@@ -1,0 +1,94 @@
+/*
+ *  Copyright 2018 Secure, Reliable, and Intelligent Systems Lab, ETH Zurich
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+
+// Type Node
+.number_type Label
+.number_type Var
+.number_type Fact
+.type VarFact = Var|Fact
+
+//
+// Inputs
+//
+.decl assignType        (l:Label, v:Var, f:Fact) input
+.decl assignVar		(l:Label, v1: Var, v2: Var) input
+.decl follows		(l1: Label, l2: Label) input
+.decl jump		(l1: Label, l2: Label, l3: Label) input
+.decl tag       (l1: Label) input
+.decl oneBranchTag       (l1: Label) input
+.decl join		(l1: Label, l2: Label, l3: Label) input
+.decl mload		(l: Label, v:Var, f:VarFact) input
+.decl mstore		(l: Label, v:Var, f:VarFact) input
+.decl sload		(l: Label, v:Var, f:VarFact) input
+.decl sstore		(l: Label, v:Var, f:VarFact) input
+.decl sha3		(l: Label, v:Var, f:VarFact) input
+.decl unk		(v:Var) input
+
+//
+// Derived
+//
+.decl mustPrecedeStep	(l1: Label, l2: Label)
+.decl reassignMemory	(l:Label, v:Var)
+.decl reassignStorage	(l:Label, v:Var)
+
+
+//
+// Output
+//
+.decl memory			(l:Label, v:Var, f:VarFact) output
+.decl storage			(l:Label, v:Var, f:VarFact) output
+.decl reach				(l: Label, v:Var, f:VarFact) output
+.decl mustPrecede		(l1: Label, l2: Label) output
+
+
+//
+// Rules
+//
+
+mustPrecedeStep(From, To) :- follows(From, To), !tag(To).
+mustPrecedeStep(From, Mid) :- jump(From, Mid, _), oneBranchTag(Mid).
+mustPrecedeStep(From, To) :- jump(From, _, To).
+
+mustPrecede(From, To) :- mustPrecedeStep(From, To).
+mustPrecede(From, To) :- mustPrecede(From, Mid), mustPrecede(Mid, To).
+
+reach(Lab, Var, Fact) :- assignType(Lab, Var, Fact).
+reach(Lab, Var1, Fact) :- assignVar(Lab, Var1, Var2), reach(Lab, Var2, Fact).
+reach(LabTo, Var, Fact) :- mustPrecede(LabFrom, LabTo), reach(LabFrom, Var, Fact).
+reach(LabTo, Var, Fact) :- join(LabFrom1, LabFrom2, LabTo), reach(LabFrom1, Var, Fact), reach(LabFrom2, Var, Fact).
+
+memory(Lab, Offset, Type) :- mstore(Lab, Offset, Var), reach(Lab, Var, Type), ! unk(Offset).
+memory(LabTo, Offset, Type) :- mustPrecedeStep(LabFrom, LabTo),  memory(LabFrom, Offset, Type), ! reassignMemory(LabTo, Offset).
+memory(LabTo, Offset, Type) :- join(LabFrom1, LabFrom2, LabTo),
+								memory(LabFrom1, Offset, Type),
+								memory(LabFrom2, Offset, Type),
+								! unk(Offset).
+
+assignType(Lab, Var, Type) :- mload(Lab, Offset, Var), memory(Lab, Offset, Type), ! unk(Offset).
+
+storage(Lab, Index, Type) :- sstore(Lab, Index, Var), reach(Lab, Var, Type), ! unk(Index).
+storage(LabTo, Index, Type) :- mustPrecedeStep(LabFrom, LabTo), storage(LabFrom, Index, Type), ! reassignStorage(LabTo, Index).
+storage(LabTo, Index, Type) :- join(LabFrom1, LabFrom2, LabTo),
+								storage(LabFrom1, Index, Type),
+								storage(LabFrom2, Index, Type),
+								! unk(Index).
+
+assignType(Lab, Var, Type) :- sload(Lab, Index, Var), storage(Lab, Index, Type), ! unk(Index).
+assignType(Lab, Var, Type) :- memory(Lab, Offset, Type), sha3(Lab, Var, Offset), ! unk(Offset).
+
+reassignStorage(Lab, Index) :- sstore(Lab, Index, _), !unk(Index).
+reassignMemory(Lab, Offset) :- mstore(Lab, Offset, _), !unk(Offset).

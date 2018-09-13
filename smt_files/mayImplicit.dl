@@ -1,0 +1,88 @@
+/*
+ *  Copyright 2018 Secure, Reliable, and Intelligent Systems Lab, ETH Zurich
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+
+
+// Type Node
+.number_type Label
+.number_type Var
+.number_type Fact
+.type VarFact = Var|Fact
+
+//
+// Inputs
+//
+.decl assignType        (l:Label, v:Var, f:Fact) input
+.decl assignVar		(l:Label, v1: Var, v2: Var) input
+.decl follows		(l1: Label, l2: Label) input
+.decl taint		(l1:Label, l2:Label, v:Var) input
+.decl endIf		(l1: Label, l2: Label) input
+.decl mload		(l: Label, v:Var, f:VarFact) input
+.decl mstore		(l: Label, v:Var, f:VarFact) input
+.decl sload		(l: Label, v:Var, f:VarFact) input
+.decl sstore		(l: Label, v:Var, f:VarFact) input
+.decl sha3		(l: Label, v:Var, f:VarFact) input
+.decl unk	(f:VarFact) input
+
+//
+// Derived
+//
+.decl reassignMemory	(l:Label, v:Var)
+.decl reassignStorage	(l:Label, v:Var)
+
+//
+// Outputs
+//
+.decl reach		(v:Var, f:VarFact) output
+.decl reachInstr        (l:Label, f:VarFact) output
+.decl memory		(l:Label, v:Var, f:VarFact) output
+.decl memoryTags		(l:Label, f:VarFact) output
+.decl storage		(l:Label, v:Var, f:VarFact) output
+.decl isAfter		(l1: Label, l2: Label) output
+
+//
+// Rules
+//
+isAfter(LabFrom, LabTo) :- follows(LabFrom, LabTo).
+isAfter(LabFrom, LabTo) :- follows(Lab, LabTo), isAfter(LabFrom, Lab).
+
+taint(LabStart, LabTo, Var) :- follows(LabFrom, LabTo), taint(LabStart, LabFrom, Var), ! endIf(LabStart, LabTo).
+
+reach(Var, Fact) :- assignType(_, Var, Fact).
+reach(Var1, Fact) :- assignVar(_, Var1, Var2), reach(Var2, Fact).
+
+reach(Var1, Fact) :- assignType(Lab, Var1, _), taint(_, Lab, Var2), reach(Var2, Fact).
+reach(Var1, Fact) :- assignVar(Lab, Var1, _), taint(_, Lab, Var2), reach(Var2, Fact).
+
+reachInstr(Lab, Var) :- taint(_, Lab, Var).
+reachInstr(Lab, Fact) :- taint(_, Lab, Var), reach(Var, Fact).
+
+memory(Lab, Offset, Type) :- mstore(Lab, Offset, Var), reach(Var, Type).
+memory(LabTo, Offset, Type) :- follows(LabFrom, LabTo), memory(LabFrom, Offset, Type), ! reassignMemory(LabTo, Offset).
+memoryTags(Lab, Type) :- memory(Lab, _, Type).
+
+assignType(Lab, Var, Type) :- mload(Lab, Offset, Var), memory(Lab, Offset, Type), ! unk(Offset).
+assignType(Lab, Var, Type) :- mload(Lab, Offset, Var), memory(Lab, _, Type), unk(Offset).
+
+storage(Lab, Index, Type) :- sstore(Lab, Index, Var), reach(Var, Type).
+storage(LabTo, Index, Type) :- follows(LabFrom, LabTo), storage(LabFrom, Index, Type), ! reassignStorage(LabTo, Index).
+
+assignType(Lab, Var, Type) :- sload(Lab, Index, Var), storage(Lab, Index, Type), ! unk(Index).
+assignType(Lab, Var, Type) :- sload(Lab, Index, Var), storage(Lab, _, Type), unk(Index).
+assignType(Lab, Var, Type) :- memory(Lab, Offset, Type), sha3(Lab, Var, Offset).
+
+reassignStorage(Lab, Index) :- sstore(Lab, Index, _), !unk(Index).
+reassignMemory(Lab, Offset) :- mstore(Lab, Offset, _), !unk(Offset).

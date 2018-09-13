@@ -1,0 +1,6 @@
+.gradle/
+.idea/
+build/
+out/
+securify.ipr
+securify.iws

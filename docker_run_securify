@@ -1,0 +1,8 @@
+#!/bin/sh
+set -eu
+securify_cmd="java -Xmx16G -jar /securify_jar/securify.jar -fs"
+for f in /contracts/*.sol ; do
+  if [ -f "$f" ]; then
+    $securify_cmd "$f"
+  fi
+done

@@ -1,0 +1,3 @@
+[submodule "securify_patterns"]
+	path = src/test/resources/solidity/securify_patterns
+	url = ssh://git@gitlab.chainsecurity.com:2224/ChainSecurity/securify_patterns.git
