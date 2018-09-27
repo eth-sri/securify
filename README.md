@@ -21,7 +21,10 @@ It features an extensive list of security patterns commonly found in smart contr
 * unrestricted ether flow
 
 
-Newly discovered bleeding-edge security patterns are released as part of the [ChainSecurity Securify Patterns](https://chainsecurity.com/securify-patterns).
+The project is meant to be an open platform welcoming contributions from all of the
+Ethereum Security Community. To suggest new patterns, to volunteer for testing or to
+contribute developing new patterns please get in touch through our
+[Discord](https://discord.gg/nN77ckb) group.
 
 ## Getting Started
 ### Requirements
