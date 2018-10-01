@@ -329,7 +329,7 @@ public class Main {
         // allPatterns.add(new DivisionBeforeCallvalue());
         // allPatterns.add(new DivisionBeforeMultiply());
         // TODO: buggy
-        //allPatterns.add(new LockedEther());
+        allPatterns.add(new LockedEther());
         // allPatterns.add(new DivisionBeforeCallvalue());
         // allPatterns.add(new DivisionBeforeMultiply());
         allPatterns.add(new MissingInputValidation());
