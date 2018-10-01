@@ -333,8 +333,8 @@ public class DecompilerFallback extends AbstractDecompiler {
 
 			removeUnusedInstructions(decompiledInstructions);
 
-			if (destacker.sawMergeWithDiffStackSize) System.out.println("size-mismatch merger");
-			if (destacker.sawPlaceholderVarsAtStackBottom) System.out.println("placeholder vars at stack bottom");
+			if (destacker.sawMergeWithDiffStackSize) log.println("size-mismatch merger");
+			if (destacker.sawPlaceholderVarsAtStackBottom) log.println("placeholder vars at stack bottom");
 
 			return decompiledInstructions;
 		}
