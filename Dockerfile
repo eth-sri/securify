@@ -32,7 +32,15 @@ RUN apt-get update && apt-get -y install\
 RUN wget https://github.com/ethereum/solidity/releases/download/v0.4.24/solc-static-linux -O /usr/local/bin/solc &&\
   chmod u+x /usr/local/bin/solc
 
-COPY ./build/libs/*.jar /securify_jar/securify.jar
+COPY . /sec
+
+WORKDIR /sec
+
+RUN ./gradlew jar
+
+RUN mkdir /securify_jar
+
+RUN cp build/libs/*.jar /securify_jar/securify.jar
 
 RUN mkdir -p /smt_files
 COPY ./smt_files/* /smt_files/
@@ -42,5 +50,7 @@ COPY src/test/resources/solidity/transaction-reordering.sol /contracts/example.s
 COPY docker_run_securify /
 
 RUN chmod u+x /docker_run_securify
+
+WORKDIR /
 
 CMD ["/docker_run_securify"]

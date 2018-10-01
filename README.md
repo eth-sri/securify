@@ -69,7 +69,6 @@ a working Java 8 installation, you can use Docker.
 
 Build the Docker image:
 ```sh
-./gradlew jar
 docker build . -t securify
 ```
 
