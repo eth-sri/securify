@@ -82,6 +82,11 @@ You can change the files analyzed by specifying a volume to mount, and every
 docker run -v $(pwd)/folder_with_solidity_files:/contracts securify
 ```
 
+### Output
+
+The output is a in JSON and gives the vulnerabilities found over the files
+analyzed and the corresponding line numbers.
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md).
