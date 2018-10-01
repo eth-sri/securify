@@ -64,8 +64,7 @@ To run the tests (which use JUnit4):
 The installation should be simple enough on Debian derivatives, or any other
 platform supported by Soufflé.
 
-For a quick demonstration which does not require Soufflé, and assuming you have
-a working Java 8 installation, you can use Docker.
+For a quick demonstration which does not require Soufflé, you can use Docker.
 
 Build the Docker image:
 ```sh
