@@ -2,16 +2,20 @@
 
 ![securify](/img/foundation_securify.png)
 
-Securify is a security scanner for Ethereum smart contracts supported by the 
-[Ethereum Foundation](https://ethereum.github.io/blog/2018/08/17/ethereum-foundation-grants-update-wave-3/) 
-and [ChainSecurity](https://chainsecurity.com). The core [research](https://files.sri.inf.ethz.ch/website/papers/ccs18-securify.pdf) 
-behind Securify was conducted at the [ICE Center](http://ice.ethz.ch) at ETH Zurich.
+Securify is a security scanner for Ethereum smart contracts supported by the
+[Ethereum
+Foundation](https://ethereum.github.io/blog/2018/08/17/ethereum-foundation-grants-update-wave-3/)
+and [ChainSecurity](https://chainsecurity.com). The core
+[research](https://files.sri.inf.ethz.ch/website/papers/ccs18-securify.pdf)
+behind Securify was conducted at the [ICE Center](http://ice.ethz.ch) at ETH
+Zurich.
 
 
 [![scan now](/img/scan.png)](https://securify.chainsecurity.com/)
 
 
-It features an extensive list of security patterns commonly found in smart contracts:
+It features an extensive list of security patterns commonly found in smart
+contracts:
 
 * some forms of the DAO bug (also known as reentrancy)
 * locked ether
@@ -103,7 +107,6 @@ still bugs, including:
   `computeBranches` being non tail-recursive (but recursive). In most cases,
   it is enough to increase the stack size using the `-Xss` option of `java`,
   e.g. `java -Xss1G -jar ...`.
-* the code in the fallback function is currently not analyzed. A workaround is to name this function instead.
 * libraries are not properly supported
 
 ## Presentations, research, and blogs about Securify
@@ -119,6 +122,13 @@ still bugs, including:
 
 ## Technical details
 
-Securify statically analyzes the EVM code of the smart contract to infer important semantic information (including control-flow and data-flow facts) about the contract. This step is fully automated using [Soufflé](https://souffle-lang.github.io/), a scalable Datalog solver. Then, Securify checks the inferred facts to discover security violations or prove the compliance of security-relevant instructions.
+Securify statically analyzes the EVM code of the smart contract to infer
+important semantic information (including control-flow and data-flow facts)
+about the contract. This step is fully automated using
+[Soufflé](https://souffle-lang.github.io/), a scalable Datalog solver. Then,
+Securify checks the inferred facts to discover security violations or prove the
+compliance of security-relevant instructions.
 
-The full technical details behind the Securify scanner are available in the [research paper](https://files.sri.inf.ethz.ch/website/papers/ccs18-securify.pdf).
+The full technical details behind the Securify scanner are available in the
+[research
+paper](https://files.sri.inf.ethz.ch/website/papers/ccs18-securify.pdf).
