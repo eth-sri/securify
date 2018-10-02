@@ -58,7 +58,7 @@ public class CompilationHelpers {
     static int bytecodeOffsetToSourceOffset(int bytecodeOffset, List<String[]> map) throws NotFound {
         try {
             map = map.subList(0, bytecodeOffset);
-        } catch (IndexOutOfBoundsException e) {
+        } catch (IndexOutOfBoundsException | IllegalArgumentException e) {
             throw new NotFound();
         }
 
@@ -101,6 +101,10 @@ public class CompilationHelpers {
         JsonObject jsonObject = new JsonParser().parse(readFile(f.getPath())).getAsJsonObject();
 
         return jsonObject.get("contracts").getAsJsonObject();
+    }
+
+    static JsonObject parseCompilationOutput(String compilationOutputFile) throws IOException {
+        return new JsonParser().parse(readFile(compilationOutputFile)).getAsJsonObject();
     }
 
     private static LinkedHashSet<Integer> getMatchedLines(byte[] contract, JsonArray matches, String map) throws NotFound {
