@@ -33,8 +33,8 @@ public class Dataflow extends AbstractDataflow {
             mustExplicitDataflow = new MustExplicitDataflow(instructions);
             mayImplicitDataflow = new MayImplicitDataflow(instructions);
         } catch(IOException | InterruptedException e){
-            System.out.println(e.getStackTrace());
-            System.out.println("FAILURE");
+            System.out.println("Is Soufflé installed?");
+            System.exit(7);
         }
     }
 
