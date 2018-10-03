@@ -94,35 +94,13 @@ public class CompilationHelpers {
         File f = File.createTempFile("securify_compilation_", ".json");
         f.deleteOnExit();
 
-        final Process process = p.redirectOutput(f).start();
-
-        Thread t = new Thread(){
-            public void run(){
-                try {
-                    InputStreamReader isr = new InputStreamReader(process.getErrorStream());
-                    BufferedReader br = new BufferedReader(isr);
-                    String line = br.readLine();
-                    if (!line.contains("Error")) {
-                        return;
-                    }
-                    String stacktrace = line + "\n";
-                    while ( (line = br.readLine()) != null) {
-                        stacktrace += line + "\n";
-                    }
-                    System.err.println(stacktrace);
-                } catch (IOException ioe) {
-                    ioe.printStackTrace();
-                }
-            }
-        };
-        t.start();
+        final Process process = p.redirectOutput(f).redirectError(ProcessBuilder.Redirect.INHERIT).start();
 
         process.waitFor();
         int exitValue = process.exitValue();
         if(exitValue != 0){
             throw new RuntimeException();
         }
-
 
         JsonObject jsonObject = new JsonParser().parse(readFile(f.getPath())).getAsJsonObject();
 
