@@ -1,0 +1,21 @@
+# I have checked the following
+
+- [ ] The `souffle` binary is available, output when running `souffle`:
+
+$OUTPUT
+
+- [ ] Output of `solc --version`
+
+$OUTPUT
+
+- [ ] Output of `solc --bin-runtime MyContract.sol`
+
+$OUTPUT
+
+- [ ] I can reproduce this issue in a Docker container with the following command
+
+$COMMAND
+
+# Steps to reproduce
+
+$STEPS
