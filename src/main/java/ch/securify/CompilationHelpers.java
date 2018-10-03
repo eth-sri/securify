@@ -15,7 +15,6 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.lang.Thread;
 import java.lang.RuntimeException;
-// import java.lang.Exception;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -112,7 +111,7 @@ public class CompilationHelpers {
                     }
                     System.err.println(stacktrace);
                 } catch (IOException ioe) {
-                    ioe.printStackTrace();  
+                    ioe.printStackTrace();
                 }
             }
         };
@@ -120,7 +119,7 @@ public class CompilationHelpers {
 
         process.waitFor();
         int exitValue = process.exitValue();
-        if(exitValue != 0){            
+        if(exitValue != 0){
             throw new RuntimeException();
         }
 
