@@ -33,10 +33,11 @@ contribute developing new patterns please get in touch through our
 ## Getting Started
 ### Requirements
 
-* Java 8
 * Soufflé: https://github.com/souffle-lang/souffle/releases (Securify should work with
   the latest package, please raise an issue if it does not). If you cannot
-  install Soufflé, look at the Docker container for an alternative.
+  install Soufflé, look at the Docker container for an alternative. Securify
+  will crash without the `souffle` binary.
+* Java 8
 * A `solc` binary is required to be able to use Solidity file as input.
   Securify assumes that the right version is installed for the given file.
   `solc` is available [here](https://github.com/ethereum/solidity/releases).
