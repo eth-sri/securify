@@ -4,3 +4,4 @@ build/
 out/
 securify.ipr
 securify.iws
+scripts/__pycache__
