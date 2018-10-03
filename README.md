@@ -121,6 +121,9 @@ script:
 - docker run -v $(pwd):/project chainsecurity/securify
 ```
 
+This should allow Securify to run over Truffle project in which dependencies
+have already been installed (so run `npm install` before if need be).
+
 ### Output
 
 The output is a in JSON and gives the vulnerabilities found over the files
