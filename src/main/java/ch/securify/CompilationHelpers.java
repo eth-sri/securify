@@ -123,7 +123,6 @@ public class CompilationHelpers {
             throw new RuntimeException();
         }
 
-
         JsonObject jsonObject = new JsonParser().parse(readFile(f.getPath())).getAsJsonObject();
 
         return jsonObject.get("contracts").getAsJsonObject();
