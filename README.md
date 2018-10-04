@@ -109,6 +109,8 @@ still bugs, including:
   it is enough to increase the stack size using the `-Xss` option of `java`,
   e.g. `java -Xss1G -jar ...`.
 * libraries are not properly supported
+* abstract contracts (whose binary cannot be obtained via `solc`) are not
+  supported
 
 ## Presentations, research, and blogs about Securify
 

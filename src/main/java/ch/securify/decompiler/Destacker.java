@@ -128,7 +128,7 @@ public class Destacker {
 	 * Partially executes the EVM code.
 	 * @param branchStartOffset bytecode offset where the branch starts.
 	 * @param evmStack Variable stack at the beginning of the current branch.
-	 * @param currentMethod bytecoe offset of the currently decompiling method.
+	 * @param currentMethod bytecode offset of the currently decompiling method.
 	 */
 	private void decompile(int branchStartOffset, Stack<Variable> evmStack, int currentMethod) {
 		for (int pc = branchStartOffset; ; pc = nextNonNullIndex(pc, rawInstructions)) {
