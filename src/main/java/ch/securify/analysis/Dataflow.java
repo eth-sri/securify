@@ -34,7 +34,7 @@ public class Dataflow extends AbstractDataflow {
             mayImplicitDataflow = new MayImplicitDataflow(instructions);
         } catch(IOException | InterruptedException e){
             e.printStackTrace();
-            System.exit(7);
+            throw new RuntimeException();
         }
     }
 
