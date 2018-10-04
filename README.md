@@ -37,6 +37,8 @@ contribute developing new patterns please get in touch through our
   the latest package, please raise an issue if it does not). If you cannot
   install Soufflé, look at the Docker container for an alternative. Securify
   will crash without the `souffle` binary.
+  As of writing, Soufflé is not available on Windows, so Securify should not be
+  expected to run on Windows either.
 * Java 8
 * A `solc` binary is required to be able to use Solidity file as input.
   Securify assumes that the right version is installed for the given file.
