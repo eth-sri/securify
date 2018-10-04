@@ -10,6 +10,7 @@ import org.omg.CosNaming.NamingContextPackage.NotFound;
 import javax.xml.bind.DatatypeConverter;
 import java.io.File;
 import java.io.IOException;
+import java.lang.RuntimeException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -83,18 +84,18 @@ public class CompilationHelpers {
         return new String(encoded, Charset.defaultCharset());
     }
 
-    static JsonObject compileContracts(String filesol) throws IOException, InterruptedException {
+    static JsonObject compileContracts(String filesol) throws IOException, InterruptedException, RuntimeException {
         ProcessBuilder p = new ProcessBuilder("solc", "--combined-json", "abi,ast,bin-runtime,srcmap-runtime", filesol);
 
         File f = File.createTempFile("securify_compilation_", ".json");
         f.deleteOnExit();
 
-        final Process process = p.redirectOutput(f).start();
+        final Process process = p.redirectOutput(f).redirectError(ProcessBuilder.Redirect.INHERIT).start();
 
         process.waitFor();
         int exitValue = process.exitValue();
         if(exitValue != 0){
-            throw new IOException();
+            throw new RuntimeException();
         }
 
         JsonObject jsonObject = new JsonParser().parse(readFile(f.getPath())).getAsJsonObject();
