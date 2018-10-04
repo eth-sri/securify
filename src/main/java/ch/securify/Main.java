@@ -36,6 +36,7 @@ import com.beust.jcommander.ParameterException;
 import com.google.common.base.Strings;
 import com.google.gson.*;
 import org.omg.CosNaming.NamingContextPackage.NotFound;
+import org.omg.IOP.ExceptionDetailMessage;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.*;
@@ -134,7 +135,7 @@ public class Main {
         } catch (Exception e) {
             contractResult.finished = true;
             updateContractAnalysisStatus(livestatusfile);
-            return;
+            throw new RuntimeException();
         }
 
         if (decompilationOutputFile != null) {
@@ -288,7 +289,7 @@ public class Main {
      * @param binary contract runtime binary
      * @return decompiled instructions
      */
-    public static List<Instruction> decompileContract(byte[] binary) {
+    public static List<Instruction> decompileContract(byte[] binary) throws Exception {
         List<Instruction> instructions;
         try {
             log.println("Attempt to decompile the contract with methods...");
@@ -303,7 +304,9 @@ public class Main {
             try {
                 instructions = DecompilerFallback.decompile(binary, log);
             } catch (Exception e2) {
-                log.println("Decompilation failed.");
+                System.out.println("Decompilation failed.");
+                e2.printStackTrace();
+                System.exit(1);
                 throw e2;
             }
         }
@@ -314,7 +317,8 @@ public class Main {
         log.println();
         log.println("Decompiled contract:");
         DecompilationPrinter.printInstructions(instructions, log);
-
+        System.out.println("Decompilation ok");
+        System.exit(0);
         return instructions;
     }
 
