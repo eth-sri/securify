@@ -75,7 +75,24 @@ public abstract class AbstractDataflow {
     protected String SOUFFLE_RULES;
     protected final String TIMEOUT_COMMAND = System.getProperty("os.name").toLowerCase().startsWith("mac") ? "gtimeout" : "timeout";
 
+    protected boolean isSouffleInstalled() {
+        try {
+            Process process = new ProcessBuilder(SOUFFLE_BIN).start();
+            process.waitFor();
+            return process.exitValue() == 0;
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     protected void initDataflow() throws IOException, InterruptedException {
+        if(! isSouffleInstalled()){
+            System.err.println("Soufflé does not seem to be installed.");
+            System.exit(7);
+        }
+
+
         varToCode = HashBiMap.create();
         instrToCode = HashBiMap.create();
         typeToCode = HashBiMap.create();
