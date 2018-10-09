@@ -69,7 +69,6 @@ public class CompilationHelpers {
         try {
             map = map.subList(0, bytecodeOffset);
         } catch (IndexOutOfBoundsException | IllegalArgumentException e) {
-
             throw new MappingNotFoundException(e);
         }
 
