@@ -86,8 +86,11 @@ docker run securify
 You can change the files analyzed by specifying a volume to mount, and every
 `*.sol` file contained will then be processed by Securify:
 ```sh
-docker run -v $(pwd)/folder_with_solidity_files:/contracts securify
+docker run -v $(pwd)/folder_with_solidity_files:/project securify
 ```
+
+This should allow Securify to run over Truffle project in which dependencies
+have already been installed (so run `npm install` before if need be).
 
 ### Output
 

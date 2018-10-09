@@ -1,8 +1,6 @@
 #!/bin/sh
 set -eu
-securify_cmd="java -Xmx16G -jar /securify_jar/securify.jar -fs"
-for f in /contracts/*.sol ; do
-  if [ -f "$f" ]; then
-    $securify_cmd "$f"
-  fi
-done
+securify_cmd="java -Xmx16G -jar /securify_jar/securify.jar -co"
+cd / && python3 -m sec.scripts.pysolc /project /comp.json
+
+$securify_cmd /comp.json

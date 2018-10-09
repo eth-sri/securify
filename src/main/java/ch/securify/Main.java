@@ -35,7 +35,6 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import com.google.common.base.Strings;
 import com.google.gson.*;
-import org.omg.CosNaming.NamingContextPackage.NotFound;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.*;
@@ -43,6 +42,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static ch.securify.CompilationHelpers.parseCompilationOutput;
 
 
 public class Main {
@@ -53,6 +54,9 @@ public class Main {
 
         @Parameter(names = {"-fs", "--filesol"}, description = "smart contract as a Solidity file")
         private String filesol;
+
+        @Parameter(names = {"-co", "--compilationoutput"}, description = "compilation output of a project")
+        private String compilationoutput;
 
         @Parameter(names = {"-o", "--output"}, description = "json output file")
         private String outputfile;
@@ -85,11 +89,18 @@ public class Main {
     private static Args args;
 
 
-    public static HashMap<String, SolidityResult> processSolidityFile(String filesol, String livestatusfile) throws IOException, InterruptedException, NotFound {
-        byte[] fileContent = Files.readAllBytes(new File(filesol).toPath());
-
+    public static HashMap<String, SolidityResult> processSolidityFile(String filesol, String livestatusfile) throws IOException, InterruptedException {
         JsonObject compilationOutput = CompilationHelpers.compileContracts(filesol);
 
+        return processCompilationOutput(compilationOutput, livestatusfile);
+    }
+
+    public static HashMap<String, SolidityResult> mainFromCompilationOutput(String fileCompilationOutput, String livestatusfile) throws IOException, InterruptedException {
+        JsonObject compilationOutput = parseCompilationOutput(fileCompilationOutput);
+        return processCompilationOutput(compilationOutput, livestatusfile );
+    }
+
+    public static HashMap<String, SolidityResult> processCompilationOutput(JsonObject compilationOutput, String livestatusfile) throws IOException, InterruptedException {
         Set<Map.Entry<String, JsonElement>> entries = compilationOutput.entrySet();
 
         HashMap<String, SolidityResult> allContractResults = new HashMap<>();
@@ -107,13 +118,15 @@ public class Main {
 
             processHexFile(binFile.getPath(), null, livestatusfile);
 
+            byte[] fileContent = Files.readAllBytes(new File(e.getKey().split(":")[0]).toPath());
+
             SolidityResult allPatternResults = CompilationHelpers.getMappingsFromStatusFile(livestatusfile, map, fileContent);
             allContractResults.put(e.getKey(), allPatternResults);
         }
 
         return allContractResults;
-
     }
+
 
     private static void processHexFile(String hexBinaryFile, String decompilationOutputFile, String livestatusfile) throws IOException, InterruptedException {
         if (!new File(hexBinaryFile).exists()) {
@@ -154,7 +167,7 @@ public class Main {
 
     }
 
-    public static void main(String[] rawrgs) throws IOException, InterruptedException, NotFound {
+    public static void main(String[] rawrgs) throws IOException, InterruptedException {
 
         args = new Args();
 
@@ -182,8 +195,13 @@ public class Main {
         String livestatusfile = lStatusFile.getPath();
 
 
-        if (args.filesol != null) {
-            HashMap<String, SolidityResult> allContractsResults = processSolidityFile(args.filesol, livestatusfile);
+        if (args.filesol != null || args.compilationoutput != null) {
+            HashMap<String, SolidityResult> allContractsResults;
+            if (args.filesol != null) {
+                allContractsResults = processSolidityFile(args.filesol, livestatusfile);
+            } else {
+                allContractsResults = mainFromCompilationOutput(args.compilationoutput, livestatusfile);
+            }
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             if (args.outputfile != null) {
                 try (Writer writer = new FileWriter(args.outputfile)) {
