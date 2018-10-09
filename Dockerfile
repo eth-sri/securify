@@ -24,12 +24,10 @@ RUN mkdir /souffle
 RUN wget -P /souffle/ https://github.com/souffle-lang/souffle/releases/download/1.4.0/souffle_1.4.0-1_amd64.deb &&\
         gdebi --n /souffle/souffle_1.4.0-1_amd64.deb
 
-# install java
+# install java and pip
 RUN apt-get update && apt-get -y install\
-        openjdk-8-jdk
-
-# install pip and py-solc
-RUN apt-get update && apt-get install -y python3-pip
+        openjdk-8-jdk\
+        python3-pip
 
 RUN pip3 install --user py-solc
 
@@ -37,7 +35,7 @@ RUN pip3 install --user py-solc
 RUN wget https://github.com/ethereum/solidity/releases/download/v0.4.24/solc-static-linux -O /usr/local/bin/solc &&\
   chmod u+x /usr/local/bin/solc
 
-
+# copy and compile securify
 COPY . /sec
 
 WORKDIR /sec
@@ -51,6 +49,7 @@ RUN cp build/libs/*.jar /securify_jar/securify.jar
 RUN mkdir -p /smt_files
 COPY ./smt_files/* /smt_files/
 
+# Solidity example
 COPY src/test/resources/solidity/transaction-reordering.sol /project/example.sol
 
 COPY docker_run_securify /
