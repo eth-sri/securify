@@ -35,7 +35,6 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import com.google.common.base.Strings;
 import com.google.gson.*;
-import org.omg.CosNaming.NamingContextPackage.NotFound;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.*;
@@ -90,18 +89,18 @@ public class Main {
     private static Args args;
 
 
-    public static HashMap<String, SolidityResult> processSolidityFile(String filesol, String livestatusfile) throws IOException, InterruptedException, NotFound {
+    public static HashMap<String, SolidityResult> processSolidityFile(String filesol, String livestatusfile) throws IOException, InterruptedException {
         JsonObject compilationOutput = CompilationHelpers.compileContracts(filesol);
 
         return processCompilationOutput(compilationOutput, livestatusfile);
     }
 
-    public static HashMap<String, SolidityResult> mainFromCompilationOutput(String fileCompilationOutput, String livestatusfile) throws IOException, NotFound, InterruptedException {
+    public static HashMap<String, SolidityResult> mainFromCompilationOutput(String fileCompilationOutput, String livestatusfile) throws IOException, InterruptedException {
         JsonObject compilationOutput = parseCompilationOutput(fileCompilationOutput);
         return processCompilationOutput(compilationOutput, livestatusfile );
     }
 
-    public static HashMap<String, SolidityResult> processCompilationOutput(JsonObject compilationOutput, String livestatusfile) throws IOException, InterruptedException, NotFound {
+    public static HashMap<String, SolidityResult> processCompilationOutput(JsonObject compilationOutput, String livestatusfile) throws IOException, InterruptedException {
         Set<Map.Entry<String, JsonElement>> entries = compilationOutput.entrySet();
 
         HashMap<String, SolidityResult> allContractResults = new HashMap<>();
@@ -168,7 +167,7 @@ public class Main {
 
     }
 
-    public static void main(String[] rawrgs) throws IOException, InterruptedException, NotFound {
+    public static void main(String[] rawrgs) throws IOException, InterruptedException {
 
         args = new Args();
 

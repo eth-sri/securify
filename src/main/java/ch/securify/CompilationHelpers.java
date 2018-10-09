@@ -5,7 +5,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import org.omg.CosNaming.NamingContextPackage.NotFound;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.File;
@@ -34,6 +33,17 @@ class SmallPatternResult {
     }
 }
 
+class MappingNotFoundException extends RuntimeException {
+    RuntimeException baseException;
+
+    public MappingNotFoundException(){
+    }
+
+    public MappingNotFoundException(RuntimeException e) {
+        this.baseException = e;
+    }
+}
+
 public class CompilationHelpers {
     public static String sanitizeLibraries(String hexCode) {
         final String dummyAddress = "1000000000000000000000000000000000000010";
@@ -55,12 +65,12 @@ public class CompilationHelpers {
         return DatatypeConverter.parseHexBinary(sanitizeLibraries(hexCode));
     }
 
-    static int bytecodeOffsetToSourceOffset(int bytecodeOffset, List<String[]> map) throws NotFound {
+    static int bytecodeOffsetToSourceOffset(int bytecodeOffset, List<String[]> map) throws MappingNotFoundException {
         try {
             map = map.subList(0, bytecodeOffset);
         } catch (IndexOutOfBoundsException | IllegalArgumentException e) {
-            e.printStackTrace();
-            throw new NotFound();
+
+            throw new MappingNotFoundException(e);
         }
 
         reverse(map);
@@ -69,7 +79,7 @@ public class CompilationHelpers {
                 return Integer.parseInt(offset[0]);
             }
         }
-        throw new NotFound();
+        throw new MappingNotFoundException();
     }
 
     static List<String[]> explodeMappingString(String map) {
@@ -108,7 +118,7 @@ public class CompilationHelpers {
         return new JsonParser().parse(readFile(compilationOutputFile)).getAsJsonObject();
     }
 
-    private static LinkedHashSet<Integer> getMatchedLines(byte[] contract, JsonArray matches, String map) throws NotFound {
+    private static LinkedHashSet<Integer> getMatchedLines(byte[] contract, JsonArray matches, String map) throws MappingNotFoundException {
         LinkedHashSet<Integer> matchedLines = new LinkedHashSet<>();
         for (JsonElement m : matches) {
             int byteOffset = m.getAsInt();
@@ -117,7 +127,7 @@ public class CompilationHelpers {
                 int srcOffset = CompilationHelpers.bytecodeOffsetToSourceOffset(byteOffset, CompilationHelpers.explodeMappingString(map));
                 String matchingSubstring = new String(Arrays.copyOfRange(contract, 0, srcOffset), UTF_8);
                 line = CharMatcher.is('\n').countIn(matchingSubstring);
-            } catch (NotFound e) {
+            } catch (MappingNotFoundException e) {
                 line = -1;
             }
             matchedLines.add(line);
@@ -125,7 +135,7 @@ public class CompilationHelpers {
         return matchedLines;
     }
 
-    static SolidityResult getMappingsFromStatusFile(String livestatusfile, String map, byte[] contract) throws IOException, NotFound {
+    static SolidityResult getMappingsFromStatusFile(String livestatusfile, String map, byte[] contract) throws IOException, MappingNotFoundException {
         JsonObject jsonObject = new JsonParser().parse(readFile(livestatusfile)).getAsJsonObject();
         Set<Map.Entry<String, JsonElement>> results = jsonObject.get("patternResults").getAsJsonObject().entrySet();
         SolidityResult allResults = new SolidityResult();
