@@ -1,5 +1,5 @@
 /*
- *  Copyright 2018 Secure, Reliable, and Intelligent Systems Lab, ETH Zurich
+ *  Copyright 2018 ChainSecurity AG
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -14,21 +14,24 @@
  *  limitations under the License.
  *
  */
+package ch.securify.analysis;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
-package ch.securify.model;
+public class SecurifyError{
+    public String error;
+    public String stackTrace;
 
-import ch.securify.analysis.SecurifyError;
+    public SecurifyError(String error, Exception e){
+        this.error = error;
+        this.stackTrace = exceptionToString(e);
+    }
 
-import java.util.Map;
-import java.util.TreeMap;
-
-public class ContractResult {
-	public boolean decompiled = false;
-	public String error = null;
-
-	public SecurifyError securifyError = null;
-	public boolean finished = false;
-	public final Map<String, PatternResult> patternResults = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-
+    private static String exceptionToString(Exception e){
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        e.printStackTrace(pw);
+        return sw.toString();
+    }
 }

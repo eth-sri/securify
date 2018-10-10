@@ -26,7 +26,7 @@ import ch.securify.decompiler.instructions._VirtualMethodHead;
 import ch.securify.decompiler.printer.DecompilationPrinter;
 import ch.securify.model.ContractResult;
 import ch.securify.model.PatternResult;
-import ch.securify.model.SecurifyError;
+import ch.securify.analysis.SecurifyError;
 import ch.securify.patterns.*;
 import ch.securify.utils.DevNullPrintStream;
 import com.beust.jcommander.JCommander;
@@ -391,7 +391,6 @@ public class Main {
             }
             globalDataflow.dispose();
         }
-
     }
 
 

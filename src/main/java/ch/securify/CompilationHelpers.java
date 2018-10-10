@@ -1,6 +1,6 @@
 package ch.securify;
 
-import ch.securify.model.SecurifyError;
+import ch.securify.analysis.SecurifyError;
 import com.google.common.base.CharMatcher;
 import com.google.gson.*;
 
