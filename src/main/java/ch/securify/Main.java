@@ -24,19 +24,16 @@ import ch.securify.decompiler.*;
 import ch.securify.decompiler.instructions.Instruction;
 import ch.securify.decompiler.instructions._VirtualMethodHead;
 import ch.securify.decompiler.printer.DecompilationPrinter;
-import ch.securify.model.Contract;
 import ch.securify.model.ContractResult;
 import ch.securify.model.PatternResult;
 import ch.securify.patterns.*;
 import ch.securify.utils.DevNullPrintStream;
-import ch.securify.utils.StreamUtil;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import com.google.common.base.Strings;
 import com.google.gson.*;
 
-import javax.xml.bind.DatatypeConverter;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -63,10 +60,6 @@ public class Main {
 
         @Parameter(names = {"-fh", "--filehex"}, description = "contract runtime code to parse as a hex-encoded file")
         private String filehex;
-
-        @Parameter(names = {"-fjl",
-                "--filejsonlist"}, description = "JSON file containing a list of smart contracts (2d array)")
-        private String filejsonlist;
 
         @Parameter(names = {"-ca",
                 "--contractaddress"}, description = "specific contract address to search for in the provided set of contracts")
@@ -218,87 +211,11 @@ public class Main {
 
         if (args.filehex != null) {
             processHexFile(args.filehex, args.decompoutputfile, livestatusfile);
-        } else if (args.filejsonlist != null) {
-            log.println("filejsonlist: " + args.filejsonlist);
-            if (!new File(args.filejsonlist).exists()) {
-                throw new IllegalArgumentException("File '" + args.filejsonlist + "' not found");
-            }
-
-            Contract[][] contracts = new Gson().fromJson(new FileReader(args.filejsonlist), Contract[][].class);
-
-            long contractsNonUniqueCount = Arrays.stream(contracts).filter(Objects::nonNull).flatMap(Arrays::stream)
-                    .filter(Objects::nonNull).count();
-            log.println("contractsNonUniqueCount = " + contractsNonUniqueCount);
-
-            List<Contract> uniqueContracts = Arrays.stream(contracts).filter(Objects::nonNull).flatMap(Arrays::stream)
-                    .filter(Objects::nonNull).filter(contract -> !contract.getCode().isEmpty())
-                    .filter(contract -> args.contractaddress == null
-                            || args.contractaddress.equalsIgnoreCase(contract.getContractAddress()))
-                    .filter(StreamUtil.distinctCustom(Contract::getCode)).collect(Collectors.toList());
-
-            handleContractList(uniqueContracts, livestatusfile);
         } else {
             new JCommander(args).usage();
             return;
         }
 
-    }
-
-    private static void handleContractList(List<Contract> contracts, String livestatusfile) {
-        log.println("contract count: " + contracts.size());
-
-
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        JsonArray resultsJSON = new JsonArray();
-
-        for (int counter = 0; counter < contracts.size(); counter++) {
-            Contract contract = contracts.get(counter);
-            JsonObject resultJSON = new JsonObject();
-            resultJSON.addProperty("address", contract.getContractAddress());
-
-            contractResult = new ContractResult();
-            updateContractAnalysisStatus(livestatusfile);
-            /* reset patterns */
-            initPatterns(args);
-            patterns.forEach(pattern -> contractResult.patternResults.put(pattern.getClass().getSimpleName(), new PatternResult()));
-            log.println("Contract (" + counter + "/" + contracts.size() + "): " + contract.getContractAddress());
-
-            byte[] bin = DatatypeConverter.parseHexBinary(contract.getCode());
-            // decompile
-            List<Instruction> instructions;
-
-            try {
-                instructions = decompileContract(bin);
-            } catch (Exception e) {
-                resultJSON.addProperty("status", "decompilation-failed");
-                resultsJSON.add(resultJSON);
-                log.println("  decomp failed: " + e.getClass().getSimpleName() + " " + e.getMessage());
-                continue;
-            }
-
-            // analyze patterns
-            try {
-                checkPatterns(instructions, livestatusfile);
-                resultJSON.addProperty("status", "success");
-                resultJSON.add("result", gson.toJsonTree(contractResult));
-                resultsJSON.add(resultJSON);
-            } catch (Exception e) {
-                resultJSON.addProperty("status", "pattern-checking-failed");
-                resultsJSON.add(resultJSON);
-                log.println("  pattern check failed: " + e.getClass().getSimpleName() + " " + e.getMessage());
-                continue;
-            }
-        }
-
-        writeJSONtoFile(resultsJSON, livestatusfile, gson);
-    }
-
-    private static void writeJSONtoFile(Object jsonObj, String fileName, Gson gson) {
-        try (Writer writer = new FileWriter(fileName)) {
-            gson.toJson(jsonObj, writer);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
     /**
