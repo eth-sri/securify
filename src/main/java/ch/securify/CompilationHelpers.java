@@ -1,10 +1,8 @@
 package ch.securify;
 
+import ch.securify.model.SecurifyError;
 import com.google.common.base.CharMatcher;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.File;
@@ -138,6 +136,9 @@ public class CompilationHelpers {
         JsonObject jsonObject = new JsonParser().parse(readFile(livestatusfile)).getAsJsonObject();
         Set<Map.Entry<String, JsonElement>> results = jsonObject.get("patternResults").getAsJsonObject().entrySet();
         SolidityResult allResults = new SolidityResult();
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        allResults.securifyError = gson.fromJson(jsonObject.get("securifyError"), SecurifyError.class);
 
         for (Map.Entry<String, JsonElement> e : results) {
             JsonArray violations = e.getValue().getAsJsonObject().get("violations").getAsJsonArray();

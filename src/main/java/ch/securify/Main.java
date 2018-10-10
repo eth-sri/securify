@@ -26,6 +26,7 @@ import ch.securify.decompiler.instructions._VirtualMethodHead;
 import ch.securify.decompiler.printer.DecompilationPrinter;
 import ch.securify.model.ContractResult;
 import ch.securify.model.PatternResult;
+import ch.securify.model.SecurifyError;
 import ch.securify.patterns.*;
 import ch.securify.utils.DevNullPrintStream;
 import com.beust.jcommander.JCommander;
@@ -73,6 +74,9 @@ public class Main {
 
         @Parameter(names = {"--decompoutputfile"}, description = "output file for the decompiled code")
         private String decompoutputfile;
+
+        @Parameter(names = {"--progress"}, description = "show progress when contracts are being processed")
+        private boolean progress;
     }
 
     private static List<AbstractPattern> patterns;
@@ -115,6 +119,13 @@ public class Main {
             byte[] fileContent = Files.readAllBytes(new File(e.getKey().split(":")[0]).toPath());
 
             SolidityResult allPatternResults = CompilationHelpers.getMappingsFromStatusFile(livestatusfile, map, fileContent);
+
+            if (args.progress) {
+                Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                gson.toJson(allPatternResults, System.out);
+                System.out.println();
+            }
+
             allContractResults.put(e.getKey(), allPatternResults);
         }
 
@@ -134,15 +145,15 @@ public class Main {
         updateContractAnalysisStatus(livestatusfile);
 
         List<Instruction> instructions;
+
         try {
-            // decompile
             instructions = decompileContract(bin);
-            contractResult.decompiled = true;
-        } catch (Exception e) {
-            contractResult.finished = true;
-            updateContractAnalysisStatus(livestatusfile);
+        }catch(Exception e){
+            handleSecurifyError("decompilation_error", e, livestatusfile);
             return;
         }
+
+        contractResult.decompiled = true;
 
         if (decompilationOutputFile != null) {
             new File(decompilationOutputFile).getAbsoluteFile().getParentFile().mkdirs();
@@ -155,14 +166,28 @@ public class Main {
             updateContractAnalysisStatus(livestatusfile);
         }
 
-        checkPatterns(instructions, livestatusfile);
+        try {
+            checkPatterns(instructions, livestatusfile);
+        }catch(Exception e){
+            handleSecurifyError("pattern_error", e, livestatusfile);
+            return;
+        }
+
+        finishContractResult(livestatusfile);
+    }
+
+    private static void handleSecurifyError(String errorMessage, Exception e, String livestatusfile){
+        System.err.println("Error in Securify");
+        contractResult.securifyError = new SecurifyError("decompilation_error", e);
+        finishContractResult(livestatusfile);
+    }
+
+    private static void finishContractResult(String livestatusfile){
         contractResult.finished = true;
         updateContractAnalysisStatus(livestatusfile);
-
     }
 
     public static void main(String[] rawrgs) throws IOException, InterruptedException {
-
         args = new Args();
 
         try {
