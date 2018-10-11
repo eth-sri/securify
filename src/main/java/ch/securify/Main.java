@@ -26,7 +26,6 @@ import ch.securify.decompiler.instructions._VirtualMethodHead;
 import ch.securify.decompiler.printer.DecompilationPrinter;
 import ch.securify.model.ContractResult;
 import ch.securify.model.PatternResult;
-import ch.securify.analysis.SecurifyError;
 import ch.securify.patterns.*;
 import ch.securify.utils.DevNullPrintStream;
 import com.beust.jcommander.JCommander;
@@ -133,7 +132,7 @@ public class Main {
     }
 
 
-    private static void processHexFile(String hexBinaryFile, String decompilationOutputFile, String livestatusfile) throws IOException, InterruptedException {
+    private static void processHexFile(String hexBinaryFile, String decompilationOutputFile, String livestatusfile) throws IOException {
         if (!new File(hexBinaryFile).exists()) {
             throw new IllegalArgumentException("File '" + hexBinaryFile + "' not found");
         }
@@ -148,8 +147,9 @@ public class Main {
 
         try {
             instructions = decompileContract(bin);
-        }catch(Exception e){
-            handleSecurifyError("decompilation_error", e, livestatusfile);
+        } catch(Exception e) {
+            handleSecurifyError("decompilation_error", e);
+            finishContractResult(livestatusfile);
             return;
         }
 
@@ -168,18 +168,16 @@ public class Main {
 
         try {
             checkPatterns(instructions, livestatusfile);
-        }catch(Exception e){
-            handleSecurifyError("pattern_error", e, livestatusfile);
-            return;
+        } catch(Exception e) {
+            handleSecurifyError("pattern_error", e);
+        } finally {
+            finishContractResult(livestatusfile);
         }
-
-        finishContractResult(livestatusfile);
     }
 
-    private static void handleSecurifyError(String errorMessage, Exception e, String livestatusfile){
+    private static void handleSecurifyError(String errorMessage, Exception e){
         System.err.println("Error in Securify");
-        contractResult.securifyError = new SecurifyError("decompilation_error", e);
-        finishContractResult(livestatusfile);
+        contractResult.securifyErrors.add(errorMessage, e);
     }
 
     private static void finishContractResult(String livestatusfile){
@@ -240,7 +238,6 @@ public class Main {
             new JCommander(args).usage();
             return;
         }
-
     }
 
     /**
@@ -352,6 +349,7 @@ public class Main {
                 try {
                     checkInstructions(instructions, instructions, pattern, dataflow, livestatusfile);
                 } catch (Exception e) {
+                    handleSecurifyError("check_pattern_" + pattern.getClass().getName(), e);
                     e.printStackTrace();
                 }
             }
@@ -371,6 +369,7 @@ public class Main {
                     try {
                         checkInstructions(body, instructions, pattern, bodyDataflow, livestatusfile);
                     } catch (Exception e) {
+                        handleSecurifyError("check_pattern_" + pattern.getClass().getName(), e);
                         e.printStackTrace();
                     }
                 }
@@ -386,6 +385,7 @@ public class Main {
                 try {
                     checkInstructions(instructions, instructions, pattern, globalDataflow, livestatusfile);
                 } catch (Exception e) {
+                    handleSecurifyError("check_pattern_" + pattern.getClass().getName(), e);
                     e.printStackTrace();
                 }
             }
@@ -405,7 +405,8 @@ public class Main {
             pattern.checkPattern(methodInstructions, contractInstructions, dataflow);
         } catch (Exception e) {
             status.error = e instanceof UnsupportedOperationException ? "not supported" : "analysis failed";
-            log.print(e.getStackTrace());
+            handleSecurifyError("check_instructions" + pattern.getClass().getName(), e);
+            e.printStackTrace();
         }
 
         status.completed = true;

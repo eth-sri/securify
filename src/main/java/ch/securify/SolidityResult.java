@@ -1,10 +1,10 @@
 package ch.securify;
 
 import java.util.TreeMap;
-import ch.securify.analysis.SecurifyError;
+import ch.securify.analysis.SecurifyErrors;
 
 public class SolidityResult {
     TreeMap<String, SmallPatternResult> results = new TreeMap<>();
 
-    SecurifyError securifyError = null;
+    SecurifyErrors securifyErrors = null;
 }

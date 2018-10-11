@@ -18,8 +18,10 @@
 
 package ch.securify.model;
 
-import ch.securify.analysis.SecurifyError;
+import ch.securify.analysis.SecurifyErrors;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -27,7 +29,7 @@ public class ContractResult {
 	public boolean decompiled = false;
 	public String error = null;
 
-	public SecurifyError securifyError = null;
+	public SecurifyErrors securifyErrors = new SecurifyErrors();
 	public boolean finished = false;
 	public final Map<String, PatternResult> patternResults = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 

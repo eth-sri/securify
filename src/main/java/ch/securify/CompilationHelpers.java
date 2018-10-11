@@ -1,6 +1,6 @@
 package ch.securify;
 
-import ch.securify.analysis.SecurifyError;
+import ch.securify.analysis.SecurifyErrors;
 import com.google.common.base.CharMatcher;
 import com.google.gson.*;
 
@@ -138,7 +138,7 @@ public class CompilationHelpers {
         SolidityResult allResults = new SolidityResult();
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        allResults.securifyError = gson.fromJson(jsonObject.get("securifyError"), SecurifyError.class);
+        allResults.securifyErrors = gson.fromJson(jsonObject.get("securifyErrors"), SecurifyErrors.class);
 
         for (Map.Entry<String, JsonElement> e : results) {
             JsonArray violations = e.getValue().getAsJsonObject().get("violations").getAsJsonArray();
@@ -153,8 +153,8 @@ public class CompilationHelpers {
                     getMatchedLines(contract, conflicts, map));
 
             allResults.results.put(e.getKey(), pResults);
-
         }
+
         return allResults;
     }
 }

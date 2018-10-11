@@ -18,20 +18,30 @@ package ch.securify.analysis;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.LinkedList;
 
-public class SecurifyError{
-    public String error;
-    public String stackTrace;
+public class SecurifyErrors{
 
-    public SecurifyError(String error, Exception e){
-        this.error = error;
-        this.stackTrace = exceptionToString(e);
+    class Error{
+        String error;
+        String stackTrace;
+
+        Error(String error, Exception e){
+            this.error = error;
+            this.stackTrace = exceptionToString(e);
+        }
+
+        private String exceptionToString(Exception e){
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            return sw.toString();
+        }
     }
 
-    private static String exceptionToString(Exception e){
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        e.printStackTrace(pw);
-        return sw.toString();
+    private LinkedList<Error> errors = new LinkedList<>();
+
+    public void add(String error, Exception e){
+        errors.add(new Error(error, e));
     }
 }
