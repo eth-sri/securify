@@ -1,10 +1,10 @@
 package ch.securify.dslpatterns;
 
-import ch.securify.decompiler.instructions.Instruction;
+import ch.securify.dslpatterns.instructions.AbstractDSLInstruction;
 
 public class All extends AbstractQuantifiedDSLPattern{
 
-    public All(Instruction quantifiedInstr, AbstractDSLPattern quantifiedPattern) {
+    public All(AbstractDSLInstruction quantifiedInstr, AbstractDSLPattern quantifiedPattern) {
         super(quantifiedInstr, quantifiedPattern);
     }
 
