@@ -1,5 +1,8 @@
 package ch.securify.dslpatterns;
 
+/**
+ * Normal logic implication
+ */
 public class Implies extends AbstractDSLPattern {
 
     private AbstractDSLPattern lhs, rhs;

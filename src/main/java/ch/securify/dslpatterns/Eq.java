@@ -2,6 +2,9 @@ package ch.securify.dslpatterns;
 
 import ch.securify.decompiler.Variable;
 
+/**
+ * Equality between two variables
+ */
 public class Eq extends AbstractDSLPattern {
     private Variable v1, v2;
 

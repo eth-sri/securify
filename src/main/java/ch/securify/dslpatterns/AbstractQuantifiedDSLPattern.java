@@ -2,6 +2,9 @@ package ch.securify.dslpatterns;
 
 import ch.securify.dslpatterns.instructions.AbstractDSLInstruction;
 
+/**
+ * Patterns that contain a quatifier, e.g. {@link Some}, {@link All}
+ */
 public class AbstractQuantifiedDSLPattern extends AbstractDSLPattern {
 
     protected AbstractDSLInstruction quantifiedInstr;

@@ -3,6 +3,9 @@ package ch.securify.dslpatterns;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Patterns that contain a list of arguments, e.g. {@link And}, {@link Or}
+ */
 public class AbstractListDSLPattern extends AbstractDSLPattern {
     protected List<AbstractDSLPattern> patterns;
 

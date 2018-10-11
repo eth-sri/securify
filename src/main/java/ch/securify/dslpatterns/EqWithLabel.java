@@ -2,6 +2,9 @@ package ch.securify.dslpatterns;
 
 import ch.securify.dslpatterns.instructions.DSLLabel;
 
+/**
+ * Equality between two labels
+ */
 public class EqWithLabel extends AbstractDSLPattern {
     private DSLLabel l1, l2;
 

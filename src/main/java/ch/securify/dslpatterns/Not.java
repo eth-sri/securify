@@ -1,5 +1,8 @@
 package ch.securify.dslpatterns;
 
+/**
+ * Normal logic negation
+ */
 public class Not extends AbstractDSLPattern {
 
     private AbstractDSLPattern negatedPattern;

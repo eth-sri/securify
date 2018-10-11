@@ -10,6 +10,10 @@ import ch.securify.dslpatterns.predicates.PredicateFactory;
 import java.util.ArrayList;
 import java.util.List;
 
+
+/**
+ * The factory to create Patterns, can be called to generate the right objects
+ */
 public class DSLPatternFactory {
 
     private static DSLInstructionFactory instrFct = new DSLInstructionFactory();
@@ -70,6 +74,9 @@ public class DSLPatternFactory {
         return new Some(quantifiedInstr, quantifiedPattern);
     }
 
+    /**
+     * Just a test method, todo: remove
+     */
     private static void testPatterns() {
 
         DSLLabel l1 = new DSLLabel();

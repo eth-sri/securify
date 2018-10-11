@@ -2,6 +2,9 @@ package ch.securify.dslpatterns;
 
 import ch.securify.decompiler.Variable;
 
+/**
+ * Equality between a variable and a Class (e.g.: X = callvalue)
+ */
 public class EqWithClass extends AbstractDSLPattern {
     private Variable v1;
     private Class classtype;
