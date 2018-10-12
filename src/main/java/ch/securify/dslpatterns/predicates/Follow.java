@@ -2,6 +2,9 @@ package ch.securify.dslpatterns.predicates;
 
 import ch.securify.dslpatterns.instructions.DSLLabel;
 
+/**
+ * The follow DSL predicate
+ */
 public class Follow extends AbstractPredicate {
     DSLLabel l1, l2;
 

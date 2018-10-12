@@ -1,5 +1,10 @@
 package ch.securify.dslpatterns.instructions;
 
+/**
+ * Class that represents the labels placeholders inside the DSL
+ * The labels are created in a consecutive way, with the same naming scheme as {@link ch.securify.decompiler.Variable},
+ * except they start with "L-" in front
+ */
 public class DSLLabel {
     private String name;
 

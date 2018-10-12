@@ -1,5 +1,8 @@
 package ch.securify.dslpatterns.instructions;
 
+/**
+ * Stop DSL instruction
+ */
 public class DSLStop extends AbstractDSLInstruction {
 
     public DSLStop(DSLLabel label) {

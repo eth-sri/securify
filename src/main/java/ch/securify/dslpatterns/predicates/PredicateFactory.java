@@ -2,6 +2,9 @@ package ch.securify.dslpatterns.predicates;
 
 import ch.securify.dslpatterns.instructions.DSLLabel;
 
+/**
+ * Factory to create dsl predicates objects
+ */
 public class PredicateFactory {
 
     public static Follow follow(DSLLabel l1, DSLLabel l2) {

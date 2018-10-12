@@ -1,6 +1,11 @@
 package ch.securify.dslpatterns.instructions;
 
+/**
+ * Abstract supercalass for the objects that represent instructions in DSL patterns,
+ * like {@link DSLGoto}, {@link DSLStop}...
+ * */
 public class AbstractDSLInstruction {
+    //the label on which the instruction is located
     protected DSLLabel label = null;
 
     public AbstractDSLInstruction(DSLLabel label) {

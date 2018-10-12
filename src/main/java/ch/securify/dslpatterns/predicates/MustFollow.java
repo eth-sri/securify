@@ -2,6 +2,9 @@ package ch.securify.dslpatterns.predicates;
 
 import ch.securify.dslpatterns.instructions.DSLLabel;
 
+/**
+ * The must follow DSL predicate
+ */
 public class MustFollow extends AbstractPredicate {
     DSLLabel l1, l2;
 
