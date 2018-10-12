@@ -138,7 +138,7 @@ public class CompilationHelpers {
     static SolidityResult getMappingsFromStatusFile(String livestatusfile, String map, byte[] contract) throws IOException {
         JsonObject jsonObject = new JsonParser().parse(readFile(livestatusfile)).getAsJsonObject();
         Set<Map.Entry<String, JsonElement>> results = jsonObject.get("patternResults").getAsJsonObject().entrySet();
-        SolidityResult allResults = new SolidityResult();
+        SolidityResult allResults = SolidityResult.getInstance();
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         allResults.securifyErrors = gson.fromJson(jsonObject.get("securifyErrors"), SecurifyErrors.class);
