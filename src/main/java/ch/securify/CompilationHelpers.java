@@ -33,12 +33,14 @@ class SmallPatternResult {
 
 class MappingNotFoundException extends RuntimeException {
     RuntimeException baseException;
+    int bytecodeOffset;
 
     public MappingNotFoundException(){
     }
 
-    public MappingNotFoundException(RuntimeException e) {
+    public MappingNotFoundException(RuntimeException e, int bytecodeOffset) {
         this.baseException = e;
+        this.bytecodeOffset = bytecodeOffset;
     }
 }
 
@@ -67,7 +69,7 @@ public class CompilationHelpers {
         try {
             map = map.subList(0, bytecodeOffset);
         } catch (IndexOutOfBoundsException | IllegalArgumentException e) {
-            throw new MappingNotFoundException(e);
+            throw new MappingNotFoundException(e, bytecodeOffset);
         }
 
         reverse(map);
@@ -115,7 +117,7 @@ public class CompilationHelpers {
         return new JsonParser().parse(readFile(compilationOutputFile)).getAsJsonObject();
     }
 
-    private static TreeSet<Integer> getMatchedLines(byte[] contract, JsonArray matches, String map) throws MappingNotFoundException {
+    private static TreeSet<Integer> getMatchedLines(byte[] contract, JsonArray matches, String map, SecurifyErrors securifyErrors) throws MappingNotFoundException {
         TreeSet<Integer> matchedLines = new TreeSet<>();
         for (JsonElement m : matches) {
             int byteOffset = m.getAsInt();
@@ -126,13 +128,14 @@ public class CompilationHelpers {
                 line = CharMatcher.is('\n').countIn(matchingSubstring);
             } catch (MappingNotFoundException e) {
                 line = -1;
+                securifyErrors.add("mapping_error", e);
             }
             matchedLines.add(line);
         }
         return matchedLines;
     }
 
-    static SolidityResult getMappingsFromStatusFile(String livestatusfile, String map, byte[] contract) throws IOException, MappingNotFoundException {
+    static SolidityResult getMappingsFromStatusFile(String livestatusfile, String map, byte[] contract) throws IOException {
         JsonObject jsonObject = new JsonParser().parse(readFile(livestatusfile)).getAsJsonObject();
         Set<Map.Entry<String, JsonElement>> results = jsonObject.get("patternResults").getAsJsonObject().entrySet();
         SolidityResult allResults = new SolidityResult();
@@ -147,10 +150,10 @@ public class CompilationHelpers {
             JsonArray conflicts = e.getValue().getAsJsonObject().get("conflicts").getAsJsonArray();
 
             SmallPatternResult pResults = new SmallPatternResult(
-                    getMatchedLines(contract, violations, map),
-                    getMatchedLines(contract, safe, map),
-                    getMatchedLines(contract, warnings, map),
-                    getMatchedLines(contract, conflicts, map));
+                    getMatchedLines(contract, violations, map, allResults.securifyErrors),
+                    getMatchedLines(contract, safe, map, allResults.securifyErrors),
+                    getMatchedLines(contract, warnings, map, allResults.securifyErrors),
+                    getMatchedLines(contract, conflicts, map, allResults.securifyErrors));
 
             allResults.results.put(e.getKey(), pResults);
         }
