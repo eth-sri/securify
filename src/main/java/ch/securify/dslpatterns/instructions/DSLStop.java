@@ -1,5 +1,7 @@
 package ch.securify.dslpatterns.instructions;
 
+import ch.securify.dslpatterns.util.DSLLabel;
+
 /**
  * Stop DSL instruction
  */

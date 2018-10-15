@@ -1,6 +1,7 @@
 package ch.securify.dslpatterns.instructions;
 
 import ch.securify.decompiler.Variable;
+import ch.securify.dslpatterns.util.DSLLabel;
 
 /**
  * A goto DSL goto instruction

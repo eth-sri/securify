@@ -1,5 +1,7 @@
 package ch.securify.dslpatterns.instructions;
 
+import ch.securify.dslpatterns.util.DSLLabel;
+
 /**
  * Abstract supercalass for the objects that represent instructions in DSL patterns,
  * like {@link DSLGoto}, {@link DSLStop}...

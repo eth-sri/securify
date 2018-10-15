@@ -1,4 +1,4 @@
-package ch.securify.dslpatterns.instructions;
+package ch.securify.dslpatterns.util;
 
 /**
  * Class that represents the labels placeholders inside the DSL

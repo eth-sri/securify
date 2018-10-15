@@ -1,6 +1,6 @@
 package ch.securify.dslpatterns;
 
-import ch.securify.dslpatterns.instructions.DSLLabel;
+import ch.securify.dslpatterns.util.DSLLabel;
 
 /**
  * Equality between two labels
@@ -12,7 +12,7 @@ public class EqWithLabel extends AbstractDSLPattern {
         this.l1 = l1;
         this.l2 = l2;
     }
-
+    
     /**
      * @return a string description of the equality
      */

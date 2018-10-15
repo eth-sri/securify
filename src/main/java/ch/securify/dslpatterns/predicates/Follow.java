@@ -1,12 +1,12 @@
 package ch.securify.dslpatterns.predicates;
 
-import ch.securify.dslpatterns.instructions.DSLLabel;
+import ch.securify.dslpatterns.util.DSLLabel;
 
 /**
  * The follow DSL predicate
  */
 public class Follow extends AbstractPredicate {
-    DSLLabel l1, l2;
+    private DSLLabel l1, l2;
 
     public Follow(DSLLabel l1, DSLLabel l2) {
         this.l1 = l1;
