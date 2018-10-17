@@ -182,6 +182,8 @@ public class InstructionFactory {
 			case OpCodes.CALLCODE: return new CallCode();
 			case OpCodes.RETURN: return new Return();
 			case OpCodes.DELEGATECALL: return new DelegateCall();
+			case OpCodes.STATICCALL: return new StaticCall();
+			case OpCodes.REVERT: return new Revert();			
 			case OpCodes.SELFDESTRUCT: return new SelfDestruct();
 		}
 		int pos;
@@ -269,7 +271,9 @@ public class InstructionFactory {
 			case OpCodes.CALL: return Call.class.getSimpleName();
 			case OpCodes.CALLCODE: return CallCode.class.getSimpleName();
 			case OpCodes.RETURN: return Return.class.getSimpleName();
+			case OpCodes.REVERT: return Revert.class.getSimpleName();
 			case OpCodes.DELEGATECALL: return DelegateCall.class.getSimpleName();
+			case OpCodes.STATICCALL: return StaticCall.class.getSimpleName();			
 			case OpCodes.SELFDESTRUCT: return SelfDestruct.class.getSimpleName();
 
 		}

@@ -5,3 +5,4 @@ out/
 securify.ipr
 securify.iws
 scripts/__pycache__
+/bin/

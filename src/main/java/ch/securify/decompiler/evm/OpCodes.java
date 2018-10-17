@@ -166,8 +166,9 @@ public class OpCodes {
 	public static final int CALLCODE = 0xf2;
 	public static final int RETURN = 0xf3;
 	public static final int DELEGATECALL = 0xf4;
+	public static final int STATICCALL = 0xf5;	
+	public static final int REVERT = 0xfd;
 	public static final int SELFDESTRUCT = 0xff;
-
 
 	/**
 	 * Get the name of the operation.
@@ -286,6 +287,8 @@ public class OpCodes {
 			case CALLCODE: return 7;
 			case RETURN: return 2;
 			case DELEGATECALL: return 6;
+			case STATICCALL: return 6;
+			case REVERT: return 2;			
 			case SELFDESTRUCT: return 1;
 		}
 		if (isPush(opcode) > -1) {
@@ -373,6 +376,8 @@ public class OpCodes {
 			case CALLCODE: return 1;
 			case RETURN: return 0;
 			case DELEGATECALL: return 1;
+			case STATICCALL: return 1;			
+			case REVERT: return 0;			
 			case SELFDESTRUCT: return 0;
 		}
 		if (isPush(opcode) > -1) {

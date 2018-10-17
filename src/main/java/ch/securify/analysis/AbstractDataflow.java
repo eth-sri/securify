@@ -456,7 +456,7 @@ public abstract class AbstractDataflow {
                     // tag the arguments to depend on user input (CallDataLoad)
                     createAssignTypeRule(instr, arg, CallDataLoad.class);
                 }
-            } else if (instr instanceof Call) {
+            } else if (instr instanceof Call || instr instanceof StaticCall) {
                 log("Type of " + instr.getOutput()[0] + " is Call");
                 createAssignTopRule(instr, instr.getOutput()[0]);
                 // assign the return value as an abstract type (to check later
@@ -543,7 +543,7 @@ public abstract class AbstractDataflow {
                 }
             }
 
-            if (instr instanceof Call) {
+            if (instr instanceof Call || instr instanceof StaticCall) {
                 createAssignVarRule(instr, instr.getOutput()[0], instr.getInput()[2]);
             }
 
@@ -570,6 +570,7 @@ public abstract class AbstractDataflow {
                     || instr instanceof SStore
                     || instr instanceof SLoad
                     || instr instanceof Call
+                    || instr instanceof StaticCall                    
                     || instr instanceof Sha3) {
                 continue;
             }
