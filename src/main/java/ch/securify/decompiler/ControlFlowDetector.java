@@ -221,6 +221,12 @@ public class ControlFlowDetector {
 				richBranches.put(pc, BRANCH_EXIT);
 				return;
 			}
+			else if (opcode == OpCodes.REVERT) {
+				// end of execution
+				addExecutionBranch(branchStartOffset, RichBranch.c(pc, evmStack));
+				richBranches.put(pc, BRANCH_ERROR);
+				return;
+			}			
 			else if (opcode == OpCodes.SELFDESTRUCT) {
 				// end of execution
 				addExecutionBranch(branchStartOffset, RichBranch.c(pc, evmStack));
