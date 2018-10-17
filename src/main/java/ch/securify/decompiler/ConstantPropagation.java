@@ -29,6 +29,7 @@ import ch.securify.decompiler.instructions.MStore8;
 import ch.securify.decompiler.instructions.SLoad;
 import ch.securify.decompiler.instructions.SStore;
 import ch.securify.decompiler.instructions.Sha3;
+import ch.securify.decompiler.instructions.StaticCall;
 import ch.securify.decompiler.instructions._VirtualInstruction;
 import ch.securify.decompiler.instructions._VirtualMethodHead;
 import ch.securify.decompiler.instructions._VirtualMethodReturn;
@@ -194,6 +195,32 @@ public class ConstantPropagation {
 						programState.polluteMemory(pollution); // TODO: pollute with what?
 					}
 				}
+				else if (instruction instanceof StaticCall) {
+					Variable memOffsetVar = instruction.getInput()[4];
+					Variable memLenVar = instruction.getInput()[5];
+					if (memLenVar.hasConstantValue() && BigIntUtil.fromInt256(memLenVar.getConstantValue()).equals(BigInteger.ZERO)) {
+						// zero-length target memory
+					}
+					else if (memOffsetVar.hasConstantValue()) {
+						BigInteger memOffset = BigIntUtil.fromInt256(memOffsetVar.getConstantValue());
+						BigInteger memRangeStart = memOffset;
+						BigInteger memRangeEnd = memLenVar.hasConstantValue() ?
+												 BigIntUtil.fromInt256(memLenVar.getConstantValue()).subtract(memOffset) : null;
+
+						// clear memory that may overlap with the call result
+						programState.heap.entrySet().removeIf(entry -> {
+							// TODO: may store new variables with "call" type instead of just wiping the area
+							BigInteger offset = entry.getKey();
+							return (memRangeStart.compareTo(offset) <= 0 && (memRangeEnd == null || offset.compareTo(memRangeEnd) < 0));
+						});
+					}
+					else {
+						// write to unknown location: clear whole memory
+						Variable pollution = new Variable();
+						pollution.addValueType(Variable.TYPE_ANY);
+						programState.polluteMemory(pollution); // TODO: pollute with what?
+					}
+				}				
 
 				// check if any input variable depends on an unprocessed instructions
 				// in that case we can't know the output values
