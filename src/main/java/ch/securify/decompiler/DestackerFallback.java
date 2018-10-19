@@ -22,6 +22,7 @@ import ch.securify.decompiler.evm.OpCodes;
 import ch.securify.decompiler.evm.RawInstruction;
 import ch.securify.decompiler.printer.HexPrinter;
 import ch.securify.utils.DevNullPrintStream;
+import ch.securify.utils.Pair;
 import ch.securify.utils.Resolver;
 import ch.securify.decompiler.instructions.BranchInstruction;
 import ch.securify.decompiler.instructions.Eq;
@@ -43,6 +44,7 @@ import com.google.common.primitives.Ints;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EmptyStackException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -77,7 +79,7 @@ public class DestackerFallback {
 	private Map<Integer, Variable[]> argumentsForMethodCall, returnVarsForMethodCall;
 
 	private Map<Integer, Stack<Variable>> canonicalStackForBranchJoinJumpdest;
-	private Map<Instruction, Map<Variable, Variable>> variableReassignments;
+	private Map<Pair<Instruction, Boolean>, Map<Variable, Variable>> variableReassignments;
 	private Map<Instruction, Map<Variable, Variable>> variableReassignmentsInline;
 	private Map<Integer, List<Instruction>> dynamicJumpReplacement;
 	private Map<Instruction, Integer> dynamicJumpReplacementTargets;
@@ -154,11 +156,36 @@ public class DestackerFallback {
 				throw new IllegalStateException("Instruction @" + HexPrinter.toHex(pc) + " was already processed");
 			}
 
-			//log.print("[DS] decompiling @" + toHex(pc) + " " + OpCodes.getOpName(rawInstructions[pc].opcode));
+			log.print("[DS] decompiling @" + toHex(pc) + " " + OpCodes.getOpName(rawInstructions[pc].opcode));
 
+			
+			// Hotfix
+			// TODO: Fix properly
+			if(instructionFactory.stackTooSmall(rawInstruction, evmStack) != -1) {
+				// Securify took an unforeseen path through the executable
+				// This path doesn't work, others might, rollback
+				// TODO: Check if other paths worked
+				// TODO:
+
+				log.println("\nFailed application at "+ ". Rolling back:" + HexPrinter.toHex(branchStartOffset) + "-" + HexPrinter.toHex(pc) );
+				for (int rollbackpc = branchStartOffset; rollbackpc <= pc; rollbackpc = nextNonNullIndex(rollbackpc,
+						rawInstructions)) {
+					// Check that we didn't process any jumps here
+					assert (!(instructions[rollbackpc] instanceof Jump)
+							&& !(instructions[rollbackpc] instanceof JumpI));
+					instructions[rollbackpc] = null;
+				}
+				// Add extra variables to evmStack and run again
+				//for(int newVariables = 0; newVariables < instructionFactory.stackTooSmall(rawInstruction, evmStack); newVariables++) {
+				//	rollBackStack.insertElementAt(new Variable(), 0);
+				//}
+				//decompile(branchStartOffset, rollBackStack);
+				return;				
+			}
+			
 			instructions[pc] = instructionFactory.createAndApply(rawInstruction, evmStack);
 
-			//log.println(" > " + evmStack.size());
+			log.println(" > " + evmStack.size());
 
 			if (opcode == OpCodes.JUMP) {
 				if (jumps.get(pc).size() != 1) {
@@ -197,6 +224,7 @@ public class DestackerFallback {
 						if (instructions[jumpdest] == null) {
 							Stack<Variable> branchedStack = StackUtil.copyStack(evmStack);
 							ensureUniqueCanonicalStack(jumpI, jumpdest, branchedStack);
+							log.println("Exploring new branch: " + HexPrinter.toHex(pc) + "/" + HexPrinter.toHex(branchStartOffset) + "->" + HexPrinter.toHex(jumpdest) + ", " + evmStack.size());
 							decompile(jumpdest, branchedStack);
 						}
 						else {
@@ -208,6 +236,7 @@ public class DestackerFallback {
 				}
 				else {
 					int jumpdest = jumps.get(pc).iterator().next();
+					log.println("Exploring new branch: " + HexPrinter.toHex(pc) + "/" + HexPrinter.toHex(branchStartOffset) + "->" + HexPrinter.toHex(jumpdest) + ", " + evmStack.size());
 					if (!ControlFlowDetector.isVirtualJumpDest(jumpdest)) {
 						if (instructions[jumpdest] == null) {
 							Stack<Variable> branchedStack = StackUtil.copyStack(evmStack);
@@ -227,9 +256,10 @@ public class DestackerFallback {
 				if (jumps.get(pc).size() != 1) {
 					// TODO: create virtual hard jumps for this dynamic jump
 					// are there any dynamic conditional jumps? never seen such a thing...
-					throw new AssumptionViolatedException("conditional jump @" + HexPrinter.toHex(pc) + " has multiple jump targets");
+					throw new AssumptionViolatedException("conditional jump @" + HexPrinter.toHex(pc) + "/" + HexPrinter.toHex(branchStartOffset)  + " has multiple jump targets");
 				}
 				int jumpdest = jumps.get(pc).iterator().next();
+				log.println("Exploring new branch: " + HexPrinter.toHex(pc) + "/" + HexPrinter.toHex(branchStartOffset) + "->" + HexPrinter.toHex(jumpdest) + ", " + evmStack.size());				
 				if (!ControlFlowDetector.isVirtualJumpDest(jumpdest)) {
 					if (instructions[jumpdest] == null) {
 						Stack<Variable> branchedStack = StackUtil.copyStack(evmStack);
@@ -307,11 +337,14 @@ public class DestackerFallback {
 					variableReassignmentsInline.put(inlineDest, reassignments);
 				}
 				else {
-					variableReassignments.put(jumpsrc, reassignments);
+					variableReassignments.put(new Pair<>(jumpsrc, true), reassignments);
 				}
 			}
 			// add some placeholder variable at the stack's bottom,
 			// in case our canonical stack is too small to map another merged stack
+
+			// Comment @ritzdorf: This doesn't really help from my perspective
+/*			
 			if (jumpsInv.get(jumpdest).size() > 1) {
 				for (int i = 0; i < 20; ++i) {
 					Variable virtualVar = new Variable();
@@ -320,6 +353,7 @@ public class DestackerFallback {
 				}
 				sawPlaceholderVarsAtStackBottom = true;
 			}
+*/			
 		}
 	}
 
@@ -353,8 +387,10 @@ public class DestackerFallback {
 			throw new IllegalStateException("a canonical variable is assigned multiple times");
 		}
 
-		// create re-assignemt instructions
-		if (variableReassignments.containsKey(jumpI)) {
+		boolean jumpCondition = findJumpCondition(jumpI, jumpdest);
+		
+		// create re-assignemt instructions		
+		if (variableReassignments.containsKey(new Pair<Instruction, Boolean>(jumpI, jumpCondition))) {
 			throw new IllegalStateException("reassignment does already exist");
 		}
 		Map<Variable, Variable> reassignments = new LinkedHashMap<>();
@@ -390,7 +426,21 @@ public class DestackerFallback {
 			reassignments.putAll(reassignmentsWithTemps);
 		}
 
-		variableReassignments.put(jumpI, reassignments);
+		variableReassignments.put(new Pair<Instruction, Boolean>(jumpI, jumpCondition), reassignments);
+	}
+
+
+    // Identifies whether the positive or negative branch was taken in case of JUMPI
+    // Always true otherwise
+	private boolean findJumpCondition(Instruction jumpI, int jumpdest) {
+		if(jumpI instanceof Jump) {
+			return true;
+		}
+		if(jumpI instanceof JumpI) {
+			int x = jumps.get(jumpI.getRawInstruction().offset).iterator().next();
+			return jumpdest == jumps.get(jumpI.getRawInstruction().offset).iterator().next();
+		}
+		return true;
 	}
 
 
@@ -418,8 +468,12 @@ public class DestackerFallback {
 								if (replcmntInstrs.get(i) instanceof BranchInstruction) {
 									BranchInstruction jumpInstruction = (BranchInstruction) replcmntInstrs.get(i);
 									JumpDest jumpDest = (JumpDest) instructions[dynamicJumpReplacementTargets.get(jumpInstruction)];
-									jumpInstruction.addOutgoingBranch(jumpDest);
-									jumpDest.addIncomingBranch(jumpInstruction);
+									if (jumpDest != null) {
+										jumpInstruction.addOutgoingBranch(jumpDest);
+										jumpDest.addIncomingBranch(jumpInstruction);
+									} else {
+										log.println("Warning: " + HexPrinter.toHex(instr.getRawInstruction().offset) + " wasn't decompiled!");
+									}
 								}
 							}
 							Instruction last = replcmntInstrs.get(replcmntInstrs.size() - 1);
@@ -435,8 +489,13 @@ public class DestackerFallback {
 								jumps.get(offset).stream().filter(target -> target >= 0)
 										.forEach(targetBco -> {
 											JumpDest jumpDest = (JumpDest) instructions[targetBco];
-											jumpInstruction.addOutgoingBranch(jumpDest);
-											jumpDest.addIncomingBranch(jumpInstruction);
+											if (jumpDest != null) {
+												jumpInstruction.addOutgoingBranch(jumpDest);
+												jumpDest.addIncomingBranch(jumpInstruction);
+											} else {
+												log.println("Warning: " + HexPrinter.toHex(targetBco)
+														+ " wasn't decompiled!");
+											}
 										});
 							}
 							else {
@@ -458,8 +517,12 @@ public class DestackerFallback {
 						jumps.get(offset).stream().filter(target -> target >= 0)
 								.forEach(targetBco -> {
 									JumpDest jumpDest = (JumpDest) instructions[targetBco];
-									jumpInstruction.addOutgoingBranch(jumpDest);
-									jumpDest.addIncomingBranch(jumpInstruction);
+									if (jumpDest != null) {
+										jumpInstruction.addOutgoingBranch(jumpDest);
+										jumpDest.addIncomingBranch(jumpInstruction);
+									} else {
+										log.println("Warning: " + HexPrinter.toHex(targetBco) + " wasn't decompiled!");
+									}
 								});
 						// TODO: if conditional error jump, replace with throw() logic
 					}
@@ -491,11 +554,13 @@ public class DestackerFallback {
 
 		AtomicInteger intermediateLabels = new AtomicInteger(1);
 
-		variableReassignments.forEach((instruction, variableMap) -> {
+		variableReassignments.forEach((pair, variableMap) -> {
 			if (variableMap.entrySet().stream().noneMatch(map -> map.getKey() != map.getValue())) {
 				// nothing to reassign
 				return;
 			}
+			Instruction instruction = pair.getFirst();
+			boolean jumpCondition = pair.getSecond();
 			if (instruction instanceof Jump) {
 				// reassign just before the jump
 				// from: PREV -> JUMP -> JUMPDEST
@@ -514,7 +579,7 @@ public class DestackerFallback {
 					injectedInstrs.get(i - 1).setNext(injectedInstrs.get(i));
 				}
 			}
-			else if (instruction instanceof JumpI) {
+			else if (instruction instanceof JumpI && jumpCondition) {
 				// reassign after the jump but before reaching the target, so need to create a new intermediate branch
 				// from: JUMPI -> JUMPDEST
 				//   to: JUMPI -> JUMPDEST(virtual) -> reassignments -> JUMP(virtual) -> JUMPDEST
@@ -553,6 +618,36 @@ public class DestackerFallback {
 				// link to original jumpdest
 				intermJump.addOutgoingBranch(origJumpdest);
 				origJumpdest.addIncomingBranch(intermJump);
+			}
+			else if (instruction instanceof JumpI && !jumpCondition) {
+				// For non-taken jumps
+				// from: JUMPI -> ...
+				//   to: JUMPI -> JUMPDEST(virtual) -> reassignments -> JUMP(virtual) -> ...
+				List<Instruction> injectedInstrs = new ArrayList<>();
+
+				// original jumpi instruction
+				JumpI origJumpi = (JumpI) instruction;
+				// following instruction
+				JumpDest following = (JumpDest) origJumpi.getNext();
+
+				// create reassignments
+				variableMap.entrySet().stream().filter(map -> map.getKey() != map.getValue())
+						.forEach(map -> injectedInstrs.add(new _VirtualAssignment(map.getKey(), map.getValue())));
+				
+				// link instructions
+				for (int i = 1; i < injectedInstrs.size(); ++i) {
+					injectedInstrs.get(i).setPrev(injectedInstrs.get(i - 1));
+					injectedInstrs.get(i - 1).setNext(injectedInstrs.get(i));
+				}
+
+				
+				// Link the first instruction
+				injectedInstrs.get(0).setPrev(origJumpi);
+				origJumpi.setNext(injectedInstrs.get(0));
+				
+				// Link the last instruction
+				injectedInstrs.get(injectedInstrs.size() - 1).setNext(following);
+				following.setPrev(injectedInstrs.get(injectedInstrs.size() - 1));
 			}
 			else {
 				if (!(instruction.getNext() instanceof JumpDest)) {

@@ -67,7 +67,9 @@ public class OpCodes {
 	public static final int GASPRICE = 0x3a;
 	public static final int EXTCODESIZE = 0x3b;
 	public static final int EXTCODECOPY = 0x3c;
-
+	public static final int RETURNDATASIZE = 0x3d;
+	public static final int RETURNDATACOPY = 0x3e;
+	
 	// Block Information
 	public static final int BLOCKHASH = 0x40;
 	public static final int COINBASE = 0x41;
@@ -168,7 +170,9 @@ public class OpCodes {
 	public static final int DELEGATECALL = 0xf4;
 	public static final int STATICCALL = 0xf5;	
 	public static final int REVERT = 0xfd;
+	public static final int INVALID = 0xfe;	
 	public static final int SELFDESTRUCT = 0xff;
+
 
 	/**
 	 * Get the name of the operation.
@@ -202,7 +206,7 @@ public class OpCodes {
 	 * @return
 	 */
 	public static boolean isInvalid(int opcode) {
-		return "INVALID".equals(getOpName(opcode));
+		return "INVALID".equals(getOpName(opcode)) || opcode == INVALID;
 	}
 
 
@@ -259,6 +263,8 @@ public class OpCodes {
 			case GASPRICE: return 0;
 			case EXTCODESIZE: return 1;
 			case EXTCODECOPY: return 4;
+			case RETURNDATASIZE: return 0;
+			case RETURNDATACOPY: return 3;			
 			case BLOCKHASH: return 1;
 			case COINBASE: return 0;
 			case TIMESTAMP: return 0;
@@ -288,7 +294,8 @@ public class OpCodes {
 			case RETURN: return 2;
 			case DELEGATECALL: return 6;
 			case STATICCALL: return 6;
-			case REVERT: return 2;			
+			case REVERT: return 2;		
+			case INVALID: return 0;			
 			case SELFDESTRUCT: return 1;
 		}
 		if (isPush(opcode) > -1) {
@@ -348,6 +355,8 @@ public class OpCodes {
 			case GASPRICE: return 1;
 			case EXTCODESIZE: return 1;
 			case EXTCODECOPY: return 0;
+			case RETURNDATASIZE: return 1;
+			case RETURNDATACOPY: return 0;
 			case BLOCKHASH: return 1;
 			case COINBASE: return 1;
 			case TIMESTAMP: return 1;
@@ -378,6 +387,7 @@ public class OpCodes {
 			case DELEGATECALL: return 1;
 			case STATICCALL: return 1;			
 			case REVERT: return 0;			
+			case INVALID: return 0;
 			case SELFDESTRUCT: return 0;
 		}
 		if (isPush(opcode) > -1) {

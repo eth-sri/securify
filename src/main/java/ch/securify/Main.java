@@ -308,23 +308,24 @@ public class Main {
      */
     public static List<Instruction> decompileContract(byte[] binary) {
         List<Instruction> instructions;
-        try {
-            log.println("Attempt to decompile the contract with methods...");
-            instructions = Decompiler.decompile(binary, log);
-
-            log.println("Success. Inlining methods...");
-            instructions = MethodInliner.inline(instructions, log);
-        } catch (Exception e1) {
-            log.println(e1.getMessage());
-            log.println("Failed to decompile methods. Attempt to decompile the contract without identifying methods...");
+//        try {
+//            log.println("Attempt to decompile the contract with methods...");
+//            instructions = Decompiler.decompile(binary, log);
+//
+//            log.println("Success. Inlining methods...");
+//            instructions = MethodInliner.inline(instructions, log);
+//        } catch (Exception e1) {
+//            log.println(e1.getMessage());
+//            log.println("Failed to decompile methods. Attempt to decompile the contract without identifying methods...");
 
             try {
                 instructions = DecompilerFallback.decompile(binary, log);
             } catch (Exception e2) {
                 log.println("Decompilation failed.");
+                e2.printStackTrace();
                 throw e2;
             }
-        }
+//        }
 
         log.println("Propagating constants...");
         ConstantPropagation.propagate(instructions);
