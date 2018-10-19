@@ -168,7 +168,7 @@ public class OpCodes {
 	public static final int CALLCODE = 0xf2;
 	public static final int RETURN = 0xf3;
 	public static final int DELEGATECALL = 0xf4;
-	public static final int STATICCALL = 0xf5;	
+	public static final int STATICCALL = 0xfa;	
 	public static final int REVERT = 0xfd;
 	public static final int INVALID = 0xfe;	
 	public static final int SELFDESTRUCT = 0xff;
