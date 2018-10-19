@@ -468,6 +468,8 @@ public abstract class AbstractDataflow {
                 // TODO: double check whether to propagate the type of the
                 // argument to the output of blockhash
                 createAssignVarRule(instr, instr.getOutput()[0], instr.getInput()[0]);
+            } else if (instr instanceof ReturnDataCopy) {
+                // TODO: New memory-based rule here
             }
         }
     }

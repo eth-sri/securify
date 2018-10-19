@@ -64,6 +64,20 @@ public class InstructionFactory {
 		return labelResolver;
 	}
 
+    // Check if the current stack is too small for the next instruction
+    // Return size difference or -1 is fine
+	public int stackTooSmall(RawInstruction rawInstruction, Stack<Variable> stack) {
+		if(OpCodes.getPopCount(rawInstruction.opcode) > stack.size()) {
+			return OpCodes.getPopCount(rawInstruction.opcode) - stack.size();
+		}
+		// Check for dups
+		int dupNum = OpCodes.isDup(rawInstruction.opcode);
+		if(dupNum != -1 && dupNum + 1 > stack.size()) {
+			return dupNum+1-stack.size();
+		}
+		
+		return -1;
+	}
 
 	/**
 	 * Create an instruction instance for a given raw EVM instruction and apply its effects on the stack.
@@ -154,6 +168,8 @@ public class InstructionFactory {
 			case OpCodes.GASPRICE: return new GasPrice();
 			case OpCodes.EXTCODESIZE: return new ExtCodeSize();
 			case OpCodes.EXTCODECOPY: return new ExtCodeCopy();
+			case OpCodes.RETURNDATASIZE: return new ReturnDataSize();
+			case OpCodes.RETURNDATACOPY: return new ReturnDataCopy();			
 			case OpCodes.BLOCKHASH: return new BlockHash();
 			case OpCodes.COINBASE: return new Coinbase();
 			case OpCodes.TIMESTAMP: return new BlockTimestamp();
@@ -184,6 +200,7 @@ public class InstructionFactory {
 			case OpCodes.DELEGATECALL: return new DelegateCall();
 			case OpCodes.STATICCALL: return new StaticCall();
 			case OpCodes.REVERT: return new Revert();			
+			case OpCodes.INVALID: return new Invalid();
 			case OpCodes.SELFDESTRUCT: return new SelfDestruct();
 		}
 		int pos;
@@ -244,6 +261,8 @@ public class InstructionFactory {
 			case OpCodes.GASPRICE: return GasPrice.class.getSimpleName();
 			case OpCodes.EXTCODESIZE: return ExtCodeSize.class.getSimpleName();
 			case OpCodes.EXTCODECOPY: return ExtCodeCopy.class.getSimpleName();
+			case OpCodes.RETURNDATASIZE: return ReturnDataSize.class.getSimpleName();
+			case OpCodes.RETURNDATACOPY: return ReturnDataCopy.class.getSimpleName();					
 			case OpCodes.BLOCKHASH: return BlockHash.class.getSimpleName();
 			case OpCodes.COINBASE: return Coinbase.class.getSimpleName();
 			case OpCodes.TIMESTAMP: return BlockTimestamp.class.getSimpleName();
@@ -274,6 +293,7 @@ public class InstructionFactory {
 			case OpCodes.REVERT: return Revert.class.getSimpleName();
 			case OpCodes.DELEGATECALL: return DelegateCall.class.getSimpleName();
 			case OpCodes.STATICCALL: return StaticCall.class.getSimpleName();			
+			case OpCodes.INVALID: return Invalid.class.getSimpleName();
 			case OpCodes.SELFDESTRUCT: return SelfDestruct.class.getSimpleName();
 
 		}
