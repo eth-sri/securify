@@ -29,11 +29,14 @@ RUN apt-get update && apt-get -y install\
         openjdk-8-jdk\
         python3-pip
 
-RUN pip3 install --user py-solc
+RUN pip3 install --user py-solc termcolor
 
-# install solc
-RUN wget https://github.com/ethereum/solidity/releases/download/v0.4.24/solc-static-linux -O /usr/local/bin/solc &&\
-  chmod u+x /usr/local/bin/solc
+# install truffle for project compilation
+RUN apt-get update && apt-get install -y nodejs\
+                npm
+
+# install truffle v5-beta
+RUN npm install -g truffle@beta
 
 # copy and compile securify
 COPY . /sec
@@ -52,12 +55,13 @@ COPY ./smt_files/* /smt_files/
 # Solidity example
 COPY src/test/resources/solidity/transaction-reordering.sol /project/example.sol
 
-COPY docker_run_securify /
+# Copy python scripts
+RUN mkdir -p /scripts
+COPY ./scripts/* /scripts/
 
-RUN chmod u+x /docker_run_securify
+COPY docker_run_securify.py /
 
 WORKDIR /
 
-RUN python3 -m sec.scripts.install_solc
-
-CMD ["/docker_run_securify"]
+# ENTRYPOINT allows arguments to be passed (e.g. "--truffle").
+ENTRYPOINT ["python3", "-O", "docker_run_securify.py"]

@@ -1,4 +1,8 @@
+#!/usr/bin/env python3
+
 """
+Author: Jakob Beckmann
+
 Copyright 2018 ChainSecurity AG
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,7 +17,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-from .pysolc import install_all_versions
 
-if __name__ == '__main__':
-    install_all_versions()
+if __name__ == "__main__":
+    import sys
+    from scripts import controller
+    ctrler = controller.Controller()
+    return_code = ctrler.compile_and_report()
+    sys.exit(return_code)

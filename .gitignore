@@ -1,7 +1,9 @@
+.vscode/
+.DS_Store
 .gradle/
 .idea/
 build/
 out/
 securify.ipr
 securify.iws
-scripts/__pycache__
+__pycache__/
