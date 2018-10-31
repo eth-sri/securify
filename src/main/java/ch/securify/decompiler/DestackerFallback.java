@@ -158,7 +158,7 @@ public class DestackerFallback {
 
 			log.print("[DS] decompiling @" + toHex(pc) + " " + OpCodes.getOpName(rawInstructions[pc].opcode));
 
-			
+/*			
 			// Hotfix
 			// TODO: Fix properly
 			if(instructionFactory.stackTooSmall(rawInstruction, evmStack) != -1) {
@@ -182,6 +182,7 @@ public class DestackerFallback {
 				//decompile(branchStartOffset, rollBackStack);
 				return;				
 			}
+*/
 			
 			instructions[pc] = instructionFactory.createAndApply(rawInstruction, evmStack);
 
