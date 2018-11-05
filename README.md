@@ -99,6 +99,10 @@ docker run -v $(pwd)/folder_with_solidity_files:/project securify
 This should allow Securify to run over Truffle project in which dependencies
 have already been installed (so run `npm install` before if need be).
 
+The indices of the lines matched are 0-based, meaning that a match to line `i`
+means that the `i+1`th line is matched. In particular, the first line has an
+index of 0.
+
 ### Output
 
 The output is a in JSON and gives the vulnerabilities found over the files
