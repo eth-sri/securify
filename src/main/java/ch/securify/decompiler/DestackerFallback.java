@@ -158,9 +158,8 @@ public class DestackerFallback {
 
 			log.print("[DS] decompiling @" + toHex(pc) + " " + OpCodes.getOpName(rawInstructions[pc].opcode));
 
-/*			
 			// Hotfix
-			// TODO: Fix properly
+			// TODO: Fix properly, rollback further
 			if(instructionFactory.stackTooSmall(rawInstruction, evmStack) != -1) {
 				// Securify took an unforeseen path through the executable
 				// This path doesn't work, others might, rollback
@@ -182,7 +181,6 @@ public class DestackerFallback {
 				//decompile(branchStartOffset, rollBackStack);
 				return;				
 			}
-*/
 			
 			instructions[pc] = instructionFactory.createAndApply(rawInstruction, evmStack);
 
