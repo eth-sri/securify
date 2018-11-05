@@ -51,7 +51,7 @@ class TruffleProject(project.Project):
         """Merges individual truffle files into an aggregate file for securify."""
         result = {}
         for entry in os.scandir(self.get_truffle_build_dir()):
-            if entry.is_file():
+            if entry.is_file() and entry.name.endswith(".json") and entry.name != "Migrations.json":
                 with open(entry, mode='r') as file:
                     data = json.load(file)
                     contract_name = data["sourcePath"] + ":" + data["contractName"]
