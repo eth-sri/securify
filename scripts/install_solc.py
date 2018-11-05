@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-from .pysolc import install_last_version
+from .pysolc import install_all_versions
 
 if __name__ == '__main__':
-    install_last_version()
+    install_all_versions()
