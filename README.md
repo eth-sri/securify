@@ -103,6 +103,22 @@ The indices of the lines matched are 0-based, meaning that a match to line `i`
 means that the `i+1`th line is matched. In particular, the first line has an
 index of 0.
 
+
+### Travis
+
+You can add the following `.travis.yml` to your project to run Securify on new
+commits:
+```
+services:
+  - docker
+
+before_install:
+  - docker pull chainsecurity/securify
+
+script:
+- docker run -v $(pwd):/project chainsecurity/securify
+```
+
 ### Output
 
 The output is a in JSON and gives the vulnerabilities found over the files
