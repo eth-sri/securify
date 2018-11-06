@@ -27,9 +27,18 @@
 //from mustExplicit
 .decl assignType       (l:Label, v:Var, f:Fact) input //in order to manage to have same input this is split in two and then reassigned
 .decl assignVar		(l:Label, v1: Var, v2: Var) input
+
+//basically captures an if
 .decl jump		(l1: Label, l2: Label, l3: Label) input
-.decl tag       (l1: Label) input
-.decl oneBranchTag       (l1: Label) input
+
+//if the label appears here it means it's a destination of a jump (instr instanceof JumpDest)
+.decl jumpDest       (l1: Label) input
+
+//if the label appears here it means it's a destination of a jump, but it has only one incoming branch
+//most commonly if it's the instruction right next to an if
+//(((JumpDest) instr).getIncomingBranches().size() == 1 && instr.getPrev() == null)
+.decl oneBranchJumpDest       (l1: Label) input
+
 .decl join		(l1: Label, l2: Label, l3: Label) input
 .decl mload		(l: Label, v:Var, f:VarFact) input
 .decl mstore		(l: Label, v:Var, f:VarFact) input
@@ -64,7 +73,7 @@
 .decl memoryMustExplicit			(l:Label, v:Var, f:VarFact) output
 .decl storageMustExplicit			(l:Label, v:Var, f:VarFact) output
 .decl reachMustExplicit				(l: Label, v:Var, f:VarFact) output
-.decl mustPrecedeMustExplicit		(l1: Label, l2: Label) output
+.decl mustPrecede		(l1: Label, l2: Label) output
 
 //
 // Outputs from mayImplicit
@@ -80,16 +89,18 @@
 //
 // Rules from mustExplicit
 //
-mustPrecedeStep(From, To) :- followsMustExplicit(From, To), !tag(To).
-mustPrecedeStep(From, Mid) :- jump(From, Mid, _), oneBranchTag(Mid).
-mustPrecedeStep(From, To) :- jump(From, _, To).
+mustPrecedeStep(From, To) :- followsMustExplicit(From, To), !jumpDest(To).
+mustPrecedeStep(From, Mid) :- jump(From, Mid, _), oneBranchJumpDest(Mid). //camptures the label after the if
+mustPrecedeStep(From, To) :- jump(From, _, To). //captures the label that follows if the if condition is not true
 
-mustPrecedeMustExplicit(From, To) :- mustPrecedeStep(From, To).
-mustPrecedeMustExplicit(From, To) :- mustPrecedeMustExplicit(From, Mid), mustPrecedeMustExplicit(Mid, To).
+//mustPrecede
+mustPrecede(From, To) :- mustPrecedeStep(From, To).
+mustPrecede(From, To) :- mustPrecede(From, Mid), mustPrecede(Mid, To).
 
+//must dep on
 reachMustExplicit(Lab, Var, Fact) :- assignType(Lab, Var, Fact).
 reachMustExplicit(Lab, Var1, Fact) :- assignVar(Lab, Var1, Var2), reachMustExplicit(Lab, Var2, Fact).
-reachMustExplicit(LabTo, Var, Fact) :- mustPrecedeMustExplicit(LabFrom, LabTo), reachMustExplicit(LabFrom, Var, Fact).
+reachMustExplicit(LabTo, Var, Fact) :- mustPrecede(LabFrom, LabTo), reachMustExplicit(LabFrom, Var, Fact).
 reachMustExplicit(LabTo, Var, Fact) :- join(LabFrom1, LabFrom2, LabTo), reachMustExplicit(LabFrom1, Var, Fact), reachMustExplicit(LabFrom2, Var, Fact).
 
 memoryMustExplicit(Lab, Offset, Type) :- mstore(Lab, Offset, Var), reachMustExplicit(Lab, Var, Type), ! unk(Offset).
@@ -123,6 +134,7 @@ taint(LabStart, LabTo, Var) :- followsMayImplicit(LabFrom, LabTo), taint(LabStar
 reachMayImplicit(Var, Fact) :- assignType(_, Var, Fact).
 reachMayImplicit(Var1, Fact) :- assignVarMayImplicit(_, Var1, Var2), reachMayImplicit(Var2, Fact).
 
+//mayDepOn
 reachMayImplicit(Var1, Fact) :- assignType(Lab, Var1, _), taint(_, Lab, Var2), reachMayImplicit(Var2, Fact).
 reachMayImplicit(Var1, Fact) :- assignVarMayImplicit(Lab, Var1, _), taint(_, Lab, Var2), reachMayImplicit(Var2, Fact).
 

@@ -82,8 +82,8 @@ public class DSLAnalysis {
         ruleToSB.put("taint", new StringBuffer());
         ruleToSB.put("follows", new StringBuffer());
         ruleToSB.put("jump", new StringBuffer());
-        ruleToSB.put("tag", new StringBuffer());
-        ruleToSB.put("oneBranchTag", new StringBuffer());
+        ruleToSB.put("jumpDest", new StringBuffer());
+        ruleToSB.put("oneBranchJumpDest", new StringBuffer());
         ruleToSB.put("join", new StringBuffer());
         ruleToSB.put("endIf", new StringBuffer());
         ruleToSB.put("mload", new StringBuffer());
@@ -608,10 +608,10 @@ public class DSLAnalysis {
             if (instr instanceof JumpDest) {
                 if (((JumpDest) instr).getIncomingBranches().size() == 1 && instr.getPrev() == null) {
                     log("One-Branch Tag fact: " + instr);
-                    appendRule("oneBranchTag", getCode(instr));
+                    appendRule("oneBranchJumpDest", getCode(instr));
                 }
-                log("Tag fact: " + instr);
-                appendRule("tag", getCode(instr));
+                log("Tag fact (jumpDest): " + instr);
+                appendRule("jumpDest", getCode(instr));
             }
 
             if (instr instanceof BranchInstruction) {
