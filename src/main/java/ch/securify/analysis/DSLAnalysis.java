@@ -111,12 +111,8 @@ public class DSLAnalysis {
         deriveHeapPredicates();
         deriveStorePredicates();
 
-        deriveMayImplicitFollowsPredicates();
-        deriveMustExplicitFollowsPredicates();
-        deriveMayImplicitIfPredicates();
-        deriveMustExplicitIfPredicates();
-
-
+        deriveFollowsPredicates();
+        deriveIfPredicates();
 
         createProgramRulesFile();
         log("Number of instructions: " + instrToCode.size());
@@ -581,27 +577,7 @@ public class DSLAnalysis {
         }
     }
 
-
-    protected void deriveMayImplicitFollowsPredicates() {
-        log(">> Derive follows predicates <<");
-        for (Instruction instr : instructions) {
-            if (instr instanceof BranchInstruction) {
-                BranchInstruction branchInstruction = (BranchInstruction) instr;
-                for (Instruction outgoingInstruction : branchInstruction.getOutgoingBranches()) {
-                    if (!(outgoingInstruction instanceof _VirtualMethodHead)) {
-                        createMayImplicitFollowsRule(instr, outgoingInstruction);
-                    }
-                }
-            }
-            Instruction nextInstruction = instr.getNext();
-
-            if (nextInstruction != null) {
-                createMayImplicitFollowsRule(instr, nextInstruction);
-            }
-        }
-    }
-
-    protected void deriveMustExplicitFollowsPredicates() {
+    protected void deriveFollowsPredicates() {
         log(">> Derive follows predicates <<");
         for (Instruction instr : instructions) {
 
@@ -618,38 +594,33 @@ public class DSLAnalysis {
                 BranchInstruction branchInstruction = (BranchInstruction) instr;
                 for (Instruction outgoingInstruction : branchInstruction.getOutgoingBranches()) {
                     if (!(outgoingInstruction instanceof _VirtualMethodHead)) {
-                        createMustExplicitFollowsRule(instr, outgoingInstruction);
+                        createFollowsRule(instr, outgoingInstruction);
                     }
                 }
             }
             Instruction nextInstruction = instr.getNext();
 
             if (nextInstruction != null) {
-                createMustExplicitFollowsRule(instr, nextInstruction);
+                createFollowsRule(instr, nextInstruction);
             }
         }
     }
 
-
-    private void createMayImplicitFollowsRule(Instruction from, Instruction to) {
-        appendRule("followsMayImplicit", getCode(from), getCode(to));
-    }
-
-    private void createMustExplicitFollowsRule(Instruction from, Instruction to) {
+    private void createFollowsRule(Instruction from, Instruction to) {
         if (from instanceof JumpI) {
             Instruction mergeInstruction = ((JumpI)from).getMergeInstruction();
             if (mergeInstruction == null) {
                 mergeInstruction = new JumpDest("BLACKHOLE");
             }
             if (!(to instanceof JumpDest)) {
-                appendRule("followsMustExplicit", getCode(from), getCode(to));
+                appendRule("follows", getCode(from), getCode(to));
             }
             appendRule("jump", getCode(from), getCode(to), getCode(mergeInstruction));
         } else if (from instanceof Jump) {
             // need to use a jump, not follows because follows ignores the TO if it is of type Tag, see Datalog rules
             appendRule("jump", getCode(from), getCode(to), getCode(to));
         } else {
-            appendRule("followsMustExplicit", getCode(from), getCode(to));
+            appendRule("follows", getCode(from), getCode(to));
         }
 
         if (to instanceof JumpDest) {
@@ -679,7 +650,7 @@ public class DSLAnalysis {
         }
     }
 
-    protected void deriveMayImplicitIfPredicates() {
+    protected void deriveIfPredicates() {
         log(">> Derive TaintElse and TaintThen predicates <<");
         for (Instruction instr : instructions) {
             if (instr instanceof JumpI) {
@@ -698,21 +669,6 @@ public class DSLAnalysis {
                     log("else instruction: " + elseInstr.getStringRepresentation());
                     createTaintRule(instr, elseInstr, condition);
                 }
-
-                if (mergeInstr != null) {
-                    log("merge instruction: " + mergeInstr.getStringRepresentation());
-                    createEndIfRule(instr, mergeInstr);
-                }
-            }
-        }
-    }
-
-    protected void deriveMustExplicitIfPredicates() {
-        log(">> Derive TaintElse and TaintThen predicates <<");
-        for (Instruction instr : instructions) {
-            if (instr instanceof JumpI) {
-                JumpI ifInstr = (JumpI) instr;
-                Instruction mergeInstr = ifInstr.getMergeInstruction();
 
                 if (mergeInstr != null) {
                     log("merge instruction: " + mergeInstr.getStringRepresentation());

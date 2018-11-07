@@ -28,6 +28,9 @@
 .decl assignType       (l:Label, v:Var, f:Fact) input //in order to manage to have same input this is split in two and then reassigned
 .decl assignVar		(l:Label, v1: Var, v2: Var) input
 
+//together with the jump shows the flow of the program (see DSLAnalysis, method deriveFollowsPredicates)
+.decl follows		(l1: Label, l2: Label) input
+
 //basically captures an if
 .decl jump		(l1: Label, l2: Label, l3: Label) input
 
@@ -45,13 +48,11 @@
 .decl sload		(l: Label, v:Var, f:VarFact) input
 .decl sstore		(l: Label, v:Var, f:VarFact) input
 .decl sha3		(l: Label, v:Var, f:VarFact) input
-.decl followsMustExplicit		(l1: Label, l2: Label) input
 
 //from mayImplicit
 .decl taint		(l1:Label, l2:Label, v:Var) input
 .decl endIf		(l1: Label, l2: Label) input
 .decl unk	(f:VarFact) input
-.decl followsMayImplicit		(l1: Label, l2: Label) input
 .decl assignVarMayImplicit		(l:Label, v1: Var, v2: Var) input
 //collapses assignVar and assignVarMayImplicit
 
@@ -59,38 +60,48 @@
 //
 // Derived
 //
+//joins the follows and the jump predicate in one
+.decl allFollows        (l1: Label, l2: Label)
+
 .decl mustPrecedeStep	(l1: Label, l2: Label)
 .decl reassignMemory	(l:Label, v:Var)
 .decl reassignStorage	(l:Label, v:Var)
 
-.decl assignTypeMustExplicit        (l:Label, v:Var, f:Fact) input
-.decl assignTypeMayImplicit      (l:Label, v:Var, f:Fact) input
+.decl mustAssignType        (l:Label, v:Var, f:Fact) input
+.decl mayAssignType      (l:Label, v:Var, f:Fact) input
 
 
 //
 // Output from mustExplicit
 //
-.decl memoryMustExplicit			(l:Label, v:Var, f:VarFact) output
-.decl storageMustExplicit			(l:Label, v:Var, f:VarFact) output
-.decl reachMustExplicit				(l: Label, v:Var, f:VarFact) output
+//Shows how the memory allocation must be at a certain point
+.decl mstoreMust			(l:Label, v:Var, f:VarFact) output
+
+//Shows how the storage situation must be at a certain point
+.decl sstoreMust			(l:Label, v:Var, f:VarFact) output
+
+.decl mustDepOn				(l: Label, v:Var, f:VarFact) output
 .decl mustPrecede		(l1: Label, l2: Label) output
 
 //
 // Outputs from mayImplicit
 //
-.decl reachMayImplicit		(v:Var, f:VarFact) output
-.decl reachInstrMayImplicit       (l:Label, f:VarFact) output
-.decl memoryMayImplicit		(l:Label, v:Var, f:VarFact) output
-.decl memoryTagsMayImplicit		(l:Label, f:VarFact) output
-.decl storageMayImplicit		(l:Label, v:Var, f:VarFact) output
-.decl isAfterMayImplicit		(l1: Label, l2: Label) output
+.decl mayDepOn		            (v:Var, f:VarFact) output
+.decl reachInstrMayImplicit     (l:Label, f:VarFact) output
 
+//Shows how the memory allocation may be at a certain point
+.decl mstoreMay		    (l:Label, v:Var, f:VarFact) output
+.decl memoryTagsMayImplicit		(l:Label, f:VarFact) output
+
+//Shows how the storage situation may be at a certain point
+.decl sstoreMay		(l:Label, v:Var, f:VarFact) output
+.decl isAfterMayImplicit		(l1: Label, l2: Label) output
 
 //
 // Rules from mustExplicit
 //
-mustPrecedeStep(From, To) :- followsMustExplicit(From, To), !jumpDest(To).
-mustPrecedeStep(From, Mid) :- jump(From, Mid, _), oneBranchJumpDest(Mid). //camptures the label after the if
+mustPrecedeStep(From, To) :- follows(From, To), !jumpDest(To).
+mustPrecedeStep(From, Mid) :- jump(From, Mid, _), oneBranchJumpDest(Mid). //captures the label after the if
 mustPrecedeStep(From, To) :- jump(From, _, To). //captures the label that follows if the if condition is not true
 
 //mustPrecede
@@ -98,65 +109,68 @@ mustPrecede(From, To) :- mustPrecedeStep(From, To).
 mustPrecede(From, To) :- mustPrecede(From, Mid), mustPrecede(Mid, To).
 
 //must dep on
-reachMustExplicit(Lab, Var, Fact) :- assignType(Lab, Var, Fact).
-reachMustExplicit(Lab, Var1, Fact) :- assignVar(Lab, Var1, Var2), reachMustExplicit(Lab, Var2, Fact).
-reachMustExplicit(LabTo, Var, Fact) :- mustPrecede(LabFrom, LabTo), reachMustExplicit(LabFrom, Var, Fact).
-reachMustExplicit(LabTo, Var, Fact) :- join(LabFrom1, LabFrom2, LabTo), reachMustExplicit(LabFrom1, Var, Fact), reachMustExplicit(LabFrom2, Var, Fact).
+mustDepOn(Lab, Var, Fact) :- assignType(Lab, Var, Fact).
+mustDepOn(Lab, Var1, Fact) :- assignVar(Lab, Var1, Var2), mustDepOn(Lab, Var2, Fact).
+mustDepOn(LabTo, Var, Fact) :- mustPrecede(LabFrom, LabTo), mustDepOn(LabFrom, Var, Fact).
+mustDepOn(LabTo, Var, Fact) :- join(LabFrom1, LabFrom2, LabTo), mustDepOn(LabFrom1, Var, Fact), mustDepOn(LabFrom2, Var, Fact).
 
-memoryMustExplicit(Lab, Offset, Type) :- mstore(Lab, Offset, Var), reachMustExplicit(Lab, Var, Type), ! unk(Offset).
-memoryMustExplicit(LabTo, Offset, Type) :- mustPrecedeStep(LabFrom, LabTo),  memoryMustExplicit(LabFrom, Offset, Type), ! reassignMemory(LabTo, Offset).
-memoryMustExplicit(LabTo, Offset, Type) :- join(LabFrom1, LabFrom2, LabTo),
-								memoryMustExplicit(LabFrom1, Offset, Type),
-								memoryMustExplicit(LabFrom2, Offset, Type),
+mstoreMust(Lab, Offset, Type) :- mstore(Lab, Offset, Var), mustDepOn(Lab, Var, Type), ! unk(Offset).
+mstoreMust(LabTo, Offset, Type) :- mustPrecedeStep(LabFrom, LabTo),  mstoreMust(LabFrom, Offset, Type), ! reassignMemory(LabTo, Offset).
+mstoreMust(LabTo, Offset, Type) :- join(LabFrom1, LabFrom2, LabTo),
+								mstoreMust(LabFrom1, Offset, Type),
+								mstoreMust(LabFrom2, Offset, Type),
 								! unk(Offset).
 
-storageMustExplicit(Lab, Index, Type) :- sstore(Lab, Index, Var), reachMustExplicit(Lab, Var, Type), ! unk(Index).
-storageMustExplicit(LabTo, Index, Type) :- mustPrecedeStep(LabFrom, LabTo), storageMustExplicit(LabFrom, Index, Type), ! reassignStorage(LabTo, Index).
-storageMustExplicit(LabTo, Index, Type) :- join(LabFrom1, LabFrom2, LabTo),
-								storageMustExplicit(LabFrom1, Index, Type),
-								storageMustExplicit(LabFrom2, Index, Type),
+sstoreMust(Lab, Index, Type) :- sstore(Lab, Index, Var), mustDepOn(Lab, Var, Type), ! unk(Index).
+sstoreMust(LabTo, Index, Type) :- mustPrecedeStep(LabFrom, LabTo), sstoreMust(LabFrom, Index, Type), ! reassignStorage(LabTo, Index).
+sstoreMust(LabTo, Index, Type) :- join(LabFrom1, LabFrom2, LabTo),
+								sstoreMust(LabFrom1, Index, Type),
+								sstoreMust(LabFrom2, Index, Type),
 								! unk(Index).
 
-assignTypeMustExplicit(Lab, Var, Type) :- assignType(Lab, Var, Type).
-assignTypeMustExplicit(Lab, Var, Type) :- mload(Lab, Offset, Var), memoryMustExplicit(Lab, Offset, Type), ! unk(Offset).
+mustAssignType(Lab, Var, Type) :- assignType(Lab, Var, Type).
+mustAssignType(Lab, Var, Type) :- mload(Lab, Offset, Var), mstoreMust(Lab, Offset, Type), ! unk(Offset).
 
-assignTypeMustExplicit(Lab, Var, Type) :- sload(Lab, Index, Var), storageMustExplicit(Lab, Index, Type), ! unk(Index).
-assignTypeMustExplicit(Lab, Var, Type) :- memoryMustExplicit(Lab, Offset, Type), sha3(Lab, Var, Offset), ! unk(Offset).
+mustAssignType(Lab, Var, Type) :- sload(Lab, Index, Var), sstoreMust(Lab, Index, Type), ! unk(Index).
+mustAssignType(Lab, Var, Type) :- mstoreMust(Lab, Offset, Type), sha3(Lab, Var, Offset), ! unk(Offset).
 
 //
 // Rules from mayImplicit
 //
-mayFollowMayExplicit(LabFrom, LabTo) :- followsMayImplicit(LabFrom, LabTo).
-mayFollowMayExplicit(LabFrom, LabTo) :- followsMayImplicit(Lab, LabTo), mayFollowMayExplicit(LabFrom, Lab).
+allFollows(LabFrom, LabTo) :- follows(LabFrom, LabTo).
+allFollows(LabFrom, LabTo) :- jump(LabFrom, LabTo, _).
+allFollows(LabFrom, LabTo) :- jump(LabFrom, _, LabTo).
 
-taint(LabStart, LabTo, Var) :- followsMayImplicit(LabFrom, LabTo), taint(LabStart, LabFrom, Var), ! endIf(LabStart, LabTo).
+mayFollow(LabFrom, LabTo) :- allFollows(LabFrom, LabTo).
+mayFollow(LabFrom, LabTo) :- allFollows(Lab, LabTo), mayFollow(LabFrom, Lab).
 
-reachMayImplicit(Var, Fact) :- assignType(_, Var, Fact).
-reachMayImplicit(Var1, Fact) :- assignVarMayImplicit(_, Var1, Var2), reachMayImplicit(Var2, Fact).
+taint(LabStart, LabTo, Var) :- allFollows(LabFrom, LabTo), taint(LabStart, LabFrom, Var), ! endIf(LabStart, LabTo).
 
-//mayDepOn
-reachMayImplicit(Var1, Fact) :- assignType(Lab, Var1, _), taint(_, Lab, Var2), reachMayImplicit(Var2, Fact).
-reachMayImplicit(Var1, Fact) :- assignVarMayImplicit(Lab, Var1, _), taint(_, Lab, Var2), reachMayImplicit(Var2, Fact).
+mayDepOn(Var, Fact) :- assignType(_, Var, Fact).
+mayDepOn(Var1, Fact) :- assignVarMayImplicit(_, Var1, Var2), mayDepOn(Var2, Fact).
+
+mayDepOn(Var1, Fact) :- assignType(Lab, Var1, _), taint(_, Lab, Var2), mayDepOn(Var2, Fact).
+mayDepOn(Var1, Fact) :- assignVarMayImplicit(Lab, Var1, _), taint(_, Lab, Var2), mayDepOn(Var2, Fact).
 
 reachInstrMayImplicit(Lab, Var) :- taint(_, Lab, Var).
-reachInstrMayImplicit(Lab, Fact) :- taint(_, Lab, Var), reachMayImplicit(Var, Fact).
+reachInstrMayImplicit(Lab, Fact) :- taint(_, Lab, Var), mayDepOn(Var, Fact).
 
-memoryMayImplicit(Lab, Offset, Type) :- mstore(Lab, Offset, Var), reachMayImplicit(Var, Type).
-memoryMayImplicit(LabTo, Offset, Type) :- followsMayImplicit(LabFrom, LabTo), memoryMayImplicit(LabFrom, Offset, Type), ! reassignMemory(LabTo, Offset).
-memoryTagsMayImplicit(Lab, Type) :- memoryMayImplicit(Lab, _, Type).
+mstoreMay(Lab, Offset, Type) :- mstore(Lab, Offset, Var), mayDepOn(Var, Type).
+mstoreMay(LabTo, Offset, Type) :- allFollows(LabFrom, LabTo), mstoreMay(LabFrom, Offset, Type), ! reassignMemory(LabTo, Offset).
+memoryTagsMayImplicit(Lab, Type) :- mstoreMay(Lab, _, Type).
 
-storageMayImplicit(Lab, Index, Type) :- sstore(Lab, Index, Var), reachMayImplicit(Var, Type).
-storageMayImplicit(LabTo, Index, Type) :- followsMayImplicit(LabFrom, LabTo), storageMayImplicit(LabFrom, Index, Type), ! reassignStorage(LabTo, Index).
+sstoreMay(Lab, Index, Type) :- sstore(Lab, Index, Var), mayDepOn(Var, Type).
+sstoreMay(LabTo, Index, Type) :- allFollows(LabFrom, LabTo), sstoreMay(LabFrom, Index, Type), ! reassignStorage(LabTo, Index).
 
 assignVarMayImplicit(Lab, Var1, Var2) :- assignVar(Lab, Var1, Var2).
 
-assignTypeMayImplicit(Lab, Var, Type) :- assignType(Lab, Var, Type).
-assignTypeMayImplicit(Lab, Var, Type) :- mload(Lab, Offset, Var), memoryMayImplicit(Lab, Offset, Type), ! unk(Offset).
-assignTypeMayImplicit(Lab, Var, Type) :- mload(Lab, Offset, Var), memoryMayImplicit(Lab, _, Type), unk(Offset).
+mayAssignType(Lab, Var, Type) :- assignType(Lab, Var, Type).
+mayAssignType(Lab, Var, Type) :- mload(Lab, Offset, Var), mstoreMay(Lab, Offset, Type), ! unk(Offset).
+mayAssignType(Lab, Var, Type) :- mload(Lab, Offset, Var), mstoreMay(Lab, _, Type), unk(Offset).
 
-assignTypeMayImplicit(Lab, Var, Type) :- sload(Lab, Index, Var), storageMayImplicit(Lab, Index, Type), ! unk(Index).
-assignTypeMayImplicit(Lab, Var, Type) :- sload(Lab, Index, Var), storageMayImplicit(Lab, _, Type), unk(Index).
-assignTypeMayImplicit(Lab, Var, Type) :- memoryMayImplicit(Lab, Offset, Type), sha3(Lab, Var, Offset).
+mayAssignType(Lab, Var, Type) :- sload(Lab, Index, Var), sstoreMay(Lab, Index, Type), ! unk(Index).
+mayAssignType(Lab, Var, Type) :- sload(Lab, Index, Var), sstoreMay(Lab, _, Type), unk(Index).
+mayAssignType(Lab, Var, Type) :- mstoreMay(Lab, Offset, Type), sha3(Lab, Var, Offset).
 
 
 reassignStorage(Lab, Index) :- sstore(Lab, Index, _), !unk(Index).
