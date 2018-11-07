@@ -45,4 +45,20 @@ public class Call extends Instruction implements _TypeInstruction {
 		return false;
 	}
 
+	/**
+	 * @return the amount connected with the call
+	 */
+	public Variable getAmount() {
+		return getInput()[2];
+	}
+
+	/**
+	 * @return the variable returned
+	 */
+	public Variable getReturnVar() {
+		return getOutput()[0];
+	}
+
+
+
 }

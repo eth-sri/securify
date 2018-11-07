@@ -34,7 +34,7 @@ public class DSLAnalysis {
 
     public int unk;
 
-    protected final boolean DEBUG = false;
+    protected final boolean DEBUG = true;
 
     // input predicates
 
@@ -43,9 +43,8 @@ public class DSLAnalysis {
     protected String SOUFFLE_RULES;
     protected final String TIMEOUT_COMMAND = System.getProperty("os.name").toLowerCase().startsWith("mac") ? "gtimeout" : "timeout";
 
-    public DSLAnalysis(List<Instruction> decompiledInstructions) throws IOException, InterruptedException {
+    public DSLAnalysis() throws IOException, InterruptedException {
         SOUFFLE_RULES = "smt_files/allInOneAnalysis.dl";
-        instructions = decompiledInstructions;
         initDataflow();
     }
 
@@ -92,6 +91,7 @@ public class DSLAnalysis {
         ruleToSB.put("sstore", new StringBuffer());
         //ruleToSB.put("isStorageVar", new StringBuffer());
         ruleToSB.put("sha3", new StringBuffer());
+        ruleToSB.put("call", new StringBuffer());
         ruleToSB.put("unk", new StringBuffer());
 
         unk = getCode(UNK_CONST_VAL);
@@ -105,16 +105,21 @@ public class DSLAnalysis {
         WORKSPACE_OUT = WORKSPACE + "_OUT";
         runCommand("mkdir " + WORKSPACE);
         runCommand("mkdir " + WORKSPACE_OUT);
+    }
+
+    public void analyse(List<Instruction> decompiledInstructions) throws IOException, InterruptedException {
+        instructions = decompiledInstructions;
 
         deriveAssignVarPredicates();
         deriveAssignTypePredicates();
-        deriveHeapPredicates();
-        deriveStorePredicates();
+        deriveInstructionsPredicates();
 
         deriveFollowsPredicates();
         deriveIfPredicates();
 
         createProgramRulesFile();
+        log("code for SLoad " + getCode(SLoad.class));
+        log("code for balance " + getCode(Balance.class));
         log("Number of instructions: " + instrToCode.size());
         log("Threshold: " + Config.THRESHOLD_COMPILE);
         long start = System.currentTimeMillis();
@@ -450,8 +455,8 @@ public class DSLAnalysis {
         }
     }
 
-    protected void deriveHeapPredicates() {
-        log(">> Derive MStore and MLoad predicates <<");
+    protected void deriveInstructionsPredicates() {
+        log(">> Derive MStore, MLoad, SStore, SLoad, call predicates <<");
         for (Instruction instr : instructions) {
             if (instr instanceof MStore || instr instanceof MStore8) {
                 Variable var = instr.getInput()[1];
@@ -459,34 +464,30 @@ public class DSLAnalysis {
                 log("mstore instruction: " + instr.getStringRepresentation());
                 createMStoreRule(instr, offset, var);
             }
-            if (instr instanceof MLoad) {
+            else if (instr instanceof MLoad) {
                 log("mload instruction: " + instr.getStringRepresentation());
                 Variable var = instr.getOutput()[0];
                 Variable offset = instr.getInput()[0];
                 createMLoadRule(instr, offset, var);
             }
-        }
-    }
-
-
-    protected void deriveStorePredicates() {
-        log(">> Derive SStore and SLoad predicates <<");
-        for (Instruction instr : instructions) {
-            if (instr instanceof SStore) {
+            else if (instr instanceof SStore) {
                 Variable index = instr.getInput()[0];
                 Variable var = instr.getInput()[1];
                 log("sstore instruction: " + instr.getStringRepresentation());
                 createSStoreRule(instr, index, var);
             }
-            if (instr instanceof SLoad) {
+            else if (instr instanceof SLoad) {
                 Variable var = instr.getOutput()[0];
                 Variable index = instr.getInput()[0];
                 log("sload instruction" + instr.getStringRepresentation());
                 createSLoadRule(instr, index, var);
             }
+            else if (instr instanceof Call) {
+                log("call instruction" + instr.getStringRepresentation());
+                createCallRule(instr);
+            }
         }
     }
-
 
     protected void deriveAssignVarPredicates() {
         log(">> Derive assign predicates <<");
@@ -680,6 +681,20 @@ public class DSLAnalysis {
 
     private void createTaintRule(Instruction labStart, Instruction lab, Variable var) {
         appendRule("taint", getCode(labStart), getCode(lab), getCode(var));
+    }
+
+    protected void createCallRule(Instruction instr) {
+        Variable returnVar = ((Call) instr).getReturnVar();
+        Variable amount = ((Call) instr).getAmount();
+
+        int amountCode;
+        if (returnVar.hasConstantValue()) {
+            amountCode = getCode(getMemoryVarForIndex(getInt(amount.getConstantValue())));
+        } else {
+            amountCode = unk;
+        }
+        appendRule("call", getCode(instr), getCode(returnVar), getCode(unk), amountCode);
+        //todo: what is the third parameter in the paper? it's always _ in patterns
     }
 
     protected void createSLoadRule(Instruction instr, Variable index, Variable var) {

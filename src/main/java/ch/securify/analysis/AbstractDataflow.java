@@ -66,7 +66,7 @@ public abstract class AbstractDataflow {
 
     public int unk;
 
-    protected final boolean DEBUG = false;
+    protected final boolean DEBUG = true;
 
     // input predicates
     protected String DL_EXEC;

@@ -24,7 +24,7 @@
 //
 // Inputs
 //
-//from mustExplicit
+
 .decl assignType       (l:Label, v:Var, f:Fact) input //in order to manage to have same input this is split in two and then reassigned
 .decl assignVar		(l:Label, v1: Var, v2: Var) input
 
@@ -48,6 +48,7 @@
 .decl sload		(l: Label, v:Var, f:VarFact) input
 .decl sstore		(l: Label, v:Var, f:VarFact) input
 .decl sha3		(l: Label, v:Var, f:VarFact) input
+.decl call      (l: Label, outVar:Var, toBeDiscovered:Var, amount:Var) input
 
 //from mayImplicit
 .decl taint		(l1:Label, l2:Label, v:Var) input
@@ -86,6 +87,7 @@
 //
 // Outputs from mayImplicit
 //
+.decl mayFollow         		(l1: Label, l2: Label) output
 .decl mayDepOn		            (v:Var, f:VarFact) output
 .decl reachInstrMayImplicit     (l:Label, f:VarFact) output
 
@@ -179,3 +181,9 @@ reassignMemory(Lab, Offset) :- mstore(Lab, Offset, _), !unk(Offset).
 //the same for mayImplicit and mustExplicit
 reassignStorage(Lab, Index) :- sstore(Lab, Index, _), !unk(Index).
 reassignMemory(Lab, Offset) :- mstore(Lab, Offset, _), !unk(Offset).
+
+
+//pattern test
+.decl complTOD		    (l:Label) output
+complTOD(L) :- call(L, _, _, amount), !mayDepOn(amount, 46), !mayDepOn(amount, 29).
+//Sload = 46, balance - 29
