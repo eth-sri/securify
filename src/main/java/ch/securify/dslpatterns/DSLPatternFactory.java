@@ -1,5 +1,6 @@
 package ch.securify.dslpatterns;
 
+import ch.securify.analysis.DSLAnalysis;
 import ch.securify.decompiler.Variable;
 import ch.securify.decompiler.instructions.Balance;
 import ch.securify.decompiler.instructions.CallValue;
@@ -11,9 +12,11 @@ import ch.securify.dslpatterns.util.DSLLabel;
 import ch.securify.dslpatterns.predicates.PredicateFactory;
 import ch.securify.dslpatterns.tags.DSLMsgdata;
 import ch.securify.dslpatterns.util.DSLLabelDC;
+import ch.securify.dslpatterns.util.InvalidPatternException;
 import ch.securify.dslpatterns.util.VariableDC;
 import com.sun.org.apache.xpath.internal.Arg;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -104,6 +107,14 @@ public class DSLPatternFactory {
         Variable Y = new Variable();
         Variable amount = new Variable();
 
+        DSLToDatalogTranslator transl = new DSLToDatalogTranslator();
+        try {
+            transl.setAnalyzer(new DSLAnalysis());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         System.out.println(" *** LQ - Ether liquidity");
         AbstractDSLPattern patternComplianceOneLQ = all(instrFct.stop(l1),
@@ -155,7 +166,13 @@ public class DSLPatternFactory {
                 and(not(prdFct.mayDepOn(X, Caller.class)), not(prdFct.mayDepOn(l1, Caller.class))));
         System.out.println(patternViolationRW.getStringRepresentation());
 
-        System.out.println(" *** RT - restricted write");
+        try {
+            System.out.println(transl.translateInstructionPattern(patternViolationRW));
+        } catch (InvalidPatternException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println(" *** RT - restricted transfer");
         AbstractDSLPattern patternComplianceRT = all(instrFct.call(dcLabel, dcVar, dcVar, amount),
                 eq(amount, 0));
         System.out.println(patternComplianceRT.getStringRepresentation());
@@ -165,6 +182,12 @@ public class DSLPatternFactory {
                         not(prdFct.mayDepOn(l1, Caller.class)),
                         not(prdFct.mayDepOn(l1, DSLMsgdata.class))));
         System.out.println(patternViolationRT.getStringRepresentation());
+
+        try {
+            System.out.println(transl.translateInstructionPattern(patternComplianceRT));
+        } catch (InvalidPatternException e) {
+            e.printStackTrace();
+        }
 
         System.out.println(" *** HE - handled exception");
         AbstractDSLPattern patternComplianceHE = all(instrFct.call(l1, Y, dcVar, dcVar),

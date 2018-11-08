@@ -25,4 +25,12 @@ public class MayDepOnLabelTag extends AbstractPredicate {
 
         return sb.toString();
     }
+
+    public DSLLabel getLabel() {
+        return l;
+    }
+
+    public Class getTag() {
+        return tag;
+    }
 }

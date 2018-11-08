@@ -25,4 +25,12 @@ public class MayDepOnVarTag extends AbstractPredicate {
 
         return sb.toString();
     }
+
+    public Variable getVariable() {
+        return v;
+    }
+
+    public Class getTag() {
+        return tag;
+    }
 }

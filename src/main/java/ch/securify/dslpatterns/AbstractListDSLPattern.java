@@ -38,4 +38,8 @@ public class AbstractListDSLPattern extends AbstractDSLPattern {
     protected String getPatternName() {
         return "AbstractListDSLPattern";
     }
+
+    public List<AbstractDSLPattern> getPatterns() {
+        return patterns;
+    }
 }

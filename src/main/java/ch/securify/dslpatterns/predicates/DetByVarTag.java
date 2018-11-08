@@ -6,7 +6,7 @@ import ch.securify.dslpatterns.AbstractDSLPattern;
 /**
  * The detBy predicate with input a variable and a tag represented by a class
  */
-public class DetByVarTag extends AbstractDSLPattern {
+public class DetByVarTag extends AbstractPredicate {
     private Variable var;
     private Class tag;
 

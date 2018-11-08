@@ -34,5 +34,11 @@ public class AbstractQuantifiedDSLPattern extends AbstractDSLPattern {
         return "AbstractQuantifiedDSLPattern";
     }
 
+    public AbstractDSLInstruction getQuantifiedInstr() {
+        return quantifiedInstr;
+    }
 
+    public AbstractDSLPattern getQuantifiedPattern() {
+        return quantifiedPattern;
+    }
 }

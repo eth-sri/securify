@@ -42,6 +42,9 @@
 //(((JumpDest) instr).getIncomingBranches().size() == 1 && instr.getPrev() == null)
 .decl oneBranchJumpDest       (l1: Label) input
 
+//Label at which the if is placed, condition on which the if is evaluated, label of the jump / goto if condition doesn't hole (else branch)
+.decl goto		(l1: Label, cond: Var, l2: Label) input
+
 .decl join		(l1: Label, l2: Label, l3: Label) input
 .decl mload		(l: Label, v:Var, f:VarFact) input
 .decl mstore		(l: Label, v:Var, f:VarFact) input

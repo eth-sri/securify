@@ -22,4 +22,8 @@ public class Not extends AbstractDSLPattern {
         sb.append(")");
         return sb.toString();
     }
+
+    public AbstractDSLPattern getNegatedPattern() {
+        return negatedPattern;
+    }
 }

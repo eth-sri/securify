@@ -6,7 +6,7 @@ import ch.securify.dslpatterns.AbstractDSLPattern;
 /**
  * The detBy predicate with input two variable
  */
-public class DetByVarVar extends AbstractDSLPattern {
+public class DetByVarVar extends AbstractPredicate {
     private Variable var1, var2;
 
     public DetByVarVar(Variable var1, Variable var2) {

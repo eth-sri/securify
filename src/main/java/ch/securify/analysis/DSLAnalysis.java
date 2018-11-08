@@ -89,6 +89,7 @@ public class DSLAnalysis {
         ruleToSB.put("mstore", new StringBuffer());
         ruleToSB.put("sload", new StringBuffer());
         ruleToSB.put("sstore", new StringBuffer());
+        ruleToSB.put("goto", new StringBuffer());
         //ruleToSB.put("isStorageVar", new StringBuffer());
         ruleToSB.put("sha3", new StringBuffer());
         ruleToSB.put("call", new StringBuffer());
@@ -348,7 +349,7 @@ public class DSLAnalysis {
         sb.append("\n");
     }
 
-    protected int getFreshCode() {
+    public int getFreshCode() {
         if (bvCounter == Integer.MAX_VALUE) {
             throw new RuntimeException("Integer overflow.");
         }
@@ -357,31 +358,31 @@ public class DSLAnalysis {
         return freshCode;
     }
 
-    protected int getCode(Variable var) {
+    public int getCode(Variable var) {
         if (!varToCode.containsKey(var))
             varToCode.put(var, getFreshCode());
         return varToCode.get(var);
     }
 
-    protected int getCode(Instruction instr) {
+    public int getCode(Instruction instr) {
         if (!instrToCode.containsKey(instr))
             instrToCode.put(instr, getFreshCode());
         return instrToCode.get(instr);
     }
 
-    protected int getCode(Class instructionClass) {
+    public int getCode(Class instructionClass) {
         if (!typeToCode.containsKey(instructionClass))
             typeToCode.put(instructionClass, getFreshCode());
         return typeToCode.get(instructionClass);
     }
 
-    protected int getCode(Integer constVal) {
+    public int getCode(Integer constVal) {
         if (!constToCode.containsKey(constVal))
             constToCode.put(constVal, getFreshCode());
         return constToCode.get(constVal);
     }
 
-    protected int getCode(Object o) {
+    public int getCode(Object o) {
         if (o instanceof Instruction) {
             return getCode((Instruction) o);
         } else if (o instanceof Class) {
@@ -675,8 +676,14 @@ public class DSLAnalysis {
                     log("merge instruction: " + mergeInstr.getStringRepresentation());
                     createEndIfRule(instr, mergeInstr);
                 }
+
+                createGotoRule(instr, condition, elseInstr);
             }
         }
+    }
+
+    private void createGotoRule(Instruction instr, Variable condition, Instruction elseBranch) {
+        appendRule("goto", getCode(instr), getCode(condition), getCode(elseBranch));
     }
 
     private void createTaintRule(Instruction labStart, Instruction lab, Variable var) {
