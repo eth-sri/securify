@@ -1,5 +1,6 @@
 package ch.securify.dslpatterns.predicates;
 
+import ch.securify.analysis.DSLAnalysis;
 import ch.securify.dslpatterns.util.DSLLabel;
 
 /**
@@ -17,10 +18,23 @@ public class MayDepOnLabelTag extends AbstractPredicate {
     @Override
     public String getStringRepresentation() {
         StringBuilder sb = new StringBuilder();
-        sb.append("MayDepOn(");
+        sb.append("mayDepOn(");
         sb.append(l.getName());
         sb.append(" , ");
         sb.append(tag.getSimpleName());
+        sb.append(")");
+
+        return sb.toString();
+    }
+
+    @Override
+    public String getDatalogStringRep(DSLAnalysis analyzer) {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("mayDepOn(");
+        sb.append(l.getName());
+        sb.append(" , ");
+        sb.append(analyzer.getCode(tag));
         sb.append(")");
 
         return sb.toString();

@@ -1,5 +1,6 @@
 package ch.securify.dslpatterns.predicates;
 
+import ch.securify.analysis.DSLAnalysis;
 import ch.securify.dslpatterns.util.DSLLabel;
 
 /**
@@ -30,6 +31,18 @@ public class MustFollow extends AbstractPredicate {
         sb.append(l2.getName());
         sb.append(")");
 
+        return sb.toString();
+    }
+
+    @Override
+    public String getDatalogStringRep(DSLAnalysis analyzer) {
+        //todo: is this always ok, don't think so
+        StringBuilder sb = new StringBuilder();
+        sb.append("mustPrecede(");
+        sb.append(l1.getName());
+        sb.append(" , ");
+        sb.append(l2.getName());
+        sb.append(")");
         return sb.toString();
     }
 }

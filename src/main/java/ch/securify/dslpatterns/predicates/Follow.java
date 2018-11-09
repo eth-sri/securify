@@ -1,5 +1,6 @@
 package ch.securify.dslpatterns.predicates;
 
+import ch.securify.analysis.DSLAnalysis;
 import ch.securify.dslpatterns.util.DSLLabel;
 
 /**
@@ -25,6 +26,19 @@ public class Follow extends AbstractPredicate {
     public String getStringRepresentation() {
         StringBuilder sb = new StringBuilder();
         sb.append("Follow(");
+        sb.append(l1.getName());
+        sb.append(" , ");
+        sb.append(l2.getName());
+        sb.append(")");
+
+        return sb.toString();
+    }
+
+
+    @Override
+    public String getDatalogStringRep(DSLAnalysis analyzer) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("allFollows(");
         sb.append(l1.getName());
         sb.append(" , ");
         sb.append(l2.getName());

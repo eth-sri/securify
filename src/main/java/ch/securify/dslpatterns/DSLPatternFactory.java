@@ -152,10 +152,16 @@ public class DSLPatternFactory {
         AbstractDSLPattern patternViolationNW = some(
                 instrFct.call(l1, dcVar, dcVar, dcVar),
                 some(instrFct.sstore(l2, dcVar, dcVar),
-                        not(prdFct.mayFollow(l1, l2)))
+                        not(prdFct.mustFollow(l1, l2)))
         );
 
         System.out.println(patternViolationNW.getStringRepresentation());
+
+        try {
+            System.out.println(transl.translateInstructionPattern(patternViolationNW));
+        } catch (InvalidPatternException e) {
+            e.printStackTrace();
+        }
 
         System.out.println(" *** RW - restricted write");
         AbstractDSLPattern patternComplianceRW = all(instrFct.sstore(dcLabel, X, dcVar),

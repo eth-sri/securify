@@ -1,5 +1,6 @@
 package ch.securify.dslpatterns.predicates;
 
+import ch.securify.analysis.DSLAnalysis;
 import ch.securify.decompiler.Variable;
 import ch.securify.dslpatterns.AbstractDSLPattern;
 
@@ -24,5 +25,11 @@ public class DetByVarVar extends AbstractPredicate {
         sb.append(")");
 
         return sb.toString();
+    }
+
+    @Override
+    public String getDatalogStringRep(DSLAnalysis analyzer) {
+        //todo
+        return getStringRepresentation();
     }
 }

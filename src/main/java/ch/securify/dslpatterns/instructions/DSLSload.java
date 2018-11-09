@@ -1,7 +1,10 @@
 package ch.securify.dslpatterns.instructions;
 
+import ch.securify.analysis.DSLAnalysis;
 import ch.securify.decompiler.Variable;
 import ch.securify.dslpatterns.util.DSLLabel;
+
+import java.util.List;
 
 /**
  * The dsl placeholder for the instruction sload
@@ -22,6 +25,21 @@ public class DSLSload extends AbstractDSLInstruction {
         this.var = var;
     }
 
+    /**
+     * @return a list of all the variables contained in the instruction
+     */
+    @Override
+    public List<Variable> getAllVars() {
+        List<Variable> varsList = super.getAllVars();
+
+        if(isValidVariable(offset))
+            varsList.add(offset);
+        if(isValidVariable(var))
+            varsList.add(var);
+
+        return varsList;
+    }
+
     @Override
     public String getStringRepresentation() {
         StringBuilder sb = new StringBuilder();
@@ -35,5 +53,6 @@ public class DSLSload extends AbstractDSLInstruction {
 
         return sb.toString();
     }
+
 }
 

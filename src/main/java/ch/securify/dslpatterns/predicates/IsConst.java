@@ -1,5 +1,6 @@
 package ch.securify.dslpatterns.predicates;
 
+import ch.securify.analysis.DSLAnalysis;
 import ch.securify.decompiler.Variable;
 
 /**
@@ -19,5 +20,11 @@ public class IsConst extends AbstractPredicate {
         sb.append(")");
 
         return sb.toString();
+    }
+
+    @Override
+    public String getDatalogStringRep(DSLAnalysis analyzer) {
+        //todo
+        return getStringRepresentation();
     }
 }

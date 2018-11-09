@@ -1,7 +1,10 @@
 package ch.securify.dslpatterns.instructions;
 
+import ch.securify.analysis.DSLAnalysis;
 import ch.securify.decompiler.Variable;
 import ch.securify.dslpatterns.util.DSLLabel;
+
+import java.util.List;
 
 /**
  * The dsl placeholder for the instruction sstore
@@ -20,6 +23,21 @@ public class DSLSstore extends AbstractDSLInstruction {
         super(label);
         this.offset = offset;
         this.var = var;
+    }
+
+    /**
+     * @return a list of all the variables contained in the instruction
+     */
+    @Override
+    public List<Variable> getAllVars() {
+        List<Variable> varsList = super.getAllVars();
+
+        if(isValidVariable(offset))
+            varsList.add(offset);
+        if(isValidVariable(var))
+            varsList.add(var);
+
+        return varsList;
     }
 
     @Override

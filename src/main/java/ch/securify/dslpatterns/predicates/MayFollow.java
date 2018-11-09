@@ -24,7 +24,7 @@ public class MayFollow extends AbstractPredicate {
     @Override
     public String getStringRepresentation() {
         StringBuilder sb = new StringBuilder();
-        sb.append("MayFollow(");
+        sb.append("mayFollow(");
         sb.append(l1.getName());
         sb.append(" , ");
         sb.append(l2.getName());

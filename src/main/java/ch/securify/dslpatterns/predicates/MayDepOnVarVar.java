@@ -17,7 +17,7 @@ public class MayDepOnVarVar extends AbstractDSLPattern {
     @Override
     public String getStringRepresentation() {
         StringBuilder sb = new StringBuilder();
-        sb.append("MayDepOn(");
+        sb.append("mayDepOn(");
         sb.append(var1.getName());
         sb.append(" , ");
         sb.append(var2.getName());
