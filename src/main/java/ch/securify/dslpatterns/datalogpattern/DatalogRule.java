@@ -1,6 +1,7 @@
 package ch.securify.dslpatterns.datalogpattern;
 
 import ch.securify.analysis.DSLAnalysis;
+import ch.securify.dslpatterns.util.DSLLabel;
 
 public class DatalogRule {
     private DatalogHead head;
@@ -11,8 +12,9 @@ public class DatalogRule {
         this.body = body;
     }
 
-    public DatalogRule(DatalogHead head) {
-        this.head = head;
+    public DatalogRule(String ruleName, DSLLabel label) {
+        this.head = new DatalogHead(ruleName, label);
+        this.body = new DatalogBody();
     }
 
     public DatalogHead getHead() {

@@ -3,7 +3,8 @@ package ch.securify.dslpatterns;
 
 import ch.securify.analysis.DSLAnalysis;
 import ch.securify.decompiler.Variable;
-import ch.securify.dslpatterns.instructions.AbstractDSLInstruction;
+import ch.securify.dslpatterns.datalogpattern.DatalogElem;
+import ch.securify.dslpatterns.datalogpattern.DatalogRule;
 import ch.securify.dslpatterns.predicates.*;
 import ch.securify.dslpatterns.util.DSLLabel;
 import ch.securify.dslpatterns.util.InvalidPatternException;
@@ -17,192 +18,70 @@ import java.util.List;
 public class DSLToDatalogTranslator {
 
     //needed to get the right codes for the predicates
-    private DSLAnalysis analyzer;
+    private static DSLAnalysis analyzer;
 
-    /**
-     * It's the return type of many methods and contains the string representation,
-     * the labels contained in the pattern and the variables
-     */
-    private class RepLabelsAndVars {
-        private StringBuilder rep;
-        private List<Variable> vars;
-        private List<DSLLabel> labels;
+    private static List<DatalogRule> rules;
 
-        public RepLabelsAndVars() {
-            this.rep = new StringBuilder();
-            this.vars = new ArrayList<>();
-            this.labels = new ArrayList<>();
-        }
-
-        public String getRep() {
-            return rep.toString();
-        }
-
-        public List<Variable> getVars() {
-            return vars;
-        }
-
-        public List<DSLLabel> getLabels() {
-            return labels;
-        }
-
-        public void appendToRep(String str) {
-            rep.append(str);
-        }
-
-        public void appendToRep(int str) {
-            rep.append(str);
-        }
-
-        public void addLabel(DSLLabel l) {
-            labels.add(l);
-        }
-
-        public void addVar(Variable var) {
-            vars.add(var);
-        }
-
-        public void addAllVar(List<Variable> vars) {
-            vars.addAll(vars);
-        }
-
-        public void addAllLabel(List<DSLLabel> l) {
-            labels.addAll(l);
-        }
-
-        public void appendAll(RepLabelsAndVars toAppend) {
-            rep.append(toAppend.getRep());
-            addAllVar(toAppend.getVars());
-            addAllLabel(toAppend.getLabels());
-        }
-    }
-
-    StringBuilder sb;
+    //this is the index of the rule we are currently working on
+    private static int indexOfCurrWorkingRule;
 
     /**
      * Translates a pattern into a query, should be called only with a Some or an All
      * @param completePattern the pattern to be translated
      * @return teh String representing the pattern
      */
-    public String translateInstructionPattern(AbstractDSLPattern completePattern) throws InvalidPatternException {
+    public List<DatalogRule> translateInstructionPattern(AbstractDSLPattern completePattern, String ruleName) throws InvalidPatternException {
         if(!(completePattern instanceof All) && !(completePattern instanceof Some))
             throw new InvalidPatternException("Not an All or a Some");
 
-        sb = new StringBuilder();
+        indexOfCurrWorkingRule = 0;
 
-        //firs of all we insert the quantified instruction in the datalog rule
-        sb.append(translateInstruction(((AbstractQuantifiedDSLPattern) completePattern).getQuantifiedInstr()).getRep());
+        rules = new ArrayList<>();
+        //we create a new datalog rule with name the desired one and with label the label of the instruction which is quantified
+        rules.add(new DatalogRule(ruleName, ((AbstractQuantifiedDSLPattern) completePattern).getQuantifiedInstr().getLabel()));
 
-        sb.append(" , ");
+        //first of all we insert the quantified instruction in the datalog rule
+        addElemToCurrRule(((AbstractQuantifiedDSLPattern) completePattern).getQuantifiedInstr());
 
-        //then we append the body of the pattern, on which it quantifies
-        sb.append(dispatchCorrectTranslator(((AbstractQuantifiedDSLPattern) completePattern).getQuantifiedPattern()));
+        //then we add the body of the pattern, on which it quantifies
+        translateAndAdd(((AbstractQuantifiedDSLPattern) completePattern).getQuantifiedPattern());
 
 
-        return sb.toString();
+        return rules;
     }
 
-    private RepLabelsAndVars translateInstruction(AbstractDSLInstruction instr) {
-        RepLabelsAndVars returnVal = new RepLabelsAndVars();
-        returnVal.appendToRep(instr.getStringRepresentation());
-        returnVal.addAllLabel(instr.getAllLabels());
-        returnVal.addAllVar(instr.getAllVars());
-
-        return returnVal;
+    /**
+     * Adds one element to the rule we are currently working on
+     * @param elem the elem to add
+     */
+    private void addElemToCurrRule(DatalogElem elem) {
+        rules.get(indexOfCurrWorkingRule).getBody().addElement(elem);
     }
 
-    private RepLabelsAndVars dispatchCorrectTranslator(AbstractDSLPattern patt) {
-        if(patt instanceof Not)
-            return translNot((Not)patt);
+    private void translateAndAdd(AbstractDSLPattern patt) {
+
+        if(patt instanceof DatalogElem)
+            addElemToCurrRule((DatalogElem) patt);
+        else if(patt instanceof Not)
+            translNot((Not)patt);
         else if(patt instanceof And)
-            return transAnd((And)patt);
-        else if(patt instanceof EqWithNumber)
-            return transEqWithNumber((EqWithNumber)patt);
-        else if(patt instanceof AbstractPredicate)
-            return dispatchCorrectPredicateTranslator((AbstractPredicate) patt);
+            transAnd((And)patt);
         else if(patt instanceof Some)
-            return transSome((Some) patt);
-
-        return null;
+            transSome((Some) patt);
     }
 
-    private RepLabelsAndVars transSome(Some patt) {
-        RepLabelsAndVars returnVal = new RepLabelsAndVars();
-
-        returnVal.appendAll(translateInstruction(patt.getQuantifiedInstr()));
-        returnVal.appendToRep(" , ");
-        returnVal.appendAll(dispatchCorrectTranslator(patt.getQuantifiedPattern()));
-
-        return returnVal;
+    private void transSome(Some patt) {
+        addElemToCurrRule(patt.getQuantifiedInstr());
+        translateAndAdd(patt.getQuantifiedPattern());
     }
 
-    private RepLabelsAndVars dispatchCorrectPredicateTranslator(AbstractPredicate pred)
-    {
-        RepLabelsAndVars returnVal = new RepLabelsAndVars();
-        if(pred instanceof MayDepOnVarTag) {
-            Variable var = ((MayDepOnVarTag) pred).getVariable();
-
-            returnVal.appendToRep("mayDepOn(");
-            returnVal.appendToRep(var.getName());
-            returnVal.appendToRep(" , ");
-            returnVal.appendToRep(analyzer.getCode(((MayDepOnVarTag) pred).getTag()));
-            returnVal.appendToRep(")");
-
-            returnVal.addVar(var);
-            return returnVal;
-        }
-        else if(pred instanceof MayDepOnLabelTag) {
-            DSLLabel l = ((MayDepOnLabelTag) pred).getLabel();
-
-            returnVal.appendToRep("mayDepOn(");
-            returnVal.appendToRep(l.getName());
-            returnVal.appendToRep(" , ");
-            returnVal.appendToRep(analyzer.getCode(((MayDepOnLabelTag) pred).getTag()));
-            returnVal.appendToRep(")");
-
-            returnVal.addLabel(l);
-            return returnVal;
-        }
-        else if(pred instanceof MustFollow) {
-            //todo: is this really ok? is mustPrecede ok?
-            DSLLabel l1 = ((MustFollow) pred).getL1();
-            DSLLabel l2 = ((MustFollow) pred).getL2();
-            returnVal.appendToRep("mustPrecede(");
-            returnVal.appendToRep(l1.getName());
-            returnVal.appendToRep(" , ");
-            returnVal.appendToRep(l2.getName());
-            returnVal.appendToRep(")");
-
-            returnVal.addLabel(l1);
-            returnVal.addLabel(l2);
-
-            return returnVal;
-        }
-
-        return null;
+    private void transAnd(And patt) {
+        patt.getPatterns().forEach((pattern) -> translateAndAdd(pattern));
     }
 
-    private String transEqWithNumber(EqWithNumber eq) {
-        return eq.getStringRepresentation();
-    }
-
-    private String transAnd(And patt) {
-        StringBuilder sba = new StringBuilder();
-
-        List<AbstractDSLPattern> patterns = patt.getPatterns();
-
-        sba.append(dispatchCorrectTranslator(patterns.get(0)));
-
-        for(int i = 1; i < patterns.size(); i++) {
-            sba.append(" , ");
-            sba.append(dispatchCorrectTranslator(patterns.get(i)));
-        }
-
-        return sba.toString();
-    }
-
-    private String translNot(Not not) {
-        return "!(" + dispatchCorrectTranslator(not.getNegatedPattern()) + ")";
+    private void translNot(Not not) {
+        //todo sometimes the not is a full expression, need to do something more complicated and push it inside
+        addElemToCurrRule((DatalogElem) not.getNegatedPattern());
     }
 
     public void setAnalyzer(DSLAnalysis analyzer) {

@@ -1,11 +1,13 @@
 package ch.securify.dslpatterns;
 
+import ch.securify.analysis.DSLAnalysis;
+import ch.securify.dslpatterns.datalogpattern.DatalogElem;
 import ch.securify.dslpatterns.util.DSLLabel;
 
 /**
  * Equality between two labels
  */
-public class EqWithLabel extends AbstractDSLPattern {
+public class EqWithLabel extends AbstractDSLPattern implements DatalogElem {
     private DSLLabel l1, l2;
 
     public EqWithLabel(DSLLabel l1, DSLLabel l2) {
@@ -23,5 +25,10 @@ public class EqWithLabel extends AbstractDSLPattern {
         sb.append(" = ");
         sb.append(l2.getName());
         return sb.toString();
+    }
+
+    @Override
+    public String getDatalogStringRep(DSLAnalysis analyzer) {
+        return getStringRepresentation();
     }
 }

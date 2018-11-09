@@ -1,5 +1,7 @@
 package ch.securify.dslpatterns.datalogpattern;
 
+import ch.securify.dslpatterns.util.DSLLabel;
+
 import java.awt.*;
 
 /**
@@ -7,9 +9,9 @@ import java.awt.*;
  */
 public class DatalogHead {
     private String name;
-    private Label label;
+    private DSLLabel label;
 
-    public DatalogHead(String name, Label label) {
+    public DatalogHead(String name, DSLLabel label) {
         this.name = name;
         this.label = label;
     }
@@ -29,7 +31,7 @@ public class DatalogHead {
         return name;
     }
 
-    public Label getLabel() {
+    public DSLLabel getLabel() {
         return label;
     }
 }

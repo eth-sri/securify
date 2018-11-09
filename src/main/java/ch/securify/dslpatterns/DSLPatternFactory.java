@@ -108,12 +108,16 @@ public class DSLPatternFactory {
         Variable amount = new Variable();
 
         DSLToDatalogTranslator transl = new DSLToDatalogTranslator();
+        DSLAnalysis analyzer;
         try {
-            transl.setAnalyzer(new DSLAnalysis());
+            analyzer = new DSLAnalysis();
+            transl.setAnalyzer(analyzer);
         } catch (IOException e) {
             e.printStackTrace();
+            return;
         } catch (InterruptedException e) {
             e.printStackTrace();
+            return;
         }
 
         System.out.println(" *** LQ - Ether liquidity");
@@ -158,7 +162,7 @@ public class DSLPatternFactory {
         System.out.println(patternViolationNW.getStringRepresentation());
 
         try {
-            System.out.println(transl.translateInstructionPattern(patternViolationNW));
+            System.out.println(transl.translateInstructionPattern(patternViolationNW, "patternViolationNW").get(0).getStingRepresentation(analyzer));
         } catch (InvalidPatternException e) {
             e.printStackTrace();
         }
@@ -173,7 +177,7 @@ public class DSLPatternFactory {
         System.out.println(patternViolationRW.getStringRepresentation());
 
         try {
-            System.out.println(transl.translateInstructionPattern(patternViolationRW));
+            System.out.println(transl.translateInstructionPattern(patternViolationRW, "patternViolationNW").get(0).getStingRepresentation(analyzer));
         } catch (InvalidPatternException e) {
             e.printStackTrace();
         }
@@ -190,7 +194,7 @@ public class DSLPatternFactory {
         System.out.println(patternViolationRT.getStringRepresentation());
 
         try {
-            System.out.println(transl.translateInstructionPattern(patternComplianceRT));
+            System.out.println(transl.translateInstructionPattern(patternComplianceRT, "patternComplianceRT").get(0).getStingRepresentation(analyzer));
         } catch (InvalidPatternException e) {
             e.printStackTrace();
         }

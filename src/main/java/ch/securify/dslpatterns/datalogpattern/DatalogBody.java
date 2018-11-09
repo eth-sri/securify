@@ -1,8 +1,6 @@
 package ch.securify.dslpatterns.datalogpattern;
 
 import ch.securify.analysis.DSLAnalysis;
-import ch.securify.dslpatterns.AbstractDSLPattern;
-import ch.securify.dslpatterns.DSLInstrOrPred;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,17 +10,17 @@ public class DatalogBody {
     /**
      * They are single rules
      */
-    List<DSLInstrOrPred> elements;
+    List<DatalogElem> elements;
 
     public DatalogBody() {
         elements = new ArrayList<>();
     }
 
-    public void addElement(DSLInstrOrPred elem) {
+    public void addElement(DatalogElem elem) {
         elements.add(elem);
     }
 
-    public List<DSLInstrOrPred> getElements() {
+    public List<DatalogElem> getElements() {
         return elements;
     }
 
@@ -34,7 +32,7 @@ public class DatalogBody {
 
         sb.append(elements.get(0).getDatalogStringRep(analyzer));
 
-        for(int i = 0; i < elements.size(); i++) {
+        for(int i = 1; i < elements.size(); i++) {
             sb.append(" , ");
             sb.append(elements.get(i).getDatalogStringRep(analyzer));
         }

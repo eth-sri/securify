@@ -2,8 +2,7 @@ package ch.securify.dslpatterns.instructions;
 
 import ch.securify.analysis.DSLAnalysis;
 import ch.securify.decompiler.Variable;
-import ch.securify.dslpatterns.AbstractDSLPattern;
-import ch.securify.dslpatterns.DSLInstrOrPred;
+import ch.securify.dslpatterns.datalogpattern.DatalogElem;
 import ch.securify.dslpatterns.util.DSLLabel;
 import ch.securify.dslpatterns.util.DSLLabelDC;
 import ch.securify.dslpatterns.util.VariableDC;
@@ -15,7 +14,7 @@ import java.util.List;
  * Abstract supercalass for the objects that represent instructions in DSL patterns,
  * like {@link DSLGoto}, {@link DSLStop}...
  * */
-public abstract class AbstractDSLInstruction extends DSLInstrOrPred {
+public abstract class AbstractDSLInstruction implements DatalogElem {
     //the label on which the instruction is located
     protected DSLLabel label = null;
 
