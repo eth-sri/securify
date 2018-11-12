@@ -1,7 +1,10 @@
 #!/bin/sh
 set -eu
 memory="$(grep MemFree /proc/meminfo | awk '{print int($2 / 1024 / 1024)}')"
-securify_cmd="java -Xmx${memory}G -jar /securify_jar/securify.jar -co"
+if [ "$memory" -eq 0 ]; then
+  memory=1
+fi
+securify_cmd="java -Xmx"$memory"G -jar /securify_jar/securify.jar -co"
 cd / && python3 -m sec.scripts.pysolc /project /comp.json
 
 $securify_cmd /comp.json
