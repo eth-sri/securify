@@ -30,7 +30,14 @@ public class DetByVarTag extends AbstractPredicate {
 
     @Override
     public String getDatalogStringRep(DSLAnalysis analyzer) {
-        //todo
+        StringBuilder sb = new StringBuilder();
+        sb.append("MustDepOn(");
+        sb.append("_ ,");
+        sb.append(var.getName());
+        sb.append(" , ");
+        sb.append(analyzer.getCode(tag));
+        sb.append(")");
+
         return getStringRepresentation();
     }
 }

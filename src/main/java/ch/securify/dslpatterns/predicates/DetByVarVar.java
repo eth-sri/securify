@@ -29,7 +29,15 @@ public class DetByVarVar extends AbstractPredicate {
 
     @Override
     public String getDatalogStringRep(DSLAnalysis analyzer) {
-        //todo
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("MustDepOn(");
+        sb.append("_ ,");
+        sb.append(var1.getName());
+        sb.append(" , ");
+        sb.append(var2.getName());
+        sb.append(")");
+
         return getStringRepresentation();
     }
 }
