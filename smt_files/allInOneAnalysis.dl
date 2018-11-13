@@ -51,7 +51,7 @@
 .decl sload		(l: Label, v:Var, f:VarFact) input
 .decl sstore		(l: Label, v:Var, f:VarFact) input
 .decl sha3		(l: Label, v:Var, f:VarFact) input
-.decl call      (l: Label, outVar:Var, toBeDiscovered:Var, amount:Var) input
+.decl call      (l: Label, outVar:Var, gas:Var, amount:Var) input
 
 //from mayImplicit
 .decl taint		(l1:Label, l2:Label, v:Var) input

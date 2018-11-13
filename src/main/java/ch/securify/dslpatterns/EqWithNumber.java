@@ -3,6 +3,10 @@ package ch.securify.dslpatterns;
 import ch.securify.analysis.DSLAnalysis;
 import ch.securify.decompiler.Variable;
 import ch.securify.dslpatterns.datalogpattern.DatalogElem;
+import ch.securify.dslpatterns.util.DSLLabel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Equality between variable and integer
@@ -35,5 +39,18 @@ public class EqWithNumber extends AbstractDSLPattern implements DatalogElem {
         sb.append(" = ");
         sb.append(analyzer.getCode(n));
         return sb.toString();
+    }
+
+    @Override
+    public List<Variable> getVariables() {
+        List<Variable> vars = new ArrayList<>(1);
+        vars.add(v1);
+
+        return vars;
+    }
+
+    @Override
+    public List<DSLLabel> getLabels() {
+        return new ArrayList<>();
     }
 }

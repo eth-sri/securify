@@ -1,5 +1,10 @@
 package ch.securify.dslpatterns;
 
+import ch.securify.decompiler.Variable;
+import ch.securify.dslpatterns.util.DSLLabel;
+
+import java.util.List;
+
 /**
  * Normal logic negation
  */
@@ -21,6 +26,16 @@ public class Not extends AbstractDSLPattern {
         sb.append(negatedPattern.getStringRepresentation());
         sb.append(")");
         return sb.toString();
+    }
+
+    @Override
+    public List<Variable> getVariables() {
+        return negatedPattern.getVariables();
+    }
+
+    @Override
+    public List<DSLLabel> getLabels() {
+        return negatedPattern.getLabels();
     }
 
     public AbstractDSLPattern getNegatedPattern() {

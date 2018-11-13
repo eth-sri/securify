@@ -35,4 +35,13 @@ public class DatalogRule {
 
         return sb.toString();
     }
+
+    /**
+     * @return a copy of the object, only a new body with a new array of elements is created, the elements are the same.
+     * The two arrays will be different but point to the same elements (saves memory).
+     * The head is the same in the new object
+     */
+    public DatalogRule duplicateUpUntilBodyList() {
+        return new DatalogRule(head, body.duplicateUpUntilList());
+    }
 }

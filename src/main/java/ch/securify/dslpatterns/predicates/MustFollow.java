@@ -3,6 +3,9 @@ package ch.securify.dslpatterns.predicates;
 import ch.securify.analysis.DSLAnalysis;
 import ch.securify.dslpatterns.util.DSLLabel;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * The must follow DSL predicate
  */
@@ -36,7 +39,7 @@ public class MustFollow extends AbstractPredicate {
 
     @Override
     public String getDatalogStringRep(DSLAnalysis analyzer) {
-        //todo: is this always ok, don't think so
+        //using must precede instead of must follow seems ok since it is never quantified over
         StringBuilder sb = new StringBuilder();
         sb.append("mustPrecede(");
         sb.append(l1.getName());
@@ -44,5 +47,14 @@ public class MustFollow extends AbstractPredicate {
         sb.append(l2.getName());
         sb.append(")");
         return sb.toString();
+    }
+
+    @Override
+    public List<DSLLabel> getLabels() {
+        List<DSLLabel> labels = new ArrayList<>(2);
+        labels.add(l1);
+        labels.add(l2);
+
+        return labels;
     }
 }

@@ -3,6 +3,10 @@ package ch.securify.dslpatterns.predicates;
 import ch.securify.analysis.DSLAnalysis;
 import ch.securify.decompiler.Variable;
 import ch.securify.dslpatterns.AbstractDSLPattern;
+import ch.securify.dslpatterns.util.DSLLabel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The detBy predicate with input two variable
@@ -32,12 +36,20 @@ public class DetByVarVar extends AbstractPredicate {
 
         StringBuilder sb = new StringBuilder();
         sb.append("MustDepOn(");
-        sb.append("_ ,");
+        sb.append("_ ,"); //todo: is it really ok?
         sb.append(var1.getName());
         sb.append(" , ");
         sb.append(var2.getName());
         sb.append(")");
 
         return getStringRepresentation();
+    }
+
+    @Override
+    public List<Variable> getVariables() {
+        List<Variable> vars = new ArrayList<>(2);
+        vars.add(var1);
+        vars.add(var2);
+        return vars;
     }
 }

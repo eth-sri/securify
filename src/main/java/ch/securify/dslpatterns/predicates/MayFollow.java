@@ -2,6 +2,9 @@ package ch.securify.dslpatterns.predicates;
 
 import ch.securify.dslpatterns.util.DSLLabel;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * The may follow DSL predicate
  */
@@ -31,5 +34,14 @@ public class MayFollow extends AbstractPredicate {
         sb.append(")");
 
         return sb.toString();
+    }
+
+    @Override
+    public List<DSLLabel> getLabels() {
+        List<DSLLabel> labels = new ArrayList<>(2);
+        labels.add(l1);
+        labels.add(l2);
+
+        return labels;
     }
 }

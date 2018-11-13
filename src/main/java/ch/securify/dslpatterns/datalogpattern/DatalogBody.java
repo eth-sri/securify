@@ -16,8 +16,17 @@ public class DatalogBody {
         elements = new ArrayList<>();
     }
 
+    public DatalogBody(DatalogElem rule) {
+        elements = new ArrayList<>();
+        elements.add(rule);
+    }
+
     public void addElement(DatalogElem elem) {
         elements.add(elem);
+    }
+
+    public void addAllElements(List<DatalogElem> elems) {
+        elements.addAll(elems);
     }
 
     public List<DatalogElem> getElements() {
@@ -38,5 +47,29 @@ public class DatalogBody {
         }
 
         return sb.toString();
+    }
+
+    /**
+     * @return a copy of the object, only a new array is created, the elements are the same.
+     * The two arrays will be different but point to the same elements (saves memory)
+     */
+    public DatalogBody duplicateUpUntilList() {
+        DatalogBody copy = new DatalogBody();
+        copy.addAllElements(elements);
+        return copy;
+    }
+
+    /**
+     * Collapses two bodies into one
+     * @param one the first body
+     * @param two the second one
+     * @return the body containing the elements from both
+     */
+    public static DatalogBody collapseTwo(DatalogBody one, DatalogBody two) {
+        DatalogBody newBody = new DatalogBody();
+        newBody.addAllElements(one.getElements());
+        newBody.addAllElements(two.getElements());
+
+        return newBody;
     }
 }

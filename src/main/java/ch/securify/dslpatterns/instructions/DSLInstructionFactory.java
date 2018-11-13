@@ -16,8 +16,8 @@ public class DSLInstructionFactory {
         return new DSLStop(label);
     }
 
-    public static DSLCall call(DSLLabel label, Variable out, Variable in, Variable amount) {
-        return new DSLCall(label, out, in, amount);
+    public static DSLCall call(DSLLabel label, Variable out, Variable gas, Variable amount) {
+        return new DSLCall(label, out, gas, amount);
     }
 
     public static DSLSstore sstore(DSLLabel label, Variable offset, Variable var) {

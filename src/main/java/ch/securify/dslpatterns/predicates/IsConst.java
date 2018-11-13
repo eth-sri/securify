@@ -3,6 +3,9 @@ package ch.securify.dslpatterns.predicates;
 import ch.securify.analysis.DSLAnalysis;
 import ch.securify.decompiler.Variable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * The IsConst predicate, takes as input a variable
  */
@@ -23,8 +26,17 @@ public class IsConst extends AbstractPredicate {
     }
 
     @Override
+    public List<Variable> getVariables() {
+        List<Variable> vars = new ArrayList<>(1);
+        vars.add(x);
+        return vars;
+    }
+
+    @Override
     public String getDatalogStringRep(DSLAnalysis analyzer) {
         //todo
         return getStringRepresentation();
     }
+
+
 }

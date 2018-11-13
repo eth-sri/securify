@@ -1,6 +1,5 @@
 package ch.securify.dslpatterns.instructions;
 
-import ch.securify.analysis.DSLAnalysis;
 import ch.securify.decompiler.Variable;
 import ch.securify.dslpatterns.util.DSLLabel;
 
@@ -12,19 +11,19 @@ import java.util.List;
 public class DSLCall extends AbstractDSLInstruction {
 
     private final Variable out;
-    private final Variable in;
+    private final Variable gas;
     private final Variable amount;
 
     /**
      * @param label the label at which instruction is placed
      * @param out the output of the call
-     * @param in the input of the call
+     * @param gas the input of the call
      * @param amount the amount connected to the call
      */
-    public DSLCall(DSLLabel label, Variable out, Variable in, Variable amount) {
+    public DSLCall(DSLLabel label, Variable out, Variable gas, Variable amount) {
         super(label);
         this.out = out;
-        this.in = in;
+        this.gas = gas;
         this.amount = amount;
     }
 
@@ -37,8 +36,8 @@ public class DSLCall extends AbstractDSLInstruction {
 
         if(isValidVariable(out))
             varsList.add(out);
-        if(isValidVariable(in))
-            varsList.add(in);
+        if(isValidVariable(gas))
+            varsList.add(gas);
         if(isValidVariable(amount))
             varsList.add(amount);
 
@@ -53,7 +52,7 @@ public class DSLCall extends AbstractDSLInstruction {
         sb.append(" , ");
         sb.append(out.getName());
         sb.append(" , ");
-        sb.append(in.getName());
+        sb.append(gas.getName());
         sb.append(" , ");
         sb.append(amount.getName());
         sb.append(")");

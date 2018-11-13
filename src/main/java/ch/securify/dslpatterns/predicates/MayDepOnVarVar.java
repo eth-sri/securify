@@ -3,10 +3,13 @@ package ch.securify.dslpatterns.predicates;
 import ch.securify.decompiler.Variable;
 import ch.securify.dslpatterns.AbstractDSLPattern;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * The MayDepOn predicate with input two variables
  */
-public class MayDepOnVarVar extends AbstractDSLPattern {
+public class MayDepOnVarVar extends AbstractPredicate {
     private Variable var1, var2;
 
     public MayDepOnVarVar(Variable var1, Variable var2) {
@@ -24,5 +27,14 @@ public class MayDepOnVarVar extends AbstractDSLPattern {
         sb.append(")");
 
         return sb.toString();
+    }
+
+    @Override
+    public List<Variable> getVariables() {
+        List<Variable> vars = new ArrayList<>(2);
+        vars.add(var1);
+        vars.add(var2);
+
+        return vars;
     }
 }
