@@ -1,11 +1,11 @@
 package ch.securify;
 
-import java.util.HashMap;
+import java.util.TreeMap;
 
 public class SolidityResult {
-    HashMap<String, SmallPatternResult> results;
+    TreeMap<String, SmallPatternResult> results;
 
     SolidityResult() {
-        results = new HashMap<>();
+        results = new TreeMap<>();
     }
 }

@@ -20,12 +20,12 @@ import static java.util.Collections.reverse;
 
 class SmallPatternResult {
     private String name;
-    private LinkedHashSet<Integer> violations;
-    private LinkedHashSet<Integer> warnings;
-    private LinkedHashSet<Integer> safe;
-    private LinkedHashSet<Integer> conflicts;
+    private TreeSet<Integer> violations;
+    private TreeSet<Integer> warnings;
+    private TreeSet<Integer> safe;
+    private TreeSet<Integer> conflicts;
 
-    SmallPatternResult(LinkedHashSet<Integer> violations, LinkedHashSet<Integer> warnings, LinkedHashSet<Integer> safe, LinkedHashSet<Integer> conflicts) {
+    SmallPatternResult(TreeSet<Integer> violations, TreeSet<Integer> warnings, TreeSet<Integer> safe, TreeSet<Integer> conflicts) {
         this.violations = violations;
         this.warnings = warnings;
         this.safe = safe;
@@ -117,8 +117,8 @@ public class CompilationHelpers {
         return new JsonParser().parse(readFile(compilationOutputFile)).getAsJsonObject();
     }
 
-    private static LinkedHashSet<Integer> getMatchedLines(byte[] contract, JsonArray matches, String map) throws MappingNotFoundException {
-        LinkedHashSet<Integer> matchedLines = new LinkedHashSet<>();
+    private static TreeSet<Integer> getMatchedLines(byte[] contract, JsonArray matches, String map) throws MappingNotFoundException {
+        TreeSet<Integer> matchedLines = new TreeSet<>();
         for (JsonElement m : matches) {
             int byteOffset = m.getAsInt();
             int line;

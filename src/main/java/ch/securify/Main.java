@@ -89,21 +89,21 @@ public class Main {
     private static Args args;
 
 
-    public static HashMap<String, SolidityResult> processSolidityFile(String filesol, String livestatusfile) throws IOException, InterruptedException {
+    public static TreeMap<String, SolidityResult> processSolidityFile(String filesol, String livestatusfile) throws IOException, InterruptedException {
         JsonObject compilationOutput = CompilationHelpers.compileContracts(filesol);
 
         return processCompilationOutput(compilationOutput, livestatusfile);
     }
 
-    public static HashMap<String, SolidityResult> mainFromCompilationOutput(String fileCompilationOutput, String livestatusfile) throws IOException, InterruptedException {
+    public static TreeMap<String, SolidityResult> mainFromCompilationOutput(String fileCompilationOutput, String livestatusfile) throws IOException, InterruptedException {
         JsonObject compilationOutput = parseCompilationOutput(fileCompilationOutput);
         return processCompilationOutput(compilationOutput, livestatusfile );
     }
 
-    public static HashMap<String, SolidityResult> processCompilationOutput(JsonObject compilationOutput, String livestatusfile) throws IOException, InterruptedException {
+    public static TreeMap<String, SolidityResult> processCompilationOutput(JsonObject compilationOutput, String livestatusfile) throws IOException, InterruptedException {
         Set<Map.Entry<String, JsonElement>> entries = compilationOutput.entrySet();
 
-        HashMap<String, SolidityResult> allContractResults = new HashMap<>();
+        TreeMap<String, SolidityResult> allContractResults = new TreeMap<>();
         for (Map.Entry<String, JsonElement> e : entries) {
             initPatterns(args);
             log.println("Processing contract:");
@@ -197,7 +197,7 @@ public class Main {
 
 
         if (args.filesol != null || args.compilationoutput != null) {
-            HashMap<String, SolidityResult> allContractsResults;
+            TreeMap<String, SolidityResult> allContractsResults;
             if (args.filesol != null) {
                 allContractsResults = processSolidityFile(args.filesol, livestatusfile);
             } else {
