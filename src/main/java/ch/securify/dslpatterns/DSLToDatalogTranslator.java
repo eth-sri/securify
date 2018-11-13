@@ -3,8 +3,13 @@ package ch.securify.dslpatterns;
 
 import ch.securify.analysis.DSLAnalysis;
 import ch.securify.dslpatterns.datalogpattern.*;
+import ch.securify.dslpatterns.instructions.AbstractDSLInstruction;
+import ch.securify.dslpatterns.util.DSLLabel;
+import ch.securify.dslpatterns.util.DSLLabelDC;
 import ch.securify.dslpatterns.util.InvalidPatternException;
+import com.sun.istack.internal.Pool;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,15 +17,6 @@ import java.util.List;
  * Translates patterns written in DSL into Datalog queries (strings)
  */
 public class DSLToDatalogTranslator {
-
-    //needed to get the right codes for the predicates
-    private static DSLAnalysis analyzer;
-
-    /**
-     * These are the geneated datolog rules that have tha main name, there can be more than one in order
-     * to be able to handle the Or
-     */
-    private static List<DatalogRule> rules;
 
     /**
      * These are the rules that need to be generated to handle negation and universal quantifier
@@ -32,18 +28,26 @@ public class DSLToDatalogTranslator {
      * @param completePattern the pattern to be translated
      * @return teh String representing the pattern
      */
-    public List<DatalogRule> translateInstructionPattern(AbstractDSLPattern completePattern, String ruleName) throws InvalidPatternException {
+    public static List<DatalogRule> translateInstructionPattern(AbstractDSLPattern completePattern, String ruleName) throws InvalidPatternException {
         if(!(completePattern instanceof All) && !(completePattern instanceof Some))
             throw new InvalidPatternException("Not an All or a Some");
 
         supportingRules = new ArrayList<>();
 
         List<DatalogBody> newBodies = new ArrayList<>();
+
+        AbstractDSLInstruction instr = ((AbstractQuantifiedDSLPattern) completePattern).getQuantifiedInstr();
+
+        if(instr.getLabel() instanceof DSLLabelDC) {
+            instr = instr.getCopy();
+            instr.setLabel(new DSLLabel());
+        }
+
         //we create a new datalog rule with name the desired one and with label the label of the instruction which is quantified
-        DatalogHead head = new DatalogHead(ruleName, ((AbstractQuantifiedDSLPattern) completePattern).getQuantifiedInstr().getLabel());
+        DatalogHead head = new DatalogHead(ruleName, instr.getLabel());
 
         //first of all we insert the quantified instruction in the datalog rule
-        newBodies.add(new DatalogBody(((AbstractQuantifiedDSLPattern) completePattern).getQuantifiedInstr()));
+        newBodies.add(new DatalogBody(instr));
 
         //then we add the body of the pattern, on which it quantifies
         newBodies = collapseBodies(newBodies, translateIntoBodies(((AbstractQuantifiedDSLPattern) completePattern).getQuantifiedPattern()));
@@ -57,15 +61,7 @@ public class DSLToDatalogTranslator {
         return translatedRules;
     }
 
-    /**
-     * Adds one element to the rule we are currently working on
-     * @param elem the elem to add
-     */
-    private void addElemToMainRule(DatalogElem elem) {
-        rules.forEach((rule) -> rule.getBody().addElement(elem));
-    }
-
-    private List<DatalogBody> translateIntoBodies(AbstractDSLPattern patt) {
+    private static List<DatalogBody> translateIntoBodies(AbstractDSLPattern patt) {
         List<DatalogBody> newBodies = new ArrayList<>();
         if(patt instanceof DatalogElem)
            newBodies.add(new DatalogBody((DatalogElem) patt));
@@ -75,6 +71,14 @@ public class DSLToDatalogTranslator {
             newBodies = collapseBodies(newBodies, transAnd((And)patt));
         else if(patt instanceof Some)
             newBodies = collapseBodies(newBodies, transSome((Some) patt));
+        else if(patt instanceof Implies) {
+            //a => b === (!a or b)
+            List<AbstractDSLPattern> newPatterns = new ArrayList<>();
+            newPatterns.add(new Not(((Implies) patt).getLhs()));
+            newPatterns.add(((Implies) patt).getRhs());
+
+            newBodies = translateOr(new Or(newPatterns));
+        }
 
         return newBodies;
     }
@@ -85,7 +89,7 @@ public class DSLToDatalogTranslator {
      * @param toBeAddedBodies the bodies to be added that are returned by the call
      * @return the collapsed bodies
      */
-    private List<DatalogBody> collapseBodies(List<DatalogBody> oldBodies, List<DatalogBody> toBeAddedBodies) {
+    private static List<DatalogBody> collapseBodies(List<DatalogBody> oldBodies, List<DatalogBody> toBeAddedBodies) {
         List<DatalogBody> newBodies = new ArrayList<>(oldBodies.size()*toBeAddedBodies.size());
         if(oldBodies.isEmpty()) {
             newBodies.addAll(toBeAddedBodies);
@@ -104,7 +108,7 @@ public class DSLToDatalogTranslator {
         return newBodies;
     }
 
-    private List<DatalogBody> transSome(Some patt) {
+    private static List<DatalogBody> transSome(Some patt) {
         List<DatalogBody> newBodies = new ArrayList<>();
         newBodies.add(new DatalogBody(patt.getQuantifiedInstr()));
         newBodies = collapseBodies(newBodies, translateIntoBodies(patt.getQuantifiedPattern()));
@@ -112,7 +116,7 @@ public class DSLToDatalogTranslator {
         return newBodies;
     }
 
-    private List<DatalogBody> transAnd(And patt) {
+    private static List<DatalogBody> transAnd(And patt) {
         List<DatalogBody> newBodies = new ArrayList<>();
         for(AbstractDSLPattern pattern : patt.getPatterns()) {
             newBodies = collapseBodies(newBodies, translateIntoBodies(pattern));
@@ -121,7 +125,7 @@ public class DSLToDatalogTranslator {
         return newBodies;
     }
 
-    private List<DatalogBody> translNot(Not not) {
+    private static List<DatalogBody> translNot(Not not) {
 
         AbstractDSLPattern negatedPattern = not.getNegatedPattern();
         List<DatalogBody> newBodies = new ArrayList<>();
@@ -159,14 +163,14 @@ public class DSLToDatalogTranslator {
         return newBodies;
     }
 
-    private List<DatalogBody> transAll(All all) {
+    private static List<DatalogBody> transAll(All all) {
 
 
 
         return null;
     }
 
-    private List<DatalogBody> translateOr(Or or) {
+    private static List<DatalogBody> translateOr(Or or) {
         List<AbstractDSLPattern> patterns = or.getPatterns();
         List<DatalogBody> newBodies = new ArrayList<>(patterns.size());
         for(AbstractDSLPattern patt : patterns) {
@@ -174,9 +178,5 @@ public class DSLToDatalogTranslator {
         }
 
         return newBodies;
-    }
-
-    public void setAnalyzer(DSLAnalysis analyzer) {
-        this.analyzer = analyzer;
     }
 }

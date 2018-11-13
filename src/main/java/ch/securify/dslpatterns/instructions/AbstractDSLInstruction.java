@@ -26,6 +26,10 @@ public abstract class AbstractDSLInstruction implements DatalogElem {
         return label;
     }
 
+    public void setLabel(DSLLabel label) {
+        this.label = label;
+    }
+
     /**
      * @return a list of all the labels contained in the instruction
      */
@@ -81,4 +85,6 @@ public abstract class AbstractDSLInstruction implements DatalogElem {
     public String getDatalogStringRep(DSLAnalysis analyzer) {
         return getStringRepresentation();
     }
+
+    public abstract AbstractDSLInstruction getCopy();
 }

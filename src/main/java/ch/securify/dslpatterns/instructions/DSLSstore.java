@@ -25,6 +25,11 @@ public class DSLSstore extends AbstractDSLInstruction {
         this.var = var;
     }
 
+    @Override
+    public DSLSstore getCopy() {
+        return new DSLSstore(getLabel(), offset, var);
+    }
+
     /**
      * @return a list of all the variables contained in the instruction
      */

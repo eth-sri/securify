@@ -27,6 +27,11 @@ public class DSLCall extends AbstractDSLInstruction {
         this.amount = amount;
     }
 
+    @Override
+    public DSLCall getCopy() {
+        return new DSLCall(getLabel(), out, gas, amount);
+    }
+
     /**
      * @return a list of all the variables contained in the instruction
      */

@@ -6,6 +6,7 @@ import ch.securify.decompiler.instructions.Balance;
 import ch.securify.decompiler.instructions.CallValue;
 import ch.securify.decompiler.instructions.Caller;
 import ch.securify.decompiler.instructions.SLoad;
+import ch.securify.dslpatterns.datalogpattern.DatalogRule;
 import ch.securify.dslpatterns.instructions.AbstractDSLInstruction;
 import ch.securify.dslpatterns.instructions.DSLInstructionFactory;
 import ch.securify.dslpatterns.util.DSLLabel;
@@ -111,7 +112,6 @@ public class DSLPatternFactory {
         DSLAnalysis analyzer;
         try {
             analyzer = new DSLAnalysis();
-            transl.setAnalyzer(analyzer);
         } catch (IOException e) {
             e.printStackTrace();
             return;
@@ -153,6 +153,8 @@ public class DSLPatternFactory {
 
         System.out.println(patternComplianceNW.getStringRepresentation());
 
+        translateAndPrintPattern(patternComplianceNW, "patternComplianceNW", analyzer);
+
         AbstractDSLPattern patternViolationNW = some(
                 instrFct.call(l1, dcVar, dcVar, dcVar),
                 some(instrFct.sstore(l2, dcVar, dcVar),
@@ -161,31 +163,30 @@ public class DSLPatternFactory {
 
         System.out.println(patternViolationNW.getStringRepresentation());
 
-        try {
-            System.out.println(transl.translateInstructionPattern(patternViolationNW, "patternViolationNW").get(0).getStingRepresentation(analyzer));
-        } catch (InvalidPatternException e) {
-            e.printStackTrace();
-        }
+        translateAndPrintPattern(patternViolationNW, "patternViolationNW", analyzer);
+
 
         System.out.println(" *** RW - restricted write");
         AbstractDSLPattern patternComplianceRW = all(instrFct.sstore(dcLabel, X, dcVar),
                 prdFct.detBy(X, Caller.class));
         System.out.println(patternComplianceRW.getStringRepresentation());
 
+        translateAndPrintPattern(patternComplianceRW, "patternComplianceRW", analyzer);
+
+
         AbstractDSLPattern patternViolationRW = some(instrFct.sstore(l1, X, dcVar),
                 and(not(prdFct.mayDepOn(X, Caller.class)), not(prdFct.mayDepOn(l1, Caller.class))));
         System.out.println(patternViolationRW.getStringRepresentation());
 
-        try {
-            System.out.println(transl.translateInstructionPattern(patternViolationRW, "patternViolationNW").get(0).getStingRepresentation(analyzer));
-        } catch (InvalidPatternException e) {
-            e.printStackTrace();
-        }
+        translateAndPrintPattern(patternViolationRW, "patternViolationRW", analyzer);
+
 
         System.out.println(" *** RT - restricted transfer");
         AbstractDSLPattern patternComplianceRT = all(instrFct.call(dcLabel, dcVar, dcVar, amount),
                 eq(amount, 0));
         System.out.println(patternComplianceRT.getStringRepresentation());
+
+        translateAndPrintPattern(patternComplianceRT, "patternComplianceRT", analyzer);
 
         AbstractDSLPattern patternViolationRT = some(instrFct.call(l1, dcVar, dcVar, amount),
                 and(prdFct.detBy(amount, DSLMsgdata.class),
@@ -193,11 +194,7 @@ public class DSLPatternFactory {
                         not(prdFct.mayDepOn(l1, DSLMsgdata.class))));
         System.out.println(patternViolationRT.getStringRepresentation());
 
-        try {
-            System.out.println(transl.translateInstructionPattern(patternComplianceRT, "patternComplianceRT").get(0).getStingRepresentation(analyzer));
-        } catch (InvalidPatternException e) {
-            e.printStackTrace();
-        }
+        translateAndPrintPattern(patternViolationRT, "patternViolationRT", analyzer);
 
         System.out.println(" *** HE - handled exception");
         AbstractDSLPattern patternComplianceHE = all(instrFct.call(l1, Y, dcVar, dcVar),
@@ -205,21 +202,33 @@ public class DSLPatternFactory {
                         and(prdFct.mustFollow(l1, l2), prdFct.detBy(X, Y))));
         System.out.println(patternComplianceHE.getStringRepresentation());
 
+        translateAndPrintPattern(patternComplianceHE, "patternComplianceHE", analyzer);
+
+
         AbstractDSLPattern patternViolationHE = some(instrFct.call(l1, Y, dcVar, dcVar),
                 all(instrFct.dslgoto(l2, X, dcLabel),
                         implies(prdFct.mayFollow(l1, l2), not(prdFct.mayDepOn(X, Y)))));
         System.out.println(patternViolationHE.getStringRepresentation());
+
+        translateAndPrintPattern(patternViolationHE, "patternViolationHE", analyzer);
+
 
         System.out.println(" *** TOD - transaction ordering dependency");
         AbstractDSLPattern patternComplianceTOD = all(instrFct.call(dcLabel, dcVar, dcVar, amount),
                and(not(prdFct.mayDepOn(amount, SLoad.class)), not(prdFct.mayDepOn(amount, Balance.class))));
         System.out.println(patternComplianceTOD.getStringRepresentation());
 
+        translateAndPrintPattern(patternComplianceTOD, "patternComplianceTOD", analyzer);
+
+
         AbstractDSLPattern patternViolationTOD = some(instrFct.call(dcLabel, dcVar, dcVar, amount),
                 some(instrFct.sload(dcLabel, Y, X),
                         some(instrFct.sstore(dcLabel, X, dcVar),
                                 and(prdFct.detBy(amount, Y), prdFct.isConst(X)))));
         System.out.println(patternViolationTOD.getStringRepresentation());
+
+        translateAndPrintPattern(patternViolationTOD, "patternViolationTOD", analyzer);
+
 
         System.out.println(" *** VA - validated arguments");
         AbstractDSLPattern patternComplianceVA = all(instrFct.sstore(l1, dcVar, X),
@@ -229,15 +238,33 @@ public class DSLPatternFactory {
                                         prdFct.detBy(Y, Arg.class)))));
         System.out.println(patternComplianceVA.getStringRepresentation());
 
+        translateAndPrintPattern(patternComplianceVA, "patternComplianceVA", analyzer);
+
+
         AbstractDSLPattern patternViolationVA = some(instrFct.sstore(l1, dcVar, X),
                 implies(prdFct.mayDepOn(X, Arg.class),
                         not(some(instrFct.dslgoto(l2, Y, dcLabel),
                                 and(prdFct.mustFollow(l2, l1),
                                         prdFct.mayDepOn(Y, Arg.class))))));
         System.out.println(patternViolationVA.getStringRepresentation());
+
+        translateAndPrintPattern(patternViolationVA, "patternViolationVA", analyzer);
+
     }
 
     public static void main(String[] args) {
         testPatterns();
+    }
+
+    private static void translateAndPrintPattern(AbstractDSLPattern patt, String name, DSLAnalysis analyzer) {
+        try {
+            List<DatalogRule> rules = DSLToDatalogTranslator.translateInstructionPattern(patt, name);
+
+            System.out.println("--------- Datalog");
+            rules.forEach((rule) -> System.out.println(rule.getStingRepresentation(analyzer)));
+            System.out.println("----------");
+        } catch (InvalidPatternException e) {
+            e.printStackTrace();
+        }
     }
 }

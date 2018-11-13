@@ -25,6 +25,11 @@ public class DSLSload extends AbstractDSLInstruction {
         this.var = var;
     }
 
+    @Override
+    public DSLSload getCopy() {
+        return new DSLSload(getLabel(), offset, var);
+    }
+
     /**
      * @return a list of all the variables contained in the instruction
      */

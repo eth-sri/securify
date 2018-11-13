@@ -27,6 +27,11 @@ public class DSLGoto extends AbstractDSLInstruction{
     }
 
     @Override
+    public DSLGoto getCopy() {
+        return new DSLGoto(getLabel(), var, secondBranchLabel);
+    }
+
+    @Override
     public List<DSLLabel> getAllLabels() {
         List<DSLLabel> labelsList = super.getAllLabels();
         if(isValidLabel(secondBranchLabel))

@@ -20,4 +20,11 @@ public class DSLStop extends AbstractDSLInstruction {
 
         return sb.toString();
     }
+
+    @Override
+    public DSLStop getCopy() {
+        return new DSLStop(getLabel());
+    }
+
+
 }
