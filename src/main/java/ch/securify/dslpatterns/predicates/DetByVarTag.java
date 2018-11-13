@@ -2,11 +2,13 @@ package ch.securify.dslpatterns.predicates;
 
 import ch.securify.analysis.DSLAnalysis;
 import ch.securify.decompiler.Variable;
-import ch.securify.dslpatterns.AbstractDSLPattern;
 import ch.securify.dslpatterns.util.DSLLabel;
+import ch.securify.dslpatterns.util.VariableDC;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * The detBy predicate with input a variable and a tag represented by a class
@@ -33,15 +35,16 @@ public class DetByVarTag extends AbstractPredicate {
     }
 
     @Override
-    public List<Variable> getVariables() {
-        List<Variable> vars = new ArrayList<>(1);
-        vars.add(var);
+    public Set<Variable> getVariables() {
+        Set<Variable> vars = new HashSet<>(1);
+        if(VariableDC.isValidVariable(var))
+            vars.add(var);
         return vars;
     }
 
     @Override
-    public List<DSLLabel> getLabels() {
-        return new ArrayList<>();
+    public Set<DSLLabel> getLabels() {
+        return new HashSet<>();
     }
 
     @Override

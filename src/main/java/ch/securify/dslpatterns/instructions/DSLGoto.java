@@ -1,10 +1,9 @@
 package ch.securify.dslpatterns.instructions;
 
-import ch.securify.analysis.DSLAnalysis;
 import ch.securify.decompiler.Variable;
 import ch.securify.dslpatterns.util.DSLLabel;
+import ch.securify.dslpatterns.util.VariableDC;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,7 +33,7 @@ public class DSLGoto extends AbstractDSLInstruction{
     @Override
     public List<DSLLabel> getAllLabels() {
         List<DSLLabel> labelsList = super.getAllLabels();
-        if(isValidLabel(secondBranchLabel))
+        if(DSLLabel.isValidLabel(secondBranchLabel))
             labelsList.add(secondBranchLabel);
         return labelsList;
     }
@@ -46,7 +45,7 @@ public class DSLGoto extends AbstractDSLInstruction{
     public List<Variable> getAllVars() {
         List<Variable> varsList = super.getAllVars();
 
-        if(isValidVariable(var))
+        if(VariableDC.isValidVariable(var))
             varsList.add(var);
 
         return varsList;

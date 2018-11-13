@@ -5,7 +5,9 @@ import ch.securify.dslpatterns.instructions.AbstractDSLInstruction;
 import ch.securify.dslpatterns.util.DSLLabel;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Patterns that contain a quatifier, e.g. {@link Some}, {@link All}
@@ -36,16 +38,16 @@ public abstract class AbstractQuantifiedDSLPattern extends AbstractDSLPattern {
     }
 
     @Override
-    public List<Variable> getVariables() {
-        List<Variable> vars = new ArrayList<>();
+    public Set<Variable> getVariables() {
+        Set<Variable> vars = new HashSet<>();
         vars.addAll(quantifiedInstr.getAllVars());
         vars.addAll(quantifiedPattern.getVariables());
         return vars;
     }
 
     @Override
-    public List<DSLLabel> getLabels() {
-        List<DSLLabel> labels = new ArrayList<>();
+    public Set<DSLLabel> getLabels() {
+        Set<DSLLabel> labels = new HashSet<>();
         labels.addAll(quantifiedInstr.getAllLabels());
         labels.addAll(quantifiedPattern.getLabels());
         return labels;

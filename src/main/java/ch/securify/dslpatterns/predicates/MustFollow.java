@@ -4,7 +4,9 @@ import ch.securify.analysis.DSLAnalysis;
 import ch.securify.dslpatterns.util.DSLLabel;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * The must follow DSL predicate
@@ -50,8 +52,8 @@ public class MustFollow extends AbstractPredicate {
     }
 
     @Override
-    public List<DSLLabel> getLabels() {
-        List<DSLLabel> labels = new ArrayList<>(2);
+    public Set<DSLLabel> getLabels() {
+        Set<DSLLabel> labels = new HashSet<>(2);
         labels.add(l1);
         labels.add(l2);
 

@@ -37,6 +37,18 @@ public class DSLLabel {
         name = generateLabelName();
     }
 
+    /**
+     * Checks if the label is null or an instance of {@link DSLLabelDC}
+     * @param l the label
+     * @return true if it's a valid label
+     */
+    public static boolean isValidLabel(DSLLabel l)
+    {
+        if(l == null || l instanceof DSLLabelDC)
+            return false;
+        return true;
+    }
+
     public String getName() {
         return name;
     }

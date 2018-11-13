@@ -2,6 +2,7 @@ package ch.securify.dslpatterns.instructions;
 
 import ch.securify.decompiler.Variable;
 import ch.securify.dslpatterns.util.DSLLabel;
+import ch.securify.dslpatterns.util.VariableDC;
 
 import java.util.List;
 
@@ -39,11 +40,11 @@ public class DSLCall extends AbstractDSLInstruction {
     public List<Variable> getAllVars() {
         List<Variable> varsList = super.getAllVars();
 
-        if(isValidVariable(out))
+        if(VariableDC.isValidVariable(out))
             varsList.add(out);
-        if(isValidVariable(gas))
+        if(VariableDC.isValidVariable(gas))
             varsList.add(gas);
-        if(isValidVariable(amount))
+        if(VariableDC.isValidVariable(amount))
             varsList.add(amount);
 
         return varsList;

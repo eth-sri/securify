@@ -4,7 +4,9 @@ import ch.securify.decompiler.Variable;
 import ch.securify.dslpatterns.util.DSLLabel;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Normal logic implication
@@ -39,8 +41,8 @@ public class Implies extends AbstractDSLPattern {
     }
 
     @Override
-    public List<Variable> getVariables() {
-        List<Variable> vars = new ArrayList<>();
+    public Set<Variable> getVariables() {
+        Set<Variable> vars = new HashSet<>();
         vars.addAll(lhs.getVariables());
         vars.addAll(rhs.getVariables());
 
@@ -48,8 +50,8 @@ public class Implies extends AbstractDSLPattern {
     }
 
     @Override
-    public List<DSLLabel> getLabels() {
-        List<DSLLabel> labels = new ArrayList<>();
+    public Set<DSLLabel> getLabels() {
+        Set<DSLLabel> labels = new HashSet<>();
         labels.addAll(lhs.getLabels());
         labels.addAll(rhs.getLabels());
 

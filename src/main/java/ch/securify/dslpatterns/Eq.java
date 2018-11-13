@@ -6,7 +6,9 @@ import ch.securify.dslpatterns.datalogpattern.DatalogElem;
 import ch.securify.dslpatterns.util.DSLLabel;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Equality between two variables
@@ -32,8 +34,8 @@ public class Eq extends AbstractDSLPattern implements DatalogElem {
     }
 
     @Override
-    public List<Variable> getVariables() {
-        List<Variable> vars = new ArrayList<>(2);
+    public Set<Variable> getVariables() {
+        Set<Variable> vars = new HashSet<>(2);
         vars.add(v1);
         vars.add(v2);
 
@@ -41,8 +43,8 @@ public class Eq extends AbstractDSLPattern implements DatalogElem {
     }
 
     @Override
-    public List<DSLLabel> getLabels() {
-        return new ArrayList<>();
+    public Set<DSLLabel> getLabels() {
+        return new HashSet<>();
     }
 
     @Override

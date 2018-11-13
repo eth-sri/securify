@@ -7,7 +7,8 @@ import ch.securify.dslpatterns.datalogpattern.DatalogElem;
 import ch.securify.dslpatterns.util.DSLLabel;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Abstract class that represents predicates expressed in the DSL language,
@@ -25,12 +26,12 @@ public abstract class AbstractPredicate extends AbstractDSLPattern implements Da
     }
 
     @Override
-    public List<DSLLabel> getLabels() {
-        return new ArrayList<>();
+    public Set<DSLLabel> getLabels() {
+        return new HashSet<>();
     }
 
     @Override
-    public List<Variable> getVariables() {
-        return new ArrayList<>();
+    public Set<Variable> getVariables() {
+        return new HashSet<>();
     }
 }

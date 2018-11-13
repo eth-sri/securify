@@ -2,9 +2,13 @@ package ch.securify.dslpatterns.predicates;
 
 import ch.securify.analysis.DSLAnalysis;
 import ch.securify.decompiler.Variable;
+import ch.securify.dslpatterns.util.DSLLabel;
+import ch.securify.dslpatterns.util.VariableDC;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * The MayDepOn predicate with input a variable and a tag represented by a class
@@ -31,9 +35,10 @@ public class MayDepOnVarTag extends AbstractPredicate {
     }
 
     @Override
-    public List<Variable> getVariables() {
-        List<Variable> vars = new ArrayList<>(1);
-        vars.add(v);
+    public Set<Variable> getVariables() {
+        Set<Variable> vars = new HashSet<>(1);
+        if(VariableDC.isValidVariable(v));
+            vars.add(v);
         return vars;
     }
 

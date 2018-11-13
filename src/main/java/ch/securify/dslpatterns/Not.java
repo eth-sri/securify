@@ -3,7 +3,7 @@ package ch.securify.dslpatterns;
 import ch.securify.decompiler.Variable;
 import ch.securify.dslpatterns.util.DSLLabel;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * Normal logic negation
@@ -29,12 +29,12 @@ public class Not extends AbstractDSLPattern {
     }
 
     @Override
-    public List<Variable> getVariables() {
+    public Set<Variable> getVariables() {
         return negatedPattern.getVariables();
     }
 
     @Override
-    public List<DSLLabel> getLabels() {
+    public Set<DSLLabel> getLabels() {
         return negatedPattern.getLabels();
     }
 

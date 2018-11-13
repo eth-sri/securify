@@ -4,7 +4,9 @@ import ch.securify.decompiler.Variable;
 import ch.securify.dslpatterns.util.DSLLabel;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Patterns that contain a list of arguments, e.g. {@link And}, {@link Or}
@@ -39,15 +41,15 @@ public abstract class AbstractListDSLPattern extends AbstractDSLPattern {
     }
 
     @Override
-    public List<Variable> getVariables() {
-        List<Variable> vars = new ArrayList<>();
+    public Set<Variable> getVariables() {
+        Set<Variable> vars = new HashSet<>();
         patterns.forEach((patt) -> vars.addAll(patt.getVariables()));
         return vars;
     }
 
     @Override
-    public List<DSLLabel> getLabels() {
-        List<DSLLabel> labels = new ArrayList<>();
+    public Set<DSLLabel> getLabels() {
+        Set<DSLLabel> labels = new HashSet<>();
         patterns.forEach((patt) -> labels.addAll(patt.getLabels()));
         return labels;
     }

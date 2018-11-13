@@ -2,11 +2,12 @@ package ch.securify.dslpatterns.predicates;
 
 import ch.securify.analysis.DSLAnalysis;
 import ch.securify.decompiler.Variable;
-import ch.securify.dslpatterns.AbstractDSLPattern;
-import ch.securify.dslpatterns.util.DSLLabel;
+import ch.securify.dslpatterns.util.VariableDC;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * The detBy predicate with input two variable
@@ -46,10 +47,12 @@ public class DetByVarVar extends AbstractPredicate {
     }
 
     @Override
-    public List<Variable> getVariables() {
-        List<Variable> vars = new ArrayList<>(2);
-        vars.add(var1);
-        vars.add(var2);
+    public Set<Variable> getVariables() {
+        Set<Variable> vars = new HashSet<>(2);
+        if(VariableDC.isValidVariable(var1))
+            vars.add(var1);
+        if(VariableDC.isValidVariable(var2))
+            vars.add(var2);
         return vars;
     }
 }

@@ -3,7 +3,7 @@ package ch.securify.dslpatterns;
 import ch.securify.decompiler.Variable;
 import ch.securify.dslpatterns.util.DSLLabel;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * This class is the superclass of all possible patterns written in the DSL language
@@ -17,6 +17,6 @@ public abstract class AbstractDSLPattern {
         return "AbstractDSLPattern";
     }
 
-    public abstract List<Variable> getVariables();
-    public abstract List<DSLLabel> getLabels();
+    public abstract Set<Variable> getVariables();
+    public abstract Set<DSLLabel> getLabels();
 }

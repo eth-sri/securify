@@ -4,7 +4,6 @@ import ch.securify.analysis.DSLAnalysis;
 import ch.securify.decompiler.Variable;
 import ch.securify.dslpatterns.datalogpattern.DatalogElem;
 import ch.securify.dslpatterns.util.DSLLabel;
-import ch.securify.dslpatterns.util.DSLLabelDC;
 import ch.securify.dslpatterns.util.VariableDC;
 
 import java.util.ArrayList;
@@ -35,7 +34,7 @@ public abstract class AbstractDSLInstruction implements DatalogElem {
      */
     public List<DSLLabel> getAllLabels() {
         List<DSLLabel> labelsList = new ArrayList<DSLLabel>();
-        if(isValidLabel(label))
+        if(DSLLabel.isValidLabel(label))
             labelsList.add(label);
         return labelsList;
     }
@@ -46,30 +45,6 @@ public abstract class AbstractDSLInstruction implements DatalogElem {
     public List<Variable> getAllVars() {
         List<Variable> varsList = new ArrayList<Variable>();
         return varsList;
-    }
-
-    /**
-     * Checks if the label is null or an instance of {@link ch.securify.dslpatterns.util.DSLLabelDC}
-     * @param l the label
-     * @return true if it's a valid label
-     */
-    protected boolean isValidLabel(DSLLabel l)
-    {
-        if(l == null || l instanceof DSLLabelDC)
-            return false;
-        return true;
-    }
-
-    /**
-     * Checks if the variable is null or an instance of {@link ch.securify.dslpatterns.util.VariableDC}
-     * @param var the variable
-     * @return true if it's a valid variable
-     */
-    protected boolean isValidVariable(Variable var)
-    {
-        if(var == null || var instanceof VariableDC)
-            return false;
-        return true;
     }
 
     public String getStringRepresentation() {

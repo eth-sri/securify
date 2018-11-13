@@ -1,8 +1,8 @@
 package ch.securify.dslpatterns.instructions;
 
-import ch.securify.analysis.DSLAnalysis;
 import ch.securify.decompiler.Variable;
 import ch.securify.dslpatterns.util.DSLLabel;
+import ch.securify.dslpatterns.util.VariableDC;
 
 import java.util.List;
 
@@ -37,9 +37,9 @@ public class DSLSload extends AbstractDSLInstruction {
     public List<Variable> getAllVars() {
         List<Variable> varsList = super.getAllVars();
 
-        if(isValidVariable(offset))
+        if(VariableDC.isValidVariable(offset))
             varsList.add(offset);
-        if(isValidVariable(var))
+        if(VariableDC.isValidVariable(var))
             varsList.add(var);
 
         return varsList;

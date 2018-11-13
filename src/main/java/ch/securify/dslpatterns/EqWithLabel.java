@@ -6,7 +6,9 @@ import ch.securify.dslpatterns.datalogpattern.DatalogElem;
 import ch.securify.dslpatterns.util.DSLLabel;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Equality between two labels
@@ -37,13 +39,13 @@ public class EqWithLabel extends AbstractDSLPattern implements DatalogElem {
     }
 
     @Override
-    public List<Variable> getVariables() {
-        return new ArrayList<>();
+    public Set<Variable> getVariables() {
+        return new HashSet<>();
     }
 
     @Override
-    public List<DSLLabel> getLabels() {
-        List<DSLLabel> labels = new ArrayList<>(2);
+    public Set<DSLLabel> getLabels() {
+        Set<DSLLabel> labels = new HashSet<>(2);
         labels.add(l1);
         labels.add(l2);
 

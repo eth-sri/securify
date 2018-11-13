@@ -24,6 +24,9 @@ public class DatalogBody {
     public void addElement(DatalogElem elem) {
         elements.add(elem);
     }
+    public void addElementInFront(DatalogElem elem) {
+        elements.add(0, elem);
+    }
 
     public void addAllElements(List<DatalogElem> elems) {
         elements.addAll(elems);

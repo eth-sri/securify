@@ -1,11 +1,12 @@
 package ch.securify.dslpatterns.predicates;
 
 import ch.securify.analysis.DSLAnalysis;
-import ch.securify.decompiler.Variable;
 import ch.securify.dslpatterns.util.DSLLabel;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * The MayDepOn predicate with input a label and a tag represented by a class
@@ -32,9 +33,10 @@ public class MayDepOnLabelTag extends AbstractPredicate {
     }
 
     @Override
-    public List<DSLLabel> getLabels() {
-        List<DSLLabel> labels = new ArrayList<>(1);
-        labels.add(l);
+    public Set<DSLLabel> getLabels() {
+        Set<DSLLabel> labels = new HashSet<>(1);
+        if(DSLLabel.isValidLabel(l))
+            labels.add(l);
         return labels;
     }
 
