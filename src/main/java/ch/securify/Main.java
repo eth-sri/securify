@@ -105,6 +105,7 @@ public class Main {
 
         HashMap<String, SolidityResult> allContractResults = new HashMap<>();
         for (Map.Entry<String, JsonElement> e : entries) {
+            initPatterns(args);
             log.println("Processing contract:");
             log.println(e.getKey());
 
