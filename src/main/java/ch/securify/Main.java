@@ -100,13 +100,13 @@ public class Main {
         Set<Map.Entry<String, JsonElement>> entries = compilationOutput.entrySet();
 
         TreeMap<String, SolidityResult> allContractResults = new TreeMap<>();
-        for (Map.Entry<String, JsonElement> e : entries) {
+        for (Map.Entry<String, JsonElement> elt : entries) {
             initPatterns(args);
             log.println("Processing contract:");
-            log.println(e.getKey());
+            log.println(elt.getKey());
 
-            String bin = e.getValue().getAsJsonObject().get("bin-runtime").getAsString();
-            String map = e.getValue().getAsJsonObject().get("srcmap-runtime").getAsString();
+            String bin = elt.getValue().getAsJsonObject().get("bin-runtime").getAsString();
+            String map = elt.getValue().getAsJsonObject().get("srcmap-runtime").getAsString();
 
             List<String> lines = Arrays.asList(bin);
             File binFile = File.createTempFile("securify_binary_", ".bin.hex");
@@ -115,7 +115,7 @@ public class Main {
 
             processHexFile(binFile.getPath(), null, livestatusfile);
 
-            byte[] fileContent = Files.readAllBytes(new File(e.getKey().split(":")[0]).toPath());
+            byte[] fileContent = Files.readAllBytes(new File(elt.getKey().split(":")[0]).toPath());
 
             SolidityResult allPatternResults = CompilationHelpers.getMappingsFromStatusFile(livestatusfile, map, fileContent);
 
@@ -125,7 +125,7 @@ public class Main {
                 System.out.println();
             }
 
-            allContractResults.put(e.getKey(), allPatternResults);
+            allContractResults.put(elt.getKey(), allPatternResults);
         }
 
         return allContractResults;
