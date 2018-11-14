@@ -36,10 +36,11 @@ class TruffleProject(project.Project):
     def compile_(self):
         os.chdir(self.get_project_root())
         cmd = ["truffle", "compile"]
-        process = subprocess.run(cmd, shell=False, stdout=subprocess.PIPE)
-        if process.returncode:
+        try:
+            subprocess.check_output(cmd, shell=False, stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as e:
             utils.log_error("Error compiling truffle project.")
-            utils.handle_process_output_and_exit(process)
+            utils.handle_process_output_and_exit(e)
         os.chdir("/")
 
         self._merge_compiled_files()
@@ -52,21 +53,21 @@ class TruffleProject(project.Project):
         result = {}
         for entry in os.scandir(self.get_truffle_build_dir()):
             if entry.is_file() and entry.name.endswith(".json") and entry.name != "Migrations.json":
-                with open(entry, mode='r') as file:
+                with open(entry) as file:
                     data = json.load(file)
-                    contract_name = data["sourcePath"] + ":" + data["contractName"]
-                    # check if library contract
-                    if not pathlib.Path(contract_name).is_file():
-                        contract_name = os.path.join(
-                            utils.find_node_modules_dir(self.get_project_root()), contract_name)
-                    data["bin"] = data.pop("bytecode")
-                    data["bin-runtime"] = data.pop("deployedBytecode")
-                    data["srcmap"] = data.pop("sourceMap")
-                    data["srcmap-runtime"] = data.pop("deployedSourceMap")
-                    # remove leading '0x'
-                    data["bin"] = data["bin"][2:]
-                    data["bin-runtime"] = data["bin-runtime"][2:]
-                    result[contract_name] = data
+                contract_name = data["sourcePath"] + ":" + data["contractName"]
+                # check if library contract
+                if not pathlib.Path(contract_name).is_file():
+                    contract_name = os.path.join(
+                        utils.find_node_modules_dir(self.get_project_root()), contract_name)
+                data["bin"] = data.pop("bytecode")
+                data["bin-runtime"] = data.pop("deployedBytecode")
+                data["srcmap"] = data.pop("sourceMap")
+                data["srcmap-runtime"] = data.pop("deployedSourceMap")
+                # remove leading '0x'
+                data["bin"] = data["bin"][2:]
+                data["bin-runtime"] = data["bin-runtime"][2:]
+                result[contract_name] = data
 
         # dump aggregate compiled output to file
         with open(self.get_compilation_output(), mode='w') as file:

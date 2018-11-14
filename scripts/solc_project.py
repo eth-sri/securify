@@ -61,10 +61,11 @@ class SolcProject(project.Project):
         if not os.path.exists(binary):
             # install in seperate process to control stdout
             cmd = ["python3", "-c", f"from solc import install_solc\ninstall_solc('v{version}', platform='linux')"]
-            process = subprocess.run(cmd, shell=False, stdout=subprocess.PIPE)
-            if process.returncode:
+            try:
+                subprocess.check_output(cmd, shell=False, stderr=subprocess.STDOUT)
+            except subprocess.CalledProcessError as e:
                 utils.log_error("Error installing required solidity compiler.")
-                utils.handle_process_output_and_exit(process)
+                utils.handle_process_output_and_exit(e)
         return binary
 
     def _compile_solfiles(self, files, solc_version=None, output_values=utils.OUTPUT_VALUES):

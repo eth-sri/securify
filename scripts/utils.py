@@ -74,25 +74,24 @@ def find_node_modules_dir(directory):
 def parse_sol_version(source):
     """Parses the solidity version from a contract using the pragma."""
     with open(source, encoding='utf-8') as f:
-        for l in f.readlines():
-            if 'pragma' in l and not 'experimental' in l:
-                if '^' in l or '>' in l:
-                    return DEFAULT_SOLC_VERSION
-                else:
-                    solc_version = COMP_VERSION1_REX.findall(l)[0]
-                    if solc_version not in SOLC_VERSIONS:
-                        raise CompilerVersionNotSupported(
-                            solc_version, solc_version < SOLC_VERSIONS[0])
-                    return solc_version
+        lines = f.readlines()
+    for l in lines:
+        if 'pragma' in l and not 'experimental' in l:
+            if '^' in l or '>' in l:
+                return DEFAULT_SOLC_VERSION
+            else:
+                solc_version = COMP_VERSION1_REX.findall(l)[0]
+                if solc_version not in SOLC_VERSIONS:
+                    raise CompilerVersionNotSupported(
+                        solc_version, solc_version < SOLC_VERSIONS[0])
+                return solc_version
     return DEFAULT_SOLC_VERSION
 
 
-def handle_process_output_and_exit(process):
-    """Processes stdout and stderr from a subprocess."""
-    if process.stderr:
-        logging.info(process.stderr.decode('ascii'))
-    if process.stdout:
-        logging.info(process.stdout.decode('ascii'))
+def handle_process_output_and_exit(error):
+    """Processes stdout and stderr from a subprocess CalledProcessError."""
+    if error.output:
+        logging.info(process.output.decode('ascii'))
     logging.shutdown()
     sys.exit(1)
 
@@ -120,8 +119,6 @@ def set_logger_level(level=None):
     config = { "format": "%(message)s", "level": log_level}
     logging.basicConfig(**config)
 
-
-DEBUG = False
 
 COMP_VERSION1_REX = re.compile(r'0\.\d+\.\d+')
 

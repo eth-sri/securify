@@ -27,11 +27,12 @@ from . import utils
 class Controller:
     def __init__(self):
         """Initialise the controller. This sets up the command line argument parsing etc."""
-        self._parser = parser = argparse.ArgumentParser(description='Run securify in docker image.')
-        self._parser.add_argument('-t', '--truffle', action="store_true", help="Use truffle project as base")
-        self._parser.add_argument('-p', '--project', action="store", help="The project root.", default="/project")
-        self._parser.add_argument('-v', '--verbose', action="store_true", help="Provide verbose output")
-        self._parser.add_argument('-q', '--quiet', action="store_true", help="Suppress most output")
+        self._parser = parser = argparse.ArgumentParser(description='Run securify.')
+        self._parser.add_argument('-t', '--truffle', action="store_true", help="use truffle project as base")
+        self._parser.add_argument('-p', '--project', action="store", help="the project root", default="/project")
+        verbosity_group = self._parser.add_mutually_exclusive_group()
+        verbosity_group.add_argument('-v', '--verbose', action="store_true", help="provide verbose output")
+        verbosity_group.add_argument('-q', '--quiet', action="store_true", help="suppress most output")
         self.args = self._parser.parse_args()
 
         if self.args.truffle:

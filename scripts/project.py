@@ -54,10 +54,11 @@ class Project(metaclass=abc.ABCMeta):
         """Runs the securify command."""
         cmd = ["java", "-Xmx8G", "-jar", "/securify_jar/securify.jar", "-co", self.get_compilation_output(),
                "-o", self.get_securify_target_output()]
-        process = subprocess.run(cmd, shell=False, stdout=subprocess.PIPE)
-        if process.returncode:
+        try:
+            subprocess.check_output(cmd, shell=False, stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as e:
             utils.log_error("Error running securify.")
-            utils.handle_process_output_and_exit(process)
+            utils.handle_process_output_and_exit(e)
 
     def get_compilation_output(self):
         """Returns the hex source resulting from the compilation."""
@@ -93,5 +94,5 @@ class Project(metaclass=abc.ABCMeta):
 
     def get_json_report(self):
         """Loads the JSON output from Securify."""
-        with open(self.get_securify_target_output(), mode='r') as file:
+        with open(self.get_securify_target_output()) as file:
             return json.load(file)

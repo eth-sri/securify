@@ -73,6 +73,42 @@ To run the tests (which use JUnit4):
 ./gradlew test
 ```
 
+#### Via Python 3 Script
+
+Alternatively, you can use the python script to use Securify with more flexibility. This requires additional installs:
+
+Install python dependencies:
+
+```
+pip3 install --user py-solc termcolor
+```
+
+Moreover, in order to compile using Truffle, please also install it using:
+
+```
+sudo npm install -g truffle
+```
+
+The usage of the `run_securify.py` script is then as follows:
+
+```
+usage: run_securify.py [-h] [-t] [-p PROJECT] [-v | -q]
+
+Run securify.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -t, --truffle         use truffle project as base
+  -p PROJECT, --project PROJECT
+                        the project root
+  -v, --verbose         provide verbose output
+  -q, --quiet           suppress most output
+```
+
+The `project` flag allows to define the path to the project you wish to analyze. In general, the exact same behaviour can be obtained using the docker image, without the hassle of the installs.
+
+This will also provide more readable output than running Securify as a `.jar` file.
+
 ### Docker
 
 The installation should be simple enough on Debian derivatives, or any other
@@ -96,7 +132,7 @@ You can change the files analyzed by specifying a volume to mount, and every
 docker run -v $(pwd)/folder_with_solidity_files:/project securify
 ```
 
-This should allow Securify to run over Truffle project in which dependencies
+Adding a `--truffle` flag should allow Securify to run over Truffle project in which dependencies
 have already been installed (so run `npm install` before if need be).
 
 The indices of the lines matched are 0-based, meaning that a match to line `i`

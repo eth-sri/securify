@@ -49,19 +49,19 @@ RUN mkdir /securify_jar
 
 RUN cp build/libs/*.jar /securify_jar/securify.jar
 
-RUN mkdir -p /smt_files
+# RUN mkdir -p /smt_files
 COPY ./smt_files/* /smt_files/
 
 # Solidity example
 COPY src/test/resources/solidity/transaction-reordering.sol /project/example.sol
 
 # Copy python scripts
-RUN mkdir -p /scripts
+# RUN mkdir -p /scripts
 COPY ./scripts/* /scripts/
 
-COPY docker_run_securify.py /
+COPY run_securify.py /
 
 WORKDIR /
 
 # ENTRYPOINT allows arguments to be passed (e.g. "--truffle").
-ENTRYPOINT ["python3", "-O", "docker_run_securify.py"]
+ENTRYPOINT ["python3", "-O", "run_securify.py"]
