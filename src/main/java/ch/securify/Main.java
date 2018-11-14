@@ -113,7 +113,12 @@ public class Main {
             binFile.deleteOnExit();
             Files.write(Paths.get(binFile.getPath()), lines);
 
-            processHexFile(binFile.getPath(), null, livestatusfile);
+            try {
+                processHexFile(binFile.getPath(), null, livestatusfile);
+            } catch(Exception e) {
+                e.printStackTrace();
+                System.err.println("Error, skipping: " + elt.getKey());
+            }
 
             byte[] fileContent = Files.readAllBytes(new File(elt.getKey().split(":")[0]).toPath());
 
@@ -132,7 +137,7 @@ public class Main {
     }
 
 
-    private static void processHexFile(String hexBinaryFile, String decompilationOutputFile, String livestatusfile) throws IOException {
+    private static void processHexFile(String hexBinaryFile, String decompilationOutputFile, String livestatusfile) throws IOException, InterruptedException {
         if (!new File(hexBinaryFile).exists()) {
             throw new IllegalArgumentException("File '" + hexBinaryFile + "' not found");
         }
@@ -150,7 +155,7 @@ public class Main {
         } catch(Exception e) {
             handleSecurifyError("decompilation_error", e);
             finishContractResult(livestatusfile);
-            return;
+            throw e;
         }
 
         contractResult.decompiled = true;
@@ -170,6 +175,7 @@ public class Main {
             checkPatterns(instructions, livestatusfile);
         } catch(Exception e) {
             handleSecurifyError("pattern_error", e);
+            throw e;
         } finally {
             finishContractResult(livestatusfile);
         }
