@@ -29,6 +29,7 @@ import ch.securify.decompiler.instructions.MStore8;
 import ch.securify.decompiler.instructions.SLoad;
 import ch.securify.decompiler.instructions.SStore;
 import ch.securify.decompiler.instructions.Sha3;
+import ch.securify.decompiler.instructions.StaticCall;
 import ch.securify.decompiler.instructions._VirtualInstruction;
 import ch.securify.decompiler.instructions._VirtualMethodHead;
 import ch.securify.decompiler.instructions._VirtualMethodReturn;
@@ -168,9 +169,17 @@ public class ConstantPropagation {
 						programState.polluteMemory(valueVar);
 					}
 				}
-				else if (instruction instanceof Call) {
-					Variable memOffsetVar = instruction.getInput()[5];
-					Variable memLenVar = instruction.getInput()[6];
+				else if (instruction instanceof Call || instruction instanceof StaticCall) {
+					Variable memOffsetVar;
+					Variable memLenVar;
+					if (instruction instanceof Call) {
+						memOffsetVar = instruction.getInput()[5];
+						memLenVar = instruction.getInput()[6];
+					} else {
+					    assert instruction instanceof StaticCall;
+						memOffsetVar = instruction.getInput()[4];
+						memLenVar = instruction.getInput()[5];
+					}
 					if (memLenVar.hasConstantValue() && BigIntUtil.fromInt256(memLenVar.getConstantValue()).equals(BigInteger.ZERO)) {
 						// zero-length target memory
 					}

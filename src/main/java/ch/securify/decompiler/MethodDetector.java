@@ -324,7 +324,7 @@ public class MethodDetector {
 				// continue on current branch
 				continue;
 			}
-			else if (opcode == OpCodes.STOP || opcode == OpCodes.RETURN || opcode == OpCodes.SELFDESTRUCT || OpCodes.isInvalid(opcode)) {
+			else if (opcode == OpCodes.STOP || opcode == OpCodes.RETURN || opcode == OpCodes.REVERT || opcode == OpCodes.SELFDESTRUCT || OpCodes.isInvalid(opcode)) {
 				// end of execution
 				return;
 			}
