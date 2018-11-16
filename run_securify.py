@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 """
 Author: Jakob Beckmann
 
@@ -17,10 +16,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+import sys
+from scripts import controller
 
 if __name__ == "__main__":
-    import sys
-    from scripts import controller
     ctrler = controller.Controller()
     return_code = ctrler.compile_and_report()
     sys.exit(return_code)

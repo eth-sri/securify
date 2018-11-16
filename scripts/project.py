@@ -27,12 +27,16 @@ import json
 
 from . import utils
 
+
 class Project(metaclass=abc.ABCMeta):
     """Abstract Project implemented by all different kinds projects requiring compilation and reporting."""
 
+    compilation_output = pathlib.Path("/comp.json")
+    securify_target_output = pathlib.Path("/securify_res.json")
+
     def __init__(self, project_root):
         """Sets the project root."""
-        self._project_root = pathlib.Path(project_root)
+        self.project_root = pathlib.Path(project_root)
 
     def execute(self):
         """Execute the project. This includes compilation and reporting.
@@ -46,53 +50,39 @@ class Project(metaclass=abc.ABCMeta):
         logging.info("Generating report")
         return self.report()
 
-    def get_project_root(self):
-        """Returns the project root of the project."""
-        return self._project_root
-
     def run_securify(self):
         """Runs the securify command."""
-        cmd = ["java", "-Xmx8G", "-jar", "/securify_jar/securify.jar", "-co", self.get_compilation_output(),
-               "-o", self.get_securify_target_output()]
+        cmd = ["java", "-Xmx8G", "-jar", "/securify_jar/securify.jar", "-co",
+               self.compilation_output,
+               "-o",
+               self.securify_target_output]
         try:
             subprocess.check_output(cmd, shell=False, stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
             utils.log_error("Error running securify.")
             utils.handle_process_output_and_exit(e)
 
-    def get_compilation_output(self):
-        """Returns the hex source resulting from the compilation."""
-        return pathlib.Path("/comp.json")
-
-    def get_securify_target_output(self):
-        """Returns the target file where the securify output is stored."""
-        return pathlib.Path("/securify_res.json")
-
     @abc.abstractmethod
     def compile_(self):
         """Compile the project."""
         pass
 
-    # @abc.abstractmethod
     def report(self):
         """Report findings.
 
         This function returns 0 if no violations are found, and 1 otherwise.
         """
+        with open(self.securify_target_output) as file:
+            json_report = json.load(file)
+
         return_code = 0
-        self.json_report = self.get_json_report()
-        for contract_name, contract in self.json_report.items():
+        for contract_name, contract in json_report.items():
             for pattern_name, pattern in contract["results"].items():
                 for token_num in pattern["violations"]:
-                    utils.log_error(f"Violation in contract '{contract_name.split('/')[-1]}(token {token_num})' for " +\
+                    utils.log_error(f"Violation in contract '{contract_name.split('/')[-1]}(token {token_num})' for " +
                                     f"pattern '{pattern_name}'.")
                     return_code = 1
                 for token_num in pattern["warnings"]:
-                    utils.log_warning(f"Warning in contract '{contract_name.split('/')[-1]}(token {token_num})' for " +\
+                    utils.log_warning(f"Warning in contract '{contract_name.split('/')[-1]}(token {token_num})' for " +
                                       f"pattern '{pattern_name}'.")
         return return_code
-
-    def get_json_report(self):
-        """Loads the JSON output from Securify."""
-        with open(self.get_securify_target_output()) as file:
-            return json.load(file)

@@ -17,16 +17,17 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-
-import sys
+import contextlib
+import logging
 import os
 import re
-import logging
+import sys
 
 from solc.exceptions import SolcError
 import solc.install
 
 from termcolor import colored
+
 
 class NoSolidityProject(BaseException):
     def __init__(self, dir):
@@ -50,14 +51,6 @@ class SolidityCompilationException(SolcError):
         self.files = files
 
 
-def get_supported_solc_versions():
-    """Gets the supported solc versions that can be installed from `pysolc`."""
-    versions = [getattr(solc.install, item)
-                for item in dir(solc.install) if item.startswith('V')]
-    versions = [v[1:] for v in versions]
-    return filter(lambda x: version_to_tuple(x) >= version_to_tuple('0.4.11'), versions)
-
-
 def version_to_tuple(v):
     """Converts a version string into a tuple."""
     return tuple(map(int, v.split('.')))
@@ -75,12 +68,13 @@ def parse_sol_version(source):
     """Parses the solidity version from a contract using the pragma."""
     with open(source, encoding='utf-8') as f:
         lines = f.readlines()
+
     for l in lines:
         if 'pragma' in l and not 'experimental' in l:
             if '^' in l or '>' in l:
                 return DEFAULT_SOLC_VERSION
             else:
-                solc_version = COMP_VERSION1_REX.findall(l)[0]
+                solc_version = next(COMP_VERSION1_REX.finditer(l))
                 if solc_version not in SOLC_VERSIONS:
                     raise CompilerVersionNotSupported(
                         solc_version, solc_version < SOLC_VERSIONS[0])
@@ -91,8 +85,7 @@ def parse_sol_version(source):
 def handle_process_output_and_exit(error):
     """Processes stdout and stderr from a subprocess CalledProcessError."""
     if error.output:
-        logging.info(process.output.decode('ascii'))
-    logging.shutdown()
+        logging.info(error.output.decode('ascii'))
     sys.exit(1)
 
 
@@ -116,8 +109,17 @@ def set_logger_level(level=None):
     else:
         log_level = logging.WARNING
 
-    config = { "format": "%(message)s", "level": log_level}
-    logging.basicConfig(**config)
+    logging.basicConfig(format="%(message)s", level=log_level)
+
+
+@contextlib.contextmanager
+def working_directory(path):
+    prev_cwd = os.getcwd()
+    os.chdir(path)
+    try:
+        yield
+    finally:
+        os.chdir(prev_cwd)
 
 
 COMP_VERSION1_REX = re.compile(r'0\.\d+\.\d+')
@@ -127,5 +129,11 @@ OUTPUT_VALUES = ('abi',
                  'bin-runtime',
                  'srcmap-runtime')
 
-SOLC_VERSIONS = list(get_supported_solc_versions())
+_versions = (getattr(solc.install, item)[1:]
+             for item in dir(solc.install) if item.startswith('V'))
+
+SOLC_VERSIONS = tuple(filter(
+    lambda x: version_to_tuple(x) >= version_to_tuple('0.4.11'),
+    _versions))
+
 DEFAULT_SOLC_VERSION = SOLC_VERSIONS[-1]

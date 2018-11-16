@@ -33,26 +33,31 @@ import solc.install
 from . import project
 from . import utils
 
+
 class SolcProject(project.Project):
     """A project that uses the `solc` compiler."""
+
     def __init__(self, project_root):
         super().__init__(project_root)
 
     def compile_(self):
         """Compile the project and dump the output to an intermediate file."""
         sources = self._get_sol_files()
+
         if not sources:
-            raise utils.NoSolidityProject(self.get_project_root())
+            raise utils.NoSolidityProject(self.project_root)
+
         comp_output = self._compile_solfiles(sources)
-        with open(self.get_compilation_output(), 'w') as fs:
+
+        with open(self.compilation_output, 'w') as fs:
             json.dump(comp_output, fs)
 
     def _get_sol_files(self):
         """Returns the solidity files contained in the project root."""
-        return [os.path.join(p, f) for p, _, fs in os.walk(self.get_project_root()) for f in fs if
+        return [os.path.join(p, f) for p, _, fs in os.walk(self.project_root) for f in fs if
                 f.endswith('.sol') and
                 'node_modules' not in p and
-                '/test/' not in p[len(str(self.get_project_root())):] and
+                '/test/' not in p[len(str(self.project_root)):] and
                 not p.endswith('/test')]
 
     def _get_binary(self, version):
@@ -62,7 +67,8 @@ class SolcProject(project.Project):
             # install in seperate process to control stdout
             cmd = ["python3", "-c", f"from solc import install_solc\ninstall_solc('v{version}', platform='linux')"]
             try:
-                subprocess.check_output(cmd, shell=False, stderr=subprocess.STDOUT)
+                subprocess.check_output(
+                    cmd, shell=False, stderr=subprocess.STDOUT)
             except subprocess.CalledProcessError as e:
                 utils.log_error("Error installing required solidity compiler.")
                 utils.handle_process_output_and_exit(e)
@@ -71,7 +77,7 @@ class SolcProject(project.Project):
     def _compile_solfiles(self, files, solc_version=None, output_values=utils.OUTPUT_VALUES):
         """Compiles the files using the solc compiler."""
         remappings = []
-        node_modules_dir = utils.find_node_modules_dir(self.get_project_root())
+        node_modules_dir = utils.find_node_modules_dir(self.project_root)
 
         if node_modules_dir is not None:
             zeppelin_path = os.path.abspath(os.path.join(
@@ -91,7 +97,7 @@ class SolcProject(project.Project):
 
         combined_json = ','.join(output_values)
         compiler_kwargs = {'import_remappings': remappings,
-                           'allow_paths': self.get_project_root(),
+                           'allow_paths': self.project_root,
                            'source_files': files,
                            'solc_binary': binary,
                            'combined_json': combined_json}

@@ -32,11 +32,12 @@ RUN apt-get update && apt-get -y install\
 RUN pip3 install --user py-solc termcolor
 
 # install truffle for project compilation
-RUN apt-get update && apt-get install -y nodejs\
-                npm
+RUN apt-get update && apt-get install -y\
+      nodejs\
+      npm
 
-# install truffle v5-beta
-RUN npm install -g truffle@beta
+ARG truffle="latest"
+RUN npm install -g truffle@$truffle
 
 # copy and compile securify
 COPY . /sec
@@ -49,19 +50,17 @@ RUN mkdir /securify_jar
 
 RUN cp build/libs/*.jar /securify_jar/securify.jar
 
-# RUN mkdir -p /smt_files
-COPY ./smt_files/* /smt_files/
+COPY ./smt_files /smt_files
 
 # Solidity example
 COPY src/test/resources/solidity/transaction-reordering.sol /project/example.sol
 
 # Copy python scripts
-# RUN mkdir -p /scripts
-COPY ./scripts/* /scripts/
+COPY ./scripts /scripts
 
 COPY run_securify.py /
 
 WORKDIR /
 
-# ENTRYPOINT allows arguments to be passed (e.g. "--truffle").
-ENTRYPOINT ["python3", "-O", "run_securify.py"]
+# run_securify.py allows arguments to be passed (e.g. "--truffle").
+ENTRYPOINT ["python3", "run_securify.py"]

@@ -27,31 +27,30 @@ import pathlib
 from . import utils
 from . import project
 
+
 class TruffleProject(project.Project):
     """A project that uses the truffle development environment to compile the project."""
+
     def __init__(self, project_root):
         super().__init__(project_root)
-        self._build_dir = self.get_project_root() / pathlib.Path("build/contracts/")
+        self.build_dir = self.project_root / pathlib.Path("build/contracts/")
 
     def compile_(self):
-        os.chdir(self.get_project_root())
-        cmd = ["truffle", "compile"]
-        try:
-            subprocess.check_output(cmd, shell=False, stderr=subprocess.STDOUT)
-        except subprocess.CalledProcessError as e:
-            utils.log_error("Error compiling truffle project.")
-            utils.handle_process_output_and_exit(e)
-        os.chdir("/")
+        with utils.working_directory(self.project_root):
+            try:
+                subprocess.check_output(["truffle", "compile"],
+                                        shell=False,
+                                        stderr=subprocess.STDOUT)
+            except subprocess.CalledProcessError as e:
+                utils.log_error("Error compiling truffle project.")
+                utils.handle_process_output_and_exit(e)
 
         self._merge_compiled_files()
-
-    def get_truffle_build_dir(self):
-        return self._build_dir
 
     def _merge_compiled_files(self):
         """Merges individual truffle files into an aggregate file for securify."""
         result = {}
-        for entry in os.scandir(self.get_truffle_build_dir()):
+        for entry in os.scandir(self.build_dir):
             if entry.is_file() and entry.name.endswith(".json") and entry.name != "Migrations.json":
                 with open(entry) as file:
                     data = json.load(file)
@@ -59,7 +58,9 @@ class TruffleProject(project.Project):
                 # check if library contract
                 if not pathlib.Path(contract_name).is_file():
                     contract_name = os.path.join(
-                        utils.find_node_modules_dir(self.get_project_root()), contract_name)
+                        utils.find_node_modules_dir(self.project_root),
+                        contract_name)
+
                 data["bin"] = data.pop("bytecode")
                 data["bin-runtime"] = data.pop("deployedBytecode")
                 data["srcmap"] = data.pop("sourceMap")
@@ -67,8 +68,9 @@ class TruffleProject(project.Project):
                 # remove leading '0x'
                 data["bin"] = data["bin"][2:]
                 data["bin-runtime"] = data["bin-runtime"][2:]
+
                 result[contract_name] = data
 
         # dump aggregate compiled output to file
-        with open(self.get_compilation_output(), mode='w') as file:
+        with open(self.compilation_output, mode='w') as file:
             json.dump(result, file, indent=4)
