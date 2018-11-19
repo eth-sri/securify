@@ -356,8 +356,8 @@ public class DestackerFallback {
 
 		boolean jumpCondition = findJumpCondition(jumpI, jumpdest);
 		
-		// create re-assignemt instructions		
-		if (variableReassignments.containsKey(new Pair<Instruction, Boolean>(jumpI, jumpCondition))) {
+		// create re-assignment instructions		
+		if (variableReassignments.containsKey(new Pair<>(jumpI, jumpCondition))) {
 			throw new IllegalStateException("reassignment does already exist");
 		}
 		Map<Variable, Variable> reassignments = new LinkedHashMap<>();
@@ -393,20 +393,18 @@ public class DestackerFallback {
 			reassignments.putAll(reassignmentsWithTemps);
 		}
 
-		variableReassignments.put(new Pair<Instruction, Boolean>(jumpI, jumpCondition), reassignments);
+		variableReassignments.put(new Pair<>(jumpI, jumpCondition), reassignments);
 	}
 
 
     // Identifies whether the positive or negative branch was taken in case of JUMPI
     // Always true otherwise
 	private boolean findJumpCondition(Instruction jumpI, int jumpdest) {
-		if(jumpI instanceof Jump) {
-			return true;
-		}
 		if(jumpI instanceof JumpI) {
-			int x = jumps.get(jumpI.getRawInstruction().offset).iterator().next();
+			jumps.get(jumpI.getRawInstruction().offset).iterator().next();
 			return jumpdest == jumps.get(jumpI.getRawInstruction().offset).iterator().next();
 		}
+		// includes Jump case
 		return true;
 	}
 
@@ -533,75 +531,76 @@ public class DestackerFallback {
 					injectedInstrs.get(i - 1).setNext(injectedInstrs.get(i));
 				}
 			}
-			else if (instruction instanceof JumpI && jumpCondition) {
-				// reassign after the jump but before reaching the target, so need to create a new intermediate branch
-				// from: JUMPI -> JUMPDEST
-				//   to: JUMPI -> JUMPDEST(virtual) -> reassignments -> JUMP(virtual) -> JUMPDEST
-				List<Instruction> injectedInstrs = new ArrayList<>();
+			else if (instruction instanceof JumpI) {
+				if (jumpCondition) {
+					// reassign after the jump but before reaching the target, so need to create a new intermediate branch
+					// from: JUMPI -> JUMPDEST
+					//   to: JUMPI -> JUMPDEST(virtual) -> reassignments -> JUMP(virtual) -> JUMPDEST
+					List<Instruction> injectedInstrs = new ArrayList<>();
 
-				// original jumpi instruction
-				JumpI origJumpi = (JumpI) instruction;
-				// original jumpdest
-				JumpDest origJumpdest = (JumpDest) origJumpi.getOutgoingBranches().iterator().next();
-				// break up connection to insert new intermediate branch
-				origJumpi.clearOutgoingBranches();
-				origJumpdest.removeIncomingBranch(origJumpi);
-				// create intermediate jumpdest
-				int intermediateLabel = intermediateLabels.getAndIncrement();
-				JumpDest intermJumpDest = new JumpDest("tmp_" + intermediateLabel);
-				intermJumpDest.setInput(NO_VARIABLES).setOutput(NO_VARIABLES);
-				origJumpi.clearOutgoingBranches();
-				origJumpi.addOutgoingBranch(intermJumpDest);
-				origJumpi.setTargetLabel(intermJumpDest.getLabel());
-				intermJumpDest.addIncomingBranch(origJumpi);
-				injectedInstrs.add(intermJumpDest);
-				// create reassignments
-				variableMap.entrySet().stream().filter(map -> map.getKey() != map.getValue())
-						.forEach(map -> injectedInstrs.add(new _VirtualAssignment(map.getKey(), map.getValue())));
-				// link instructions
-				for (int i = 1; i < injectedInstrs.size(); ++i) {
-					injectedInstrs.get(i).setPrev(injectedInstrs.get(i - 1));
-					injectedInstrs.get(i - 1).setNext(injectedInstrs.get(i));
+					// original jumpi instruction
+					JumpI origJumpi = (JumpI) instruction;
+					// original jumpdest
+					JumpDest origJumpdest = (JumpDest) origJumpi.getOutgoingBranches().iterator().next();
+					// break up connection to insert new intermediate branch
+					origJumpi.clearOutgoingBranches();
+					origJumpdest.removeIncomingBranch(origJumpi);
+					// create intermediate jumpdest
+					int intermediateLabel = intermediateLabels.getAndIncrement();
+					JumpDest intermJumpDest = new JumpDest("tmp_" + intermediateLabel);
+					intermJumpDest.setInput(NO_VARIABLES).setOutput(NO_VARIABLES);
+					origJumpi.clearOutgoingBranches();
+					origJumpi.addOutgoingBranch(intermJumpDest);
+					origJumpi.setTargetLabel(intermJumpDest.getLabel());
+					intermJumpDest.addIncomingBranch(origJumpi);
+					injectedInstrs.add(intermJumpDest);
+					// create reassignments
+					variableMap.entrySet().stream().filter(map -> map.getKey() != map.getValue())
+							.forEach(map -> injectedInstrs.add(new _VirtualAssignment(map.getKey(), map.getValue())));
+					// link instructions
+					for (int i = 1; i < injectedInstrs.size(); ++i) {
+						injectedInstrs.get(i).setPrev(injectedInstrs.get(i - 1));
+						injectedInstrs.get(i - 1).setNext(injectedInstrs.get(i));
+					}
+					Instruction lastReassignment = injectedInstrs.get(injectedInstrs.size() - 1);
+					// create intermediate jump
+					Jump intermJump = new Jump(origJumpdest.getLabel());
+					intermJump.setInput(new Variable[1]).setOutput(NO_VARIABLES);
+					intermJump.setPrev(lastReassignment);
+					lastReassignment.setNext(intermJump);
+					// link to original jumpdest
+					intermJump.addOutgoingBranch(origJumpdest);
+					origJumpdest.addIncomingBranch(intermJump);
+				} else {
+					// For non-taken jumps
+					// from: JUMPI -> ...
+					//   to: JUMPI -> JUMPDEST(virtual) -> reassignments -> JUMP(virtual) -> ...
+					List<Instruction> injectedInstrs = new ArrayList<>();
+
+					// original jumpi instruction
+					JumpI origJumpi = (JumpI) instruction;
+					// following instruction
+					JumpDest following = (JumpDest) origJumpi.getNext();
+
+					// create reassignments
+					variableMap.entrySet().stream().filter(map -> map.getKey() != map.getValue())
+							.forEach(map -> injectedInstrs.add(new _VirtualAssignment(map.getKey(), map.getValue())));
+
+					// link instructions
+					for (int i = 1; i < injectedInstrs.size(); ++i) {
+						injectedInstrs.get(i).setPrev(injectedInstrs.get(i - 1));
+						injectedInstrs.get(i - 1).setNext(injectedInstrs.get(i));
+					}
+
+
+					// Link the first instruction
+					injectedInstrs.get(0).setPrev(origJumpi);
+					origJumpi.setNext(injectedInstrs.get(0));
+
+					// Link the last instruction
+					injectedInstrs.get(injectedInstrs.size() - 1).setNext(following);
+					following.setPrev(injectedInstrs.get(injectedInstrs.size() - 1));
 				}
-				Instruction lastReassignment = injectedInstrs.get(injectedInstrs.size() - 1);
-				// create intermediate jump
-				Jump intermJump = new Jump(origJumpdest.getLabel());
-				intermJump.setInput(new Variable[1]).setOutput(NO_VARIABLES);
-				intermJump.setPrev(lastReassignment);
-				lastReassignment.setNext(intermJump);
-				// link to original jumpdest
-				intermJump.addOutgoingBranch(origJumpdest);
-				origJumpdest.addIncomingBranch(intermJump);
-			}
-			else if (instruction instanceof JumpI && !jumpCondition) {
-				// For non-taken jumps
-				// from: JUMPI -> ...
-				//   to: JUMPI -> JUMPDEST(virtual) -> reassignments -> JUMP(virtual) -> ...
-				List<Instruction> injectedInstrs = new ArrayList<>();
-
-				// original jumpi instruction
-				JumpI origJumpi = (JumpI) instruction;
-				// following instruction
-				JumpDest following = (JumpDest) origJumpi.getNext();
-
-				// create reassignments
-				variableMap.entrySet().stream().filter(map -> map.getKey() != map.getValue())
-						.forEach(map -> injectedInstrs.add(new _VirtualAssignment(map.getKey(), map.getValue())));
-				
-				// link instructions
-				for (int i = 1; i < injectedInstrs.size(); ++i) {
-					injectedInstrs.get(i).setPrev(injectedInstrs.get(i - 1));
-					injectedInstrs.get(i - 1).setNext(injectedInstrs.get(i));
-				}
-
-				
-				// Link the first instruction
-				injectedInstrs.get(0).setPrev(origJumpi);
-				origJumpi.setNext(injectedInstrs.get(0));
-				
-				// Link the last instruction
-				injectedInstrs.get(injectedInstrs.size() - 1).setNext(following);
-				following.setPrev(injectedInstrs.get(injectedInstrs.size() - 1));
 			}
 			else {
 				if (!(instruction.getNext() instanceof JumpDest)) {

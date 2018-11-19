@@ -20,20 +20,12 @@ package ch.securify.utils;
 
 import java.util.Objects;
 
-public class Pair<F,S> {
-    public F first;
-    public S second;
+public class Pair<F, S> {
+    final private F first;
+    final private S second;
 
     public Pair(F first, S second) {
         this.first = first;
-        this.second = second;
-    }
-
-    public void setFirst(F first) {
-        this.first = first;
-    }
-
-    public void setSecond(S second) {
         this.second = second;
     }
 
@@ -44,15 +36,15 @@ public class Pair<F,S> {
     public S getSecond() {
         return second;
     }
-    
+
     @Override
     public boolean equals(Object obj) {
-    	Pair<F, S> other = (Pair<F, S>) obj;
-    	return getFirst().equals(other.getFirst()) && getSecond().equals(other.getSecond()); 
+        Pair<F, S> other = (Pair<F, S>) obj;
+        return getFirst().equals(other.getFirst()) && getSecond().equals(other.getSecond());
     }
-    
+
     @Override
     public int hashCode() {
-    	return Objects.hash(getFirst(), getSecond());
+        return Objects.hash(first, second);
     }
 }
