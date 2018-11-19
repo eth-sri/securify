@@ -58,9 +58,9 @@ COPY src/test/resources/solidity/transaction-reordering.sol /project/example.sol
 # Copy python scripts
 COPY ./scripts /scripts
 
-COPY run_securify.py /
+COPY docker_run_securify.py /
 
 WORKDIR /
 
 # run_securify.py allows arguments to be passed (e.g. "--truffle").
-ENTRYPOINT ["python3", "run_securify.py"]
+ENTRYPOINT ["python3", "docker_run_securify.py"]
