@@ -17,13 +17,13 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-
-import sys
 import abc
-import pathlib
-import subprocess
-import logging
 import json
+import logging
+import pathlib
+import psutil
+import subprocess
+import sys
 
 from . import utils
 
@@ -52,10 +52,10 @@ class Project(metaclass=abc.ABCMeta):
 
     def run_securify(self):
         """Runs the securify command."""
-        cmd = ["java", "-Xmx8G", "-jar", "/securify_jar/securify.jar", "-co",
-               self.compilation_output,
-               "-o",
-               self.securify_target_output]
+        memory = psutil.virtual_memory().available // 1024 ** 3
+        cmd = ["java", f"-Xmx{memory}G", "-jar", "/securify_jar/securify.jar",
+               "-co", self.compilation_output,
+               "-o", self.securify_target_output]
         try:
             subprocess.check_output(cmd, shell=False, stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
@@ -78,11 +78,14 @@ class Project(metaclass=abc.ABCMeta):
         return_code = 0
         for contract_name, contract in json_report.items():
             for pattern_name, pattern in contract["results"].items():
+                c_name = contract_name.split('/')[-1]
                 for token_num in pattern["violations"]:
-                    utils.log_error(f"Violation in contract '{contract_name.split('/')[-1]}(token {token_num})' for " +
-                                    f"pattern '{pattern_name}'.")
+                    utils.log_error(f"Violation in contract '{c_name}"
+                                    f"(token {token_num})' for pattern "
+                                    f"'{pattern_name}'.")
                     return_code = 1
                 for token_num in pattern["warnings"]:
-                    utils.log_warning(f"Warning in contract '{contract_name.split('/')[-1]}(token {token_num})' for " +
-                                      f"pattern '{pattern_name}'.")
+                    utils.log_warning(f"Warning in contract '{c_name}"
+                                      f"(token {token_num})' for pattern "
+                                      f"'{pattern_name}'.")
         return return_code

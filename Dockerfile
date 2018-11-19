@@ -29,7 +29,7 @@ RUN apt-get update && apt-get -y install\
         openjdk-8-jdk\
         python3-pip
 
-RUN pip3 install --user py-solc termcolor
+RUN pip3 install --user py-solc termcolor psutil
 
 # install truffle for project compilation
 RUN apt-get update && apt-get install -y\
