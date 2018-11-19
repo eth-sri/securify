@@ -31,6 +31,10 @@ RUN apt-get update && apt-get -y install\
 
 RUN pip3 install --user py-solc termcolor psutil
 
+RUN mkdir /isolc
+COPY scripts/isolc/* /isolc/
+RUN cd / && python3 -m isolc.install_solc
+
 # install truffle for project compilation
 RUN apt-get update && apt-get install -y\
       nodejs\
