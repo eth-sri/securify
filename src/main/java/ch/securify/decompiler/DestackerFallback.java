@@ -22,6 +22,7 @@ import ch.securify.decompiler.evm.OpCodes;
 import ch.securify.decompiler.evm.RawInstruction;
 import ch.securify.decompiler.printer.HexPrinter;
 import ch.securify.utils.DevNullPrintStream;
+import ch.securify.utils.Pair;
 import ch.securify.utils.Resolver;
 import ch.securify.decompiler.instructions.BranchInstruction;
 import ch.securify.decompiler.instructions.Eq;
@@ -77,7 +78,7 @@ public class DestackerFallback {
 	private Map<Integer, Variable[]> argumentsForMethodCall, returnVarsForMethodCall;
 
 	private Map<Integer, Stack<Variable>> canonicalStackForBranchJoinJumpdest;
-	private Map<Instruction, Map<Variable, Variable>> variableReassignments;
+	private Map<Pair<Instruction, Boolean>, Map<Variable, Variable>> variableReassignments;
 	private Map<Instruction, Map<Variable, Variable>> variableReassignmentsInline;
 	private Map<Integer, List<Instruction>> dynamicJumpReplacement;
 	private Map<Instruction, Integer> dynamicJumpReplacementTargets;
@@ -307,7 +308,7 @@ public class DestackerFallback {
 					variableReassignmentsInline.put(inlineDest, reassignments);
 				}
 				else {
-					variableReassignments.put(jumpsrc, reassignments);
+					variableReassignments.put(new Pair<>(jumpsrc, true), reassignments);
 				}
 			}
 			// add some placeholder variable at the stack's bottom,
@@ -353,8 +354,10 @@ public class DestackerFallback {
 			throw new IllegalStateException("a canonical variable is assigned multiple times");
 		}
 
-		// create re-assignemt instructions
-		if (variableReassignments.containsKey(jumpI)) {
+		boolean jumpCondition = findJumpCondition(jumpI, jumpdest);
+		
+		// create re-assignemt instructions		
+		if (variableReassignments.containsKey(new Pair<Instruction, Boolean>(jumpI, jumpCondition))) {
 			throw new IllegalStateException("reassignment does already exist");
 		}
 		Map<Variable, Variable> reassignments = new LinkedHashMap<>();
@@ -390,7 +393,21 @@ public class DestackerFallback {
 			reassignments.putAll(reassignmentsWithTemps);
 		}
 
-		variableReassignments.put(jumpI, reassignments);
+		variableReassignments.put(new Pair<Instruction, Boolean>(jumpI, jumpCondition), reassignments);
+	}
+
+
+    // Identifies whether the positive or negative branch was taken in case of JUMPI
+    // Always true otherwise
+	private boolean findJumpCondition(Instruction jumpI, int jumpdest) {
+		if(jumpI instanceof Jump) {
+			return true;
+		}
+		if(jumpI instanceof JumpI) {
+			int x = jumps.get(jumpI.getRawInstruction().offset).iterator().next();
+			return jumpdest == jumps.get(jumpI.getRawInstruction().offset).iterator().next();
+		}
+		return true;
 	}
 
 
@@ -491,11 +508,13 @@ public class DestackerFallback {
 
 		AtomicInteger intermediateLabels = new AtomicInteger(1);
 
-		variableReassignments.forEach((instruction, variableMap) -> {
+		variableReassignments.forEach((pair, variableMap) -> {
 			if (variableMap.entrySet().stream().noneMatch(map -> map.getKey() != map.getValue())) {
 				// nothing to reassign
 				return;
 			}
+			Instruction instruction = pair.getFirst();
+			boolean jumpCondition = pair.getSecond();
 			if (instruction instanceof Jump) {
 				// reassign just before the jump
 				// from: PREV -> JUMP -> JUMPDEST
@@ -514,7 +533,7 @@ public class DestackerFallback {
 					injectedInstrs.get(i - 1).setNext(injectedInstrs.get(i));
 				}
 			}
-			else if (instruction instanceof JumpI) {
+			else if (instruction instanceof JumpI && jumpCondition) {
 				// reassign after the jump but before reaching the target, so need to create a new intermediate branch
 				// from: JUMPI -> JUMPDEST
 				//   to: JUMPI -> JUMPDEST(virtual) -> reassignments -> JUMP(virtual) -> JUMPDEST
@@ -553,6 +572,36 @@ public class DestackerFallback {
 				// link to original jumpdest
 				intermJump.addOutgoingBranch(origJumpdest);
 				origJumpdest.addIncomingBranch(intermJump);
+			}
+			else if (instruction instanceof JumpI && !jumpCondition) {
+				// For non-taken jumps
+				// from: JUMPI -> ...
+				//   to: JUMPI -> JUMPDEST(virtual) -> reassignments -> JUMP(virtual) -> ...
+				List<Instruction> injectedInstrs = new ArrayList<>();
+
+				// original jumpi instruction
+				JumpI origJumpi = (JumpI) instruction;
+				// following instruction
+				JumpDest following = (JumpDest) origJumpi.getNext();
+
+				// create reassignments
+				variableMap.entrySet().stream().filter(map -> map.getKey() != map.getValue())
+						.forEach(map -> injectedInstrs.add(new _VirtualAssignment(map.getKey(), map.getValue())));
+				
+				// link instructions
+				for (int i = 1; i < injectedInstrs.size(); ++i) {
+					injectedInstrs.get(i).setPrev(injectedInstrs.get(i - 1));
+					injectedInstrs.get(i - 1).setNext(injectedInstrs.get(i));
+				}
+
+				
+				// Link the first instruction
+				injectedInstrs.get(0).setPrev(origJumpi);
+				origJumpi.setNext(injectedInstrs.get(0));
+				
+				// Link the last instruction
+				injectedInstrs.get(injectedInstrs.size() - 1).setNext(following);
+				following.setPrev(injectedInstrs.get(injectedInstrs.size() - 1));
 			}
 			else {
 				if (!(instruction.getNext() instanceof JumpDest)) {
