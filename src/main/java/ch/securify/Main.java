@@ -271,7 +271,7 @@ public class Main {
         allPatterns.add(new MissingInputValidation());
         allPatterns.add(new TODAmount());
         allPatterns.add(new TODReceiver());
-        allPatterns.add(new TODTransfer());
+        // allPatterns.add(new TODTransfer());
         allPatterns.add(new UnhandledException());
         // allPatterns.add(new UnprivilegedSelfdestruct());
         allPatterns.add(new UnrestrictedEtherFlow());
