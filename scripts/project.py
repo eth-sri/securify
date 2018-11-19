@@ -33,6 +33,7 @@ class Project(metaclass=abc.ABCMeta):
 
     compilation_output = pathlib.Path("/comp.json")
     securify_target_output = pathlib.Path("/securify_res.json")
+    securify_jar = pathlib.Path("/securify_jar/securify.jar")
 
     def __init__(self, project_root):
         """Sets the project root."""
@@ -53,13 +54,13 @@ class Project(metaclass=abc.ABCMeta):
     def run_securify(self):
         """Runs the securify command."""
         memory = psutil.virtual_memory().available // 1024 ** 3
-        cmd = ["java", f"-Xmx{memory}G", "-jar", "/securify_jar/securify.jar",
+        cmd = ["java", f"-Xmx{memory}G", "-jar", str(self.securify_jar),
                "-co", self.compilation_output,
                "-o", self.securify_target_output]
         try:
             subprocess.check_output(cmd, shell=False, stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
-            utils.log_error("Error running securify.")
+            logging.error("Error running securify.")
             utils.handle_process_output_and_exit(e)
 
     @abc.abstractmethod
@@ -75,17 +76,10 @@ class Project(metaclass=abc.ABCMeta):
         with open(self.securify_target_output) as file:
             json_report = json.load(file)
 
-        return_code = 0
-        for contract_name, contract in json_report.items():
-            for pattern_name, pattern in contract["results"].items():
-                c_name = contract_name.split('/')[-1]
-                for token_num in pattern["violations"]:
-                    utils.log_error(f"Violation in contract '{c_name}"
-                                    f"(token {token_num})' for pattern "
-                                    f"'{pattern_name}'.")
-                    return_code = 1
-                for token_num in pattern["warnings"]:
-                    utils.log_warning(f"Warning in contract '{c_name}"
-                                      f"(token {token_num})' for pattern "
-                                      f"'{pattern_name}'.")
-        return return_code
+        print(json.dumps(json_report, indent=4))
+
+        for contract in json_report.values():
+            for pattern in contract["results"].values():
+                if pattern["violations"]:
+                    return 1
+        return 0

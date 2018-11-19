@@ -26,8 +26,6 @@ import sys
 from solc.exceptions import SolcError
 import solc.install
 
-from termcolor import colored
-
 
 class NoSolidityProject(BaseException):
     def __init__(self, dir):
@@ -87,18 +85,6 @@ def handle_process_output_and_exit(error):
     if error.output:
         logging.info(error.output.decode('ascii'))
     sys.exit(1)
-
-
-def log_warning(text):
-    logging.warning(colored(text, "yellow"))
-
-
-def log_error(text):
-    logging.error(colored(text, "red"))
-
-
-def log_confirmation(text):
-    logging.info(colored(text, "green"))
 
 
 def set_logger_level(level=None):

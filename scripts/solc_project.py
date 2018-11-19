@@ -68,8 +68,9 @@ class SolcProject(project.Project):
 
     def _compile_solfiles(self, files, solc_version=None, output_values=utils.OUTPUT_VALUES):
         """Compiles the files using the solc compiler."""
-        remappings = []
         node_modules_dir = utils.find_node_modules_dir(self.project_root)
+
+        remappings = []
 
         if node_modules_dir is not None:
             zeppelin_path = os.path.abspath(os.path.join(

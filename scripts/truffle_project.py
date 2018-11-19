@@ -38,7 +38,6 @@ class TruffleProject(project.Project):
         with utils.working_directory(self.project_root):
             try:
                 subprocess.check_output(["truffle", "compile"],
-                                        shell=False,
                                         stderr=subprocess.STDOUT)
             except subprocess.CalledProcessError as e:
                 utils.log_error("Error compiling truffle project.")
