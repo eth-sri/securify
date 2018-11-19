@@ -184,9 +184,3 @@ reassignMemory(Lab, Offset) :- mstore(Lab, Offset, _), !unk(Offset).
 //the same for mayImplicit and mustExplicit
 reassignStorage(Lab, Index) :- sstore(Lab, Index, _), !unk(Index).
 reassignMemory(Lab, Offset) :- mstore(Lab, Offset, _), !unk(Offset).
-
-
-//pattern test
-.decl complTOD		    (l:Label) output
-complTOD(L) :- call(L, _, _, amount), !mayDepOn(amount, 46), !mayDepOn(amount, 29).
-//Sload = 46, balance - 29

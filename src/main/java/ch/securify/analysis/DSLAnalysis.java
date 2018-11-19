@@ -2,6 +2,8 @@ package ch.securify.analysis;
 
 import ch.securify.decompiler.Variable;
 import ch.securify.decompiler.instructions.*;
+import ch.securify.dslpatterns.tags.Arg;
+import ch.securify.dslpatterns.tags.DSLMsgdata;
 import ch.securify.utils.BigIntUtil;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -30,7 +32,7 @@ public class DSLAnalysis {
     protected BiMap<String, StringBuffer> ruleToSB;
     protected Map<String, Set<Long>> fixedpoint;
 
-    protected int bvCounter = 0; // reserve first 100 for types
+    protected int bvCounter = 1; // reserve 0 for the constant 0
 
     public int unk;
 
@@ -71,6 +73,16 @@ public class DSLAnalysis {
         typeToCode = HashBiMap.create();
         constToCode = HashBiMap.create();
         fixedpoint = new HashMap<>();
+
+        //const 0 maps to 0
+        constToCode.put(new Integer(0), new Integer(0));
+
+        //fill in already the hashmap of types so that they always the same
+        getCode(Arg.class); //todo: understand how to properly translate these two
+        getCode(DSLMsgdata.class);
+        getCode(SLoad.class);
+        getCode(Balance.class);
+
 
         offsetToStorageVar = HashBiMap.create();
         offsetToMemoryVar = HashBiMap.create();
