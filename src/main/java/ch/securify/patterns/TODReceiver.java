@@ -34,10 +34,7 @@ public class TODReceiver extends AbstractInstructionPattern {
             return false;
 
         Variable value = instr.getInput()[2];
-        if (value.hasConstantValue() && AbstractDataflow.getInt(value.getConstantValue()) == 0)
-            return false;
-
-        return true;
+        return !value.hasConstantValue() || AbstractDataflow.getInt(value.getConstantValue()) != 0;
     }
 
     @Override

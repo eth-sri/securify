@@ -18,7 +18,7 @@
 
 package ch.securify.analysis;
 
-public class Config {
+class Config {
 
 	public static final int PATTERN_TIMEOUT =  15 * 60; // seconds
     public static final int THRESHOLD_COMPILE = 200; // instructions per contract

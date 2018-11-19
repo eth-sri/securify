@@ -18,7 +18,7 @@
 
 package ch.securify.decompiler;
 
-public class MethodNameResolver {
+class MethodNameResolver {
 
 
 

@@ -20,7 +20,7 @@ package ch.securify.model;
 
 import com.google.gson.annotations.SerializedName;
 
-public class CompiledContract {
+class CompiledContract {
 
 	@SerializedName("bin-runtime")
 	private String bin;

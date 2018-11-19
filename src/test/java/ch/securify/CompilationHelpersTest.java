@@ -16,7 +16,7 @@ public class CompilationHelpersTest {
         testBytecodeOffsetToSourceOffset("0:1:1;1:1:1;2:1:1;;;3:1:1", 5,2);
     }
 
-    public void testBytecodeOffsetToSourceOffset(String map, int index, int res) {
+    private void testBytecodeOffsetToSourceOffset(String map, int index, int res) {
         List<String[]> explodedMap = CompilationHelpers.explodeMappingString(map);
         assertEquals(CompilationHelpers.bytecodeOffsetToSourceOffset(index, explodedMap), res );
     }

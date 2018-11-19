@@ -19,6 +19,6 @@
 package ch.securify.decompiler.instructions;
 
 // TODO: Add this interface to all the instructions that return as output an EVM address
-public interface _ReturnsAddress {
+interface _ReturnsAddress {
 
 }

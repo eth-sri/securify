@@ -35,9 +35,7 @@ import java.util.Stack;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-import static ch.securify.decompiler.printer.HexPrinter.toHex;
-
-public class MethodDetector {
+class MethodDetector {
 
 	private PrintStream log;
 
@@ -58,7 +56,8 @@ public class MethodDetector {
 
 
 	private static class MethodCall {
-		private int callSrc, methodHead;
+		private final int callSrc;
+		private final int methodHead;
 		private MethodCall(int callSrc, int methodHead) {
 			this.callSrc = callSrc;
 			this.methodHead = methodHead;
@@ -248,7 +247,7 @@ public class MethodDetector {
 				}
 
 				int jumpdest = jumps.get(pc).iterator().next();
-				if (!ControlFlowDetector.isVirtualJumpDest(jumpdest)) {
+				if (ControlFlowDetector.isRealJumpDest(jumpdest)) {
 					boolean isMethodCall = methods.containsKey(jumpdest);
 					if (belongsToMethod[jumpdest] != -1 && belongsToMethod[jumpdest] != currentMethodBco && !isMethodCall) {
 						// should not be
@@ -286,7 +285,7 @@ public class MethodDetector {
 					throw new AssumptionViolatedException("contitional jump @" + HexPrinter.toHex(pc) + " has multiple jump targets");
 				}
 				int jumpdest = jumps.get(pc).iterator().next();
-				if (!ControlFlowDetector.isVirtualJumpDest(jumpdest)) {
+				if (ControlFlowDetector.isRealJumpDest(jumpdest)) {
 					if (belongsToMethod[jumpdest] != -1 && belongsToMethod[jumpdest] != currentMethodBco) {
 						throw new AssumptionViolatedException("Jump from @" + HexPrinter.toHex(pc) +
 								" in method " + HexPrinter.toHex(currentMethodBco) + " to @" + HexPrinter.toHex(jumpdest) +
@@ -321,8 +320,6 @@ public class MethodDetector {
 						return;
 					}
 				}
-				// continue on current branch
-				continue;
 			}
 			else if (opcode == OpCodes.STOP || opcode == OpCodes.RETURN || opcode == OpCodes.REVERT || opcode == OpCodes.SELFDESTRUCT || OpCodes.isInvalid(opcode)) {
 				// end of execution

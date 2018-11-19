@@ -77,23 +77,23 @@ public class Main {
 
     private static List<AbstractPattern> patterns;
     private static ContractResult contractResult;
-    private static boolean DEBUG = false;
-    private static PrintStream log = DEBUG ? System.out : new DevNullPrintStream();
+    private static final boolean DEBUG = false;
+    private static final PrintStream log = DEBUG ? System.out : new DevNullPrintStream();
     private static Args args;
 
 
-    public static TreeMap<String, SolidityResult> processSolidityFile(String filesol, String livestatusfile) throws IOException, InterruptedException {
+    private static TreeMap<String, SolidityResult> processSolidityFile(String filesol, String livestatusfile) throws IOException, InterruptedException {
         JsonObject compilationOutput = CompilationHelpers.compileContracts(filesol);
 
         return processCompilationOutput(compilationOutput, livestatusfile);
     }
 
-    public static TreeMap<String, SolidityResult> mainFromCompilationOutput(String fileCompilationOutput, String livestatusfile) throws IOException, InterruptedException {
+    private static TreeMap<String, SolidityResult> mainFromCompilationOutput(String fileCompilationOutput, String livestatusfile) throws IOException, InterruptedException {
         JsonObject compilationOutput = parseCompilationOutput(fileCompilationOutput);
         return processCompilationOutput(compilationOutput, livestatusfile );
     }
 
-    public static TreeMap<String, SolidityResult> processCompilationOutput(JsonObject compilationOutput, String livestatusfile) throws IOException, InterruptedException {
+    private static TreeMap<String, SolidityResult> processCompilationOutput(JsonObject compilationOutput, String livestatusfile) throws IOException, InterruptedException {
         Set<Map.Entry<String, JsonElement>> entries = compilationOutput.entrySet();
 
         TreeMap<String, SolidityResult> allContractResults = new TreeMap<>();
@@ -105,7 +105,7 @@ public class Main {
             String bin = e.getValue().getAsJsonObject().get("bin-runtime").getAsString();
             String map = e.getValue().getAsJsonObject().get("srcmap-runtime").getAsString();
 
-            List<String> lines = Arrays.asList(bin);
+            List<String> lines = Collections.singletonList(bin);
             File binFile = File.createTempFile("securify_binary_", ".bin.hex");
             binFile.deleteOnExit();
             Files.write(Paths.get(binFile.getPath()), lines);
@@ -213,9 +213,7 @@ public class Main {
             processHexFile(args.filehex, args.decompoutputfile, livestatusfile);
         } else {
             new JCommander(args).usage();
-            return;
         }
-
     }
 
     /**
@@ -317,12 +315,10 @@ public class Main {
             AbstractDataflow dataflow = DataflowFactory.getDataflow(instructions);
             for (AbstractPattern pattern : patterns) {
                 if (pattern instanceof MissingInputValidation) {
-                    if (!methodsDecompiled) {
-                        PatternResult status = contractResult.patternResults.get(MissingInputValidation.class.getSimpleName());
-                        status.completed = true;
-                        status.error = "not supported";
-                        continue;
-                    }
+                    PatternResult status = contractResult.patternResults.get(MissingInputValidation.class.getSimpleName());
+                    status.completed = true;
+                    status.error = "not supported";
+                    continue;
                 }
                 try {
                     checkInstructions(instructions, instructions, pattern, dataflow, livestatusfile);
@@ -381,7 +377,7 @@ public class Main {
             pattern.checkPattern(methodInstructions, contractInstructions, dataflow);
         } catch (Exception e) {
             status.error = e instanceof UnsupportedOperationException ? "not supported" : "analysis failed";
-            log.print(e.getStackTrace());
+            e.printStackTrace();
         }
 
         status.completed = true;

@@ -20,7 +20,7 @@ package ch.securify.model;
 
 import java.util.Map;
 
-public class CompiledContracts {
+class CompiledContracts {
 
 	private Map<String, CompiledContract> contracts;
 	private String[] sourceList;

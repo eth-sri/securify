@@ -34,10 +34,7 @@ public class TODTransfer extends AbstractInstructionPattern {
             return false;
 
         Variable value = instr.getInput()[2];
-        if (value.hasConstantValue() && AbstractDataflow.getInt(value.getConstantValue()) == 0)
-            return false;
-
-        return true;
+        return !value.hasConstantValue() || AbstractDataflow.getInt(value.getConstantValue()) != 0;
     }
 
     @Override
@@ -79,9 +76,7 @@ public class TODTransfer extends AbstractInstructionPattern {
         assert(call instanceof Call);
 
         if (dataflow.instrMayDepOn(call, SLoad.class) == Status.UNSATISFIABLE) {
-            if (dataflow.instrMayDepOn(call, Balance.class) == Status.UNSATISFIABLE) {
-                return true;
-            }
+            return dataflow.instrMayDepOn(call, Balance.class) == Status.UNSATISFIABLE;
         } else {
             for (Instruction jump : methodInstructions) {
                 if (!(jump instanceof JumpI))

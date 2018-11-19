@@ -17,13 +17,7 @@
 
 package ch.securify.patterns;
 
-import org.junit.Test;
-
-import java.io.IOException;
-
-import static org.junit.Assert.assertEquals;
-
-public class TODTransferTest {
+class TODTransferTest {
 
   // TODO: fix
   // @Test

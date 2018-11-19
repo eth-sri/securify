@@ -51,7 +51,7 @@ import java.util.TreeMap;
 public class ConstantPropagation {
 
 
-	public static List<Instruction> propagate(List<Instruction> instructions) {
+	public static void propagate(List<Instruction> instructions) {
 		Queue<Instruction> branchesToProcess = new LinkedList<>();
 		branchesToProcess.add(instructions.get(0));
 		Set<Instruction> processedInstructions = new HashSet<>();
@@ -185,7 +185,6 @@ public class ConstantPropagation {
 					}
 					else if (memOffsetVar.hasConstantValue()) {
 						BigInteger memOffset = BigIntUtil.fromInt256(memOffsetVar.getConstantValue());
-						BigInteger memRangeStart = memOffset;
 						BigInteger memRangeEnd = memLenVar.hasConstantValue() ?
 												 BigIntUtil.fromInt256(memLenVar.getConstantValue()).subtract(memOffset) : null;
 
@@ -193,7 +192,7 @@ public class ConstantPropagation {
 						programState.heap.entrySet().removeIf(entry -> {
 							// TODO: may store new variables with "call" type instead of just wiping the area
 							BigInteger offset = entry.getKey();
-							return (memRangeStart.compareTo(offset) <= 0 && (memRangeEnd == null || offset.compareTo(memRangeEnd) < 0));
+							return (memOffset.compareTo(offset) <= 0 && (memRangeEnd == null || offset.compareTo(memRangeEnd) < 0));
 						});
 					}
 					else {
@@ -443,7 +442,6 @@ public class ConstantPropagation {
 			} while ((instruction = instruction.getNext()) != null);
 		}
 
-		return instructions;
 	}
 
 
@@ -453,22 +451,22 @@ public class ConstantPropagation {
 		/** heap containing variables, byte indexed */
 		private Map<BigInteger, Variable> heap = new TreeMap<>();
 		/** store containing variables, item indexed */
-		private Map<BigInteger, Variable> storage = new TreeMap<>();
+		private final Map<BigInteger, Variable> storage = new TreeMap<>();
 
-		private Set<Variable> heapPollution = new HashSet<>();
-		private Set<Variable> storagePollution = new HashSet<>();
+		private final Set<Variable> heapPollution = new HashSet<>();
+		private final Set<Variable> storagePollution = new HashSet<>();
 
 		/**
 		 * Create new empty program state.
 		 */
-		protected ProgramState() {
+        ProgramState() {
 			// noop
 		}
 
 		/**
 		 * Copy another program state.
 		 */
-		protected ProgramState(ProgramState source) {
+        ProgramState(ProgramState source) {
 			msize = source.msize;
 			heap.putAll(source.heap);
 			storage.putAll(source.storage);
@@ -480,7 +478,7 @@ public class ConstantPropagation {
 		 * Merge another program state into this one, invalidating all conflicting data.
 		 * @param other
 		 */
-		protected void merge(ProgramState other) {
+        void merge(ProgramState other) {
 			// merge heap size, can keep only if both are the same
 			msize = msize.equals(other.msize) ? msize : BigInteger.valueOf(-1);
 			// check for storage mismatch, remove entry on mismatch
@@ -502,7 +500,7 @@ public class ConstantPropagation {
 			storagePollution.addAll(other.storagePollution);
 		}
 
-		protected void updateMsize(BigInteger writeOffset) {
+		void updateMsize(BigInteger writeOffset) {
 			if (msize.signum() == -1) {
 				return;
 			}
@@ -514,16 +512,16 @@ public class ConstantPropagation {
 			}
 		}
 
-		protected void clearMsize() {
+		void clearMsize() {
 			msize = BigInteger.valueOf(-1);
 		}
 
-		protected void polluteMemory(Variable variable) {
+		void polluteMemory(Variable variable) {
 			clearMsize();
 			heapPollution.add(variable);
 		}
 
-		protected void polluteStorage(Variable variable) {
+		void polluteStorage(Variable variable) {
 			storagePollution.add(variable);
 		}
 	}

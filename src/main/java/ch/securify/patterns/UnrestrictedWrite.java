@@ -43,10 +43,7 @@ public class UnrestrictedWrite extends AbstractInstructionPattern {
         if (dataflow.varMayDepOn(instr, instr.getInput()[0], Caller.class) == Status.SATISFIABLE)
             return false;
 
-        if (dataflow.instrMayDepOn(instr, Caller.class) == Status.SATISFIABLE)
-            return false;
-
-        return true;
+        return dataflow.instrMayDepOn(instr, Caller.class) != Status.SATISFIABLE;
     }
 
     @Override

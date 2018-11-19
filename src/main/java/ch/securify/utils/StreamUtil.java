@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class StreamUtil {
+class StreamUtil {
 
 
 	public static <T> Predicate<T> distinctCustom(Function<? super T, ?> property) {

@@ -18,4 +18,4 @@
 
 package ch.securify.analysis;
 
-public class TimeoutException extends RuntimeException {}
+class TimeoutException extends RuntimeException {}

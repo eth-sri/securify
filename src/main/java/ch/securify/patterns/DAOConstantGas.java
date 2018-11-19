@@ -41,10 +41,7 @@ public class DAOConstantGas extends AbstractInstructionPattern {
             return false;
 
         Variable gasVar = instr.getInput()[0];
-        if (dataflow.varMayDepOn(instr, gasVar, Gas.class) == Status.SATISFIABLE)
-            return false;
-
-        return true;
+        return dataflow.varMayDepOn(instr, gasVar, Gas.class) != Status.SATISFIABLE;
     }
 
     @Override

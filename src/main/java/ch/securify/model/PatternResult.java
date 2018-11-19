@@ -27,13 +27,13 @@ public class PatternResult {
 
     public boolean hasViolations;
     public boolean hasWarnings;
-    public boolean hasSafe;
-    public boolean hasConflicts;
+    private boolean hasSafe;
+    private boolean hasConflicts;
 
-    public List<Integer> violations = new ArrayList<>();
-    public List<Integer> warnings = new ArrayList<>();
-    public List<Integer> safe = new ArrayList<>();
-    public List<Integer> conflicts = new ArrayList<>();
+    public final List<Integer> violations = new ArrayList<>();
+    public final List<Integer> warnings = new ArrayList<>();
+    public final List<Integer> safe = new ArrayList<>();
+    private final List<Integer> conflicts = new ArrayList<>();
 
     public void addViolation(Integer id) {
         violations.add(id);

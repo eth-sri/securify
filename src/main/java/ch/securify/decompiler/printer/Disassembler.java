@@ -23,7 +23,7 @@ import ch.securify.decompiler.EvmParser;
 
 import java.io.PrintStream;
 
-public class Disassembler {
+class Disassembler {
 
 
 	/**
@@ -40,7 +40,7 @@ public class Disassembler {
 	 * @param bytecode EVM bytecode.
 	 * @param outputStream Stream to print the output to.
 	 */
-	public static void disassemble(byte[] bytecode, PrintStream outputStream) {
+	private static void disassemble(byte[] bytecode, PrintStream outputStream) {
 		outputStream.println("-- START");
 		EvmParser.parse(bytecode, new EvmParser.OnOperationParsedCallback() {
 			int tag = 1;

@@ -36,11 +36,9 @@ public class Call extends Instruction implements _TypeInstruction {
 		Variable toAddrVar = getInput()[1];
 		if (toAddrVar.hasConstantValue()) {
 			BigInteger toAddr = BigIntUtil.fromInt256(toAddrVar.getConstantValue());
-			if (toAddr.equals(BigInteger.valueOf(1)) || toAddr.equals(BigInteger.valueOf(2)) ||
-					toAddr.equals(BigInteger.valueOf(3)) || toAddr.equals(BigInteger.valueOf(4))) {
-				// is call to built-in contract
-				return true;
-			}
+			// is call to built-in contract
+			return toAddr.equals(BigInteger.valueOf(1)) || toAddr.equals(BigInteger.valueOf(2)) ||
+					toAddr.equals(BigInteger.valueOf(3)) || toAddr.equals(BigInteger.valueOf(4));
 		}
 		return false;
 	}

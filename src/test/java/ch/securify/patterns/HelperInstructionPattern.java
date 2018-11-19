@@ -22,7 +22,7 @@ import ch.securify.decompiler.instructions.Instruction;
 import java.io.IOException;
 import java.util.List;
 
-public class HelperInstructionPattern {
+class HelperInstructionPattern {
     AbstractPattern pattern;
 
     public HelperInstructionPattern(String hexFilename, AbstractInstructionPattern pattern) throws IOException {

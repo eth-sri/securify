@@ -34,10 +34,7 @@ public class TODAmount extends AbstractInstructionPattern {
             return false;
 
         Variable value = instr.getInput()[2];
-        if (value.hasConstantValue() && AbstractDataflow.getInt(value.getConstantValue()) == 0)
-            return false;
-
-        return true;
+        return !value.hasConstantValue() || AbstractDataflow.getInt(value.getConstantValue()) != 0;
     }
 
     @Override
@@ -62,10 +59,8 @@ public class TODAmount extends AbstractInstructionPattern {
                 // TODO: Check if the SLOAD instruction loads a constant offset and that there is an SSTORE with this offset
                 //return true;
             }
-            if (dataflow.varMustDepOn(instr, amount, Balance.class) == Status.SATISFIABLE) {
-                // TODO: Assumes balance is not constant across transactions
-                return true;
-            }
+            // TODO: Assumes balance is not constant across transactions
+            return dataflow.varMustDepOn(instr, amount, Balance.class) == Status.SATISFIABLE;
         }
         return false;
     }

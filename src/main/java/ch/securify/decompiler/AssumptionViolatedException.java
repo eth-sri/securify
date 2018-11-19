@@ -21,7 +21,7 @@ package ch.securify.decompiler;
 /**
  * An assumption made by the decompiler regarding the EVM bytecode has been violated.
  */
-public class AssumptionViolatedException extends IllegalArgumentException {
+class AssumptionViolatedException extends IllegalArgumentException {
 
 	public AssumptionViolatedException(String message) {
 		super(message);

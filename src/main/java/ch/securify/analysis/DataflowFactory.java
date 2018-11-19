@@ -21,7 +21,6 @@ package ch.securify.analysis;
 import ch.securify.decompiler.instructions.Instruction;
 import com.google.common.base.Strings;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +30,7 @@ public class DataflowFactory {
 
 	private static Function<List<Instruction>, AbstractDataflow> dataflowGenerator;
 
-	private static Map<String, Function<List<Instruction>, AbstractDataflow>> dataflowGenerators = new HashMap<>();
+	private static final Map<String, Function<List<Instruction>, AbstractDataflow>> dataflowGenerators = new HashMap<>();
 	static {
 		// Default dataflow
 		dataflowGenerators.put("default", Dataflow::new);
@@ -39,7 +38,7 @@ public class DataflowFactory {
 		setDataflowInstanceClass(null);
 	}
 
-	public static void setDataflowInstanceClass(String dataflowClass) {
+	private static void setDataflowInstanceClass(String dataflowClass) {
 		if (Strings.isNullOrEmpty(dataflowClass)) {
 			dataflowGenerator = dataflowGenerators.get("default");
 		}

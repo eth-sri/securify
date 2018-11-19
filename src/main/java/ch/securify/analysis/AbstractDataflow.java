@@ -39,43 +39,45 @@ public abstract class AbstractDataflow {
     abstract public int mayFollow(Instruction instr1, Instruction instr2);
     abstract public int instrMayDepOn(Instruction instr, Object type);
     abstract public int varMayDepOn(Instruction instr1, Variable lhs, Object type);
-    abstract public int memoryMayDepOn(Instruction instr1, int offset, Object type);
-    abstract public int memoryMayDepOn(Instruction instr, Object type);
+    protected abstract int memoryMayDepOn(Instruction instr1, int offset, Object type);
+    protected abstract int memoryMayDepOn(Instruction instr, Object type);
     abstract public int mustPrecede(Instruction instr1, Instruction instr2);
     abstract public int varMustDepOn(Instruction instr1, Variable lhs, Object type);
-    abstract public int memoryMustDepOn(Instruction instr1, int offset, Object type);
+    protected abstract int memoryMustDepOn(Instruction instr1, int offset, Object type);
 
     abstract protected void deriveFollowsPredicates();
     abstract protected void deriveIfPredicates();
     abstract protected void createSLoadRule(Instruction instr, Variable index, Variable var);
     abstract protected void createMLoadRule(Instruction instr, Variable offset, Variable var);
 
-    protected List<Instruction> instructions;
+    List<Instruction> instructions;
 
-    protected BiMap<Variable, Integer> varToCode;
-    protected BiMap<Instruction, Integer> instrToCode;
-    protected BiMap<Class, Integer> typeToCode;
-    protected BiMap<Integer, Integer> constToCode;
+    private BiMap<Variable, Integer> varToCode;
+    private BiMap<Instruction, Integer> instrToCode;
+    private BiMap<Class, Integer> typeToCode;
+    private BiMap<Integer, Integer> constToCode;
 
-    protected BiMap<Integer, Variable> offsetToStorageVar;
-    protected BiMap<Integer, Variable> offsetToMemoryVar;
-    protected BiMap<String, StringBuffer> ruleToSB;
-    protected Map<String, Set<Long>> fixedpoint;
+    private BiMap<Integer, Variable> offsetToStorageVar;
+    private BiMap<Integer, Variable> offsetToMemoryVar;
+    private BiMap<String, StringBuffer> ruleToSB;
+    private Map<String, Set<Long>> fixedpoint;
 
-    protected int bvCounter = 0; // reserve first 100 for types
+    private int bvCounter = 0; // reserve first 100 for types
 
-    public int unk;
+    int unk;
 
-    protected final boolean DEBUG = false;
+    private final boolean DEBUG = false;
 
     // input predicates
 
-    protected String WORKSPACE, WORKSPACE_OUT;
-    protected final String SOUFFLE_COMPILE_FLAG = "-c", SOUFFLE_BIN = "souffle";
-    protected String SOUFFLE_RULES;
-    protected final String TIMEOUT_COMMAND = System.getProperty("os.name").toLowerCase().startsWith("mac") ? "gtimeout" : "timeout";
+    private String WORKSPACE;
+    private String WORKSPACE_OUT;
+    private final String SOUFFLE_COMPILE_FLAG = "-c";
+    private final String SOUFFLE_BIN = "souffle";
+    String SOUFFLE_RULES;
+    private final String TIMEOUT_COMMAND = System.getProperty("os.name").toLowerCase().startsWith("mac") ? "gtimeout" : "timeout";
 
-    protected boolean isSouffleInstalled() {
+    private boolean isSouffleInstalled() {
         try {
             Process process = new ProcessBuilder(SOUFFLE_BIN).start();
             process.waitFor();
@@ -86,7 +88,7 @@ public abstract class AbstractDataflow {
         }
     }
 
-    protected void initDataflow() throws IOException, InterruptedException {
+    void initDataflow() throws IOException, InterruptedException {
         if(! isSouffleInstalled()){
             System.err.println("Soufflé does not seem to be installed.");
             System.exit(7);
@@ -166,14 +168,12 @@ public abstract class AbstractDataflow {
 
     public static int getInt(byte[] data) {
         byte[] bytes = new byte[4];
-        for (int i = 0; i < Math.min(data.length, 4); ++i) {
-            bytes[i + 4 - Math.min(data.length, 4)] = data[i];
-        }
+        System.arraycopy(data, 0, bytes, 4 - Math.min(data.length, 4), Math.min(data.length, 4));
         ByteBuffer bb = ByteBuffer.wrap(bytes);
         return bb.getInt();
     }
 
-    protected static long Encode(CSVRecord record) {
+    private static long Encode(CSVRecord record) {
         assert(record.size() <= 3);
         long entry = 0;
         for (int i = 0; i < record.size(); i++) {
@@ -185,18 +185,18 @@ public abstract class AbstractDataflow {
         return entry;
     }
 
-    protected static long Encode(Integer... args) {
+    private static long Encode(Integer... args) {
         assert(args.length <= 3);
         long entry = 0;
-        for (int i = 0; i < args.length; i++) {
+        for (Integer arg : args) {
             entry *= 80000;
-            entry += (long)args[i];
+            entry += (long) arg;
         }
         assert(entry >= 0);
         return entry;
     }
 
-    protected void createProgramRulesFile() {
+    private void createProgramRulesFile() {
         for (String rule : ruleToSB.keySet()) {
             BufferedWriter bwr;
             try {
@@ -214,12 +214,12 @@ public abstract class AbstractDataflow {
         runCommand("rm -r " + WORKSPACE_OUT);
     }
 
-    protected void readFixedpoint(String ruleName) throws IOException {
+    private void readFixedpoint(String ruleName) throws IOException {
 
         Reader in = new FileReader(WORKSPACE_OUT + "/" + ruleName + ".csv");
         /* Tab-delimited format */
         Iterable<CSVRecord> records = CSVFormat.TDF.parse(in);
-        Set<Long> entries = new HashSet<Long>(100000000);
+        Set<Long> entries = new HashSet<>(100000000);
 
         long count = 0;
         for (CSVRecord record : records) {
@@ -230,7 +230,7 @@ public abstract class AbstractDataflow {
         fixedpoint.put(ruleName, entries);
     }
 
-    protected int runQuery(String ruleName, Integer... args) {
+    int runQuery(String ruleName, Integer... args) {
         try {
             if (!fixedpoint.containsKey(ruleName)) {
                 readFixedpoint(ruleName);
@@ -249,7 +249,7 @@ public abstract class AbstractDataflow {
         }
     }
 
-    protected String runCommand(String command) throws IOException, InterruptedException {
+    private void runCommand(String command) throws IOException, InterruptedException {
         Process proc;
         String result = "";
         log("CMD: " + command);
@@ -285,7 +285,6 @@ public abstract class AbstractDataflow {
         if (proc.exitValue() != 0) {
             throw new IOException();
         }
-        return result;
     }
 
     public Variable getStorageVarForIndex(int index) {
@@ -298,7 +297,7 @@ public abstract class AbstractDataflow {
         return offsetToStorageVar.get(index);
     }
 
-    protected Variable getMemoryVarForIndex(int index) {
+    Variable getMemoryVarForIndex(int index) {
         if (!offsetToMemoryVar.containsKey(index)) {
             Variable newVar = new Variable();
             offsetToMemoryVar.put(index, newVar);
@@ -307,12 +306,12 @@ public abstract class AbstractDataflow {
         return offsetToMemoryVar.get(index);
     }
 
-    protected void log(String msg) {
+    void log(String msg) {
         if (DEBUG)
             System.out.println(this.getClass().getSimpleName() + ": " + msg);
     }
 
-    protected void createMStoreRule(Instruction instr, Variable offset, Variable var) {
+    private void createMStoreRule(Instruction instr, Variable offset, Variable var) {
         int offsetCode;
         if (offset.hasConstantValue()) {
             log("Offset " + offset + ", int offset " + getInt(offset.getConstantValue()) + "memory var " + getMemoryVarForIndex(getInt(offset.getConstantValue())) + ", code " + getCode(getMemoryVarForIndex(getInt(offset.getConstantValue()))));
@@ -324,7 +323,7 @@ public abstract class AbstractDataflow {
         appendRule("mstore", getCode(instr), offsetCode, getCode(var));
     }
 
-    protected void createSStoreRule(Instruction instr, Variable index, Variable var) {
+    private void createSStoreRule(Instruction instr, Variable index, Variable var) {
         int indexCode;
         if (index.hasConstantValue()) {
             indexCode = getCode(getStorageVarForIndex(getInt(index.getConstantValue())));
@@ -334,23 +333,23 @@ public abstract class AbstractDataflow {
         appendRule("sstore", getCode(instr), indexCode, getCode(var));
     }
 
-    protected void createAssignVarRule(Instruction instr, Variable output, Variable input) {
+    void createAssignVarRule(Instruction instr, Variable output, Variable input) {
         appendRule("assignVar", getCode(instr), getCode(output), getCode(input));
     }
 
-    protected void createAssignTypeRule(Instruction instr, Variable var, Class type) {
+    private void createAssignTypeRule(Instruction instr, Variable var, Class type) {
         appendRule("assignType", getCode(instr), getCode(var), getCode(type));
     }
 
-    protected void createAssignTopRule(Instruction instr, Variable var) {
+    private void createAssignTopRule(Instruction instr, Variable var) {
         appendRule("assignType", getCode(instr), getCode(var), unk);
     }
 
-    protected void createEndIfRule(Instruction start, Instruction end) {
+    void createEndIfRule(Instruction start, Instruction end) {
         appendRule("endIf", getCode(start), getCode(end));
     }
 
-    protected void appendRule(String ruleName, Object... args) {
+    void appendRule(String ruleName, Object... args) {
         StringBuffer sb;
         if (ruleToSB.containsKey(ruleName)) {
             sb = ruleToSB.get(ruleName);
@@ -365,7 +364,7 @@ public abstract class AbstractDataflow {
         sb.append("\n");
     }
 
-    protected int getFreshCode() {
+    private int getFreshCode() {
         if (bvCounter == Integer.MAX_VALUE) {
             throw new RuntimeException("Integer overflow.");
         }
@@ -374,31 +373,31 @@ public abstract class AbstractDataflow {
         return freshCode;
     }
 
-    protected int getCode(Variable var) {
+    int getCode(Variable var) {
         if (!varToCode.containsKey(var))
             varToCode.put(var, getFreshCode());
         return varToCode.get(var);
     }
 
-    protected int getCode(Instruction instr) {
+    int getCode(Instruction instr) {
         if (!instrToCode.containsKey(instr))
             instrToCode.put(instr, getFreshCode());
         return instrToCode.get(instr);
     }
 
-    protected int getCode(Class instructionClass) {
+    private int getCode(Class instructionClass) {
         if (!typeToCode.containsKey(instructionClass))
             typeToCode.put(instructionClass, getFreshCode());
         return typeToCode.get(instructionClass);
     }
 
-    protected int getCode(Integer constVal) {
+    int getCode(Integer constVal) {
         if (!constToCode.containsKey(constVal))
             constToCode.put(constVal, getFreshCode());
         return constToCode.get(constVal);
     }
 
-    protected int getCode(Object o) {
+    int getCode(Object o) {
         if (o instanceof Instruction) {
             return getCode((Instruction) o);
         } else if (o instanceof Class) {
@@ -412,7 +411,7 @@ public abstract class AbstractDataflow {
         }
     }
 
-    protected void deriveAssignTypePredicates() {
+    private void deriveAssignTypePredicates() {
         log(">> Derive AssignType predicates <<");
         for (Instruction instr : instructions) {
             if (instr instanceof Push
@@ -474,7 +473,7 @@ public abstract class AbstractDataflow {
         }
     }
 
-    protected void deriveHeapPredicates() {
+    private void deriveHeapPredicates() {
         log(">> Derive MStore and MLoad predicates <<");
         for (Instruction instr : instructions) {
             if (instr instanceof MStore || instr instanceof MStore8) {
@@ -493,7 +492,7 @@ public abstract class AbstractDataflow {
     }
 
 
-    protected void deriveStorePredicates() {
+    private void deriveStorePredicates() {
         log(">> Derive SStore and SLoad predicates <<");
         for (Instruction instr : instructions) {
             if (instr instanceof SStore) {
@@ -512,7 +511,7 @@ public abstract class AbstractDataflow {
     }
 
 
-    protected void deriveAssignVarPredicates() {
+    private void deriveAssignVarPredicates() {
         log(">> Derive assign predicates <<");
         for (Instruction instr : instructions) {
             log(instr.getStringRepresentation());

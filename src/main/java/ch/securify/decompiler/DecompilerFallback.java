@@ -76,7 +76,7 @@ public class DecompilerFallback extends AbstractDecompiler {
 		/* Map bytecode offsets of JUMP/JUMPI instructions to known bytecode offsets of JUMPDEST instructions.
 		 * These are the edges of the control flow graph the correspond to explicit jumps.
 		 * assumption: there are no dynamic jumps that may have multiple jump targets. */
-		Multimap<Integer, Integer> mapJumpsToDests = HashMultimap.create();;
+		Multimap<Integer, Integer> mapJumpsToDests = HashMultimap.create();
 
 		Multimap<Integer, Integer> controlFlowGraph = dectectControlFlow(log, rawInstructions, jumpDestinations, tags,
 				controlFlowDetector, mapJumpsToDests);

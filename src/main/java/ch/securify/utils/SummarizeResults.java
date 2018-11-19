@@ -35,16 +35,16 @@ import com.google.gson.stream.JsonReader;
 
 import ch.securify.model.ContractResult;
 
-public class SummarizeResults {
+class SummarizeResults {
 
-    private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-    private static Map<String, Integer> totalNumViolations = new HashMap<>();
-    private static Map<String, Integer> totalNumWarnings = new HashMap<>();
-    private static Map<String, Integer> totalNumCompliant = new HashMap<>();
+    private static final Map<String, Integer> totalNumViolations = new HashMap<>();
+    private static final Map<String, Integer> totalNumWarnings = new HashMap<>();
+    private static final Map<String, Integer> totalNumCompliant = new HashMap<>();
 
-    private static Map<String, Integer> numContractsWithViolation = new HashMap<>();
-    private static Map<String, Integer> numContractsCompliant = new HashMap<>();
+    private static final Map<String, Integer> numContractsWithViolation = new HashMap<>();
+    private static final Map<String, Integer> numContractsCompliant = new HashMap<>();
 
     private static String percentage(int n1, int n2) {
         return String.format("%3.1f", ((float) n1) * 100 / n2);
@@ -94,10 +94,6 @@ public class SummarizeResults {
         } catch (com.google.gson.JsonSyntaxException e) {
             System.out.println("JSON exception");
             return;
-        } finally {
-            if (results == null) {
-                return;
-            }
         }
 
         /* Count contracts */
@@ -123,15 +119,15 @@ public class SummarizeResults {
 
                     /* Update total number of violations, compliances and warnings */
                     int old = totalNumViolations.getOrDefault(key, 0);
-                    int n = (new HashSet<Integer>(result.patternResults.get(key).violations)).size();
+                    int n = (new HashSet<>(result.patternResults.get(key).violations)).size();
                     totalNumViolations.put(key, old + n);
 
                     old = totalNumWarnings.getOrDefault(key, 0);
-                    n = (new HashSet<Integer>(result.patternResults.get(key).warnings)).size();
+                    n = (new HashSet<>(result.patternResults.get(key).warnings)).size();
                     totalNumWarnings.put(key, old + n);
 
                     old = totalNumCompliant.getOrDefault(key, 0);
-                    n = (new HashSet<Integer>(result.patternResults.get(key).safe)).size();
+                    n = (new HashSet<>(result.patternResults.get(key).safe)).size();
                     totalNumCompliant.put(key, old + n);
 
                     // The contract contains at least one violation

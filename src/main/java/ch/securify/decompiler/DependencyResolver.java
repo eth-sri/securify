@@ -32,7 +32,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.stream.Stream;
 
-public class DependencyResolver {
+class DependencyResolver {
 
 
 	/**
@@ -49,7 +49,7 @@ public class DependencyResolver {
 	 * Create a dependency graph for the instructions.
 	 * @param instructions
 	 */
-	public static void resolveDependencies(List<Instruction> instructions, boolean ignoreUnresolved) {
+	private static void resolveDependencies(List<Instruction> instructions, boolean ignoreUnresolved) {
 		instructions.forEach(instruction -> {
 					// determine dependencies for this instruction
 					Stream.concat(Arrays.stream(instruction.getInput()), instruction.getMemoryInputs().stream())

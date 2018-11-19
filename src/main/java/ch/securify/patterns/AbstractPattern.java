@@ -28,16 +28,16 @@ import java.util.List;
 public abstract class AbstractPattern {
 
     // Instructions that violate the pattern
-    Collection<Instruction> violations = new LinkedList<Instruction>();
+    final Collection<Instruction> violations = new LinkedList<>();
 
     // Instruction that MAY violate the pattern (warnings)
-    Collection<Instruction> warnings = new LinkedList<Instruction>();
+    final Collection<Instruction> warnings = new LinkedList<>();
 
     // Instructions that do NOT violate the pattern (safe uses)
-    Collection<Instruction> safe = new LinkedList<Instruction>();
+    final Collection<Instruction> safe = new LinkedList<>();
 
     // Instructions that have conflicting pattern result (safe and violation)
-    Collection<Instruction> conflicts = new LinkedList<Instruction>();
+    private final Collection<Instruction> conflicts = new LinkedList<>();
 
     /**
      * @param instructions : instructions to be checked
@@ -74,19 +74,19 @@ public abstract class AbstractPattern {
         return conflicts;
     }
 
-    protected void addViolation(Instruction instr) {
+    void addViolation(Instruction instr) {
         violations.add(instr);
     }
 
-    protected void addWarning(Instruction instr) {
+    void addWarning(Instruction instr) {
         warnings.add(instr);
     }
 
-    protected void addSafe(Instruction instr) {
+    void addSafe(Instruction instr) {
         safe.add(instr);
     }
 
-    protected void addConflict(Instruction instr) {
+    void addConflict(Instruction instr) {
         conflicts.add(instr);
     }
 

@@ -42,7 +42,7 @@ import java.util.Stack;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-public class ControlFlowDetector {
+class ControlFlowDetector {
 
 
 	private static final byte[] DUMMY_DATA = new byte[0];
@@ -430,8 +430,8 @@ public class ControlFlowDetector {
 	 * @param jumpdest bytecode offset.
 	 * @return
 	 */
-	public static boolean isVirtualJumpDest(int jumpdest) {
-		return jumpdest < 0;
+	public static boolean isRealJumpDest(int jumpdest) {
+		return jumpdest >= 0;
 	}
 
 
@@ -451,7 +451,7 @@ public class ControlFlowDetector {
 
 		@Override
 		public boolean equals(Object obj) {
-			if (obj == null || !(obj instanceof RichBranch))
+			if (!(obj instanceof RichBranch))
 				return false;
 			RichBranch other = (RichBranch) obj;
 			return jumpDest == other.jumpDest && stackState.equals(other.stackState);

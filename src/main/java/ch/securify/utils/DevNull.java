@@ -20,7 +20,7 @@ package ch.securify.utils;
 
 import java.io.OutputStream;
 
-public class DevNull extends OutputStream {
+class DevNull extends OutputStream {
 
 	@Override
 	public void write(int b) {

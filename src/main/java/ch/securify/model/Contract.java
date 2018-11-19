@@ -18,7 +18,7 @@
 
 package ch.securify.model;
 
-public class Contract {
+class Contract {
 
 	private String contractAddress;
 	//private String init;

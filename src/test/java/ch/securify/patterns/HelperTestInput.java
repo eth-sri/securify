@@ -26,7 +26,7 @@ import ch.securify.decompiler.instructions.Instruction;
 import java.io.IOException;
 import java.util.List;
 
-public class HelperTestInput {
+class HelperTestInput {
     List<Instruction> instructions;
     List<List<Instruction>> methodBodies;
     AbstractDataflow dataflow;

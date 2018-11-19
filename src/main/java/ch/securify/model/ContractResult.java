@@ -24,7 +24,7 @@ import java.util.TreeMap;
 public class ContractResult {
 
 	public boolean decompiled = false;
-	public String error = null;
+	public final String error = null;
 	public boolean finished = false;
 	public final Map<String, PatternResult> patternResults = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 

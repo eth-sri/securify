@@ -84,7 +84,7 @@ public class Decompiler extends AbstractDecompiler {
 		/* Map bytecode offsets of JUMP/JUMPI instructions to known bytecode offsets of JUMPDEST instructions.
 		 * These are the edges of the control flow graph the correspond to explicit jumps.
 		 * assumption: there are no dynamic jumps that may have multiple jump targets. */
-		Multimap<Integer, Integer> mapJumpsToDests = HashMultimap.create();;
+		Multimap<Integer, Integer> mapJumpsToDests = HashMultimap.create();
 
 		Multimap<Integer, Integer> controlFlowGraph = dectectControlFlow(log, rawInstructions, jumpDestinations, tags,
 				controlFlowDetector, mapJumpsToDests);
@@ -273,11 +273,9 @@ public class Decompiler extends AbstractDecompiler {
 
 		// print method signatures
 		log.println("Method signatures:");
-		methodHeads.forEach(methodHead -> {
-			log.println(tags.get(methodHead)
-					+ " (" + String.join(",", Collections.nCopies(methodDetector.getArgumentCountForMethod(methodHead), "a")) + ")"
-					+ " -> (" + String.join(",", Collections.nCopies(methodDetector.getReturnVarCountForMethod(methodHead), "r")) + ")");
-		});
+		methodHeads.forEach(methodHead -> log.println(tags.get(methodHead)
+				+ " (" + String.join(",", Collections.nCopies(methodDetector.getArgumentCountForMethod(methodHead), "a")) + ")"
+				+ " -> (" + String.join(",", Collections.nCopies(methodDetector.getReturnVarCountForMethod(methodHead), "r")) + ")"));
 
 
 		// Decompile the whole thing
@@ -387,8 +385,7 @@ public class Decompiler extends AbstractDecompiler {
 	 */
 	private static Integer findBeginOfMethodForBranch(Integer abiMethodBranch,
 			Multimap<Integer, Integer> cfg, Collection<Integer> methodHeads) {
-		Queue<Integer> bfsQueue = new LinkedList<>();
-		bfsQueue.addAll(cfg.get(abiMethodBranch));
+		Queue<Integer> bfsQueue = new LinkedList<>(cfg.get(abiMethodBranch));
 
 		int variant = 256;
 		while (!bfsQueue.isEmpty() && variant --> 0) {

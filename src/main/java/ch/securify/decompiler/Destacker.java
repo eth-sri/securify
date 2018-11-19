@@ -60,14 +60,13 @@ import static ch.securify.utils.ArrayUtil.nextNonNullItem;
 import static ch.securify.utils.ArrayUtil.prevNonNullIndex;
 import static ch.securify.utils.ArrayUtil.prevNonNullItem;
 
-public class Destacker {
+class Destacker {
 
 	private PrintStream log;
 
 	private RawInstruction[] rawInstructions;
 	private Multimap<Integer, Integer> jumps;
 	private Multimap<Integer, Integer> jumpsInv;
-	private Multimap<Integer, Integer> controlFlowGraph;
 	private InstructionFactory instructionFactory;
 	private Collection<Integer> methodHeads;
 	private MethodDetector methodDetector;
@@ -82,7 +81,7 @@ public class Destacker {
 
 	public boolean sawMergeWithDiffStackSize = false;
 
-	private static boolean DEBUG = false;
+	private static final boolean DEBUG = false;
 
 	/**
 	 * Decompile the bytecode.
@@ -100,7 +99,7 @@ public class Destacker {
 
 		this.rawInstructions = rawInstructions;
 		this.jumps = jumps;
-		this.controlFlowGraph = controlFlowGraph;
+		Multimap<Integer, Integer> controlFlowGraph1 = controlFlowGraph;
 		this.instructionFactory = instructionFactory;
 		this.methodHeads = methodDetector.getMethods().keySet();
 		this.methodDetector = methodDetector;
@@ -236,7 +235,7 @@ public class Destacker {
 						throw new AssumptionViolatedException("Non-return jump has multiple possible targets");
 					}
 					int jumpdest = jumps.get(pc).iterator().next();
-					if (!ControlFlowDetector.isVirtualJumpDest(jumpdest)) {
+					if (ControlFlowDetector.isRealJumpDest(jumpdest)) {
 						if (instructions[jumpdest] == null) {
 							Stack<Variable> branchedStack = StackUtil.copyStack(evmStack);
 							ensureUniqueCanonicalStack(pc, jumpdest, branchedStack);
@@ -256,7 +255,7 @@ public class Destacker {
 					throw new AssumptionViolatedException("conditional jump @" + toHex(pc) + " has multiple jump targets");
 				}
 				int jumpdest = jumps.get(pc).iterator().next();
-				if (!ControlFlowDetector.isVirtualJumpDest(jumpdest)) {
+				if (ControlFlowDetector.isRealJumpDest(jumpdest)) {
 					if (instructions[jumpdest] == null) {
 						Stack<Variable> branchedStack = StackUtil.copyStack(evmStack);
 						ensureUniqueCanonicalStack(pc, jumpdest, branchedStack);
@@ -267,8 +266,6 @@ public class Destacker {
 						handleStackMerging(evmStack, pc, jumpdest);
 					}
 				}
-				// continue on current branch
-				continue;
 			}
 			else if (opcode == OpCodes.STOP || opcode == OpCodes.RETURN || opcode == OpCodes.REVERT || opcode == OpCodes.SELFDESTRUCT || OpCodes.isInvalid(opcode)) {
 				// end of execution
@@ -621,7 +618,7 @@ public class Destacker {
 	 * @param methodBco method bytecode offset.
 	 * @return array of argument Variables.
 	 */
-	public Variable[] getArgumentsForMethod(int methodBco) {
+	private Variable[] getArgumentsForMethod(int methodBco) {
 		return argumentsForMethod.get(methodBco);
 	}
 
@@ -631,7 +628,7 @@ public class Destacker {
 	 * @param methodBco method bytecode offset.
 	 * @return array of return Variables.
 	 */
-	public Variable[] getReturnVarsForMethod(int methodBco) {
+	private Variable[] getReturnVarsForMethod(int methodBco) {
 		return returnVarsForMethod.get(methodBco);
 	}
 
@@ -641,7 +638,7 @@ public class Destacker {
 	 * @param jumpBco bytecode offset of the jump instruction representing the method call.
 	 * @return array of argument Variables.
 	 */
-	public Variable[] getArgumentsForMethodCall(int jumpBco) {
+	private Variable[] getArgumentsForMethodCall(int jumpBco) {
 		return argumentsForMethodCall.get(jumpBco);
 	}
 
@@ -651,7 +648,7 @@ public class Destacker {
 	 * @param jumpBco bytecode offset of the jump instruction representing the method call.
 	 * @return array of return Variables.
 	 */
-	public Variable[] getReturnVarsForMethodCall(int jumpBco) {
+	private Variable[] getReturnVarsForMethodCall(int jumpBco) {
 		return returnVarsForMethodCall.get(jumpBco);
 	}
 

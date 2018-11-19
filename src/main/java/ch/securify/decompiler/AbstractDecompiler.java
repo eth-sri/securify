@@ -39,7 +39,7 @@ import ch.securify.decompiler.instructions.Push;
 import ch.securify.decompiler.instructions._VirtualAssignment;
 import ch.securify.decompiler.printer.HexPrinter;
 
-public class AbstractDecompiler {
+class AbstractDecompiler {
 
 	private static boolean removeInstruction(Instruction instruction) {
 		if (instruction.getPrev() == null || instruction.getNext() == null)
@@ -56,31 +56,28 @@ public class AbstractDecompiler {
 			Set<Instruction> dependencies = new HashSet<>();
 			decompiledInstructions.forEach(instruction -> dependencies.addAll(instruction.getDependencies()));
 
-			removedSomething = decompiledInstructions.removeIf(new Predicate<Instruction>() {
-				public boolean test(Instruction instruction) {
-					if (dependencies.contains(instruction)) {
-						return false; // keep used instructions
-					}
-					if (instruction instanceof Push) {
-						return removeInstruction(instruction); // remove unused pushed variables
-					}
-					if (instruction instanceof _VirtualAssignment) {
-						return removeInstruction(instruction); // remove unused reassignments
-					}
-					if (instruction.getOutput().length >= 1 && instruction.getRawInstruction() != null) {
-						int opcode = instruction.getRawInstruction().opcode;
-						if ((OpCodes.ADD <= opcode && opcode <= OpCodes.BYTE)) {
-							return removeInstruction(instruction); // remove unused arithmetic instructions
-						}
-					}
-					return false; // keep the rest
+			removedSomething = decompiledInstructions.removeIf(instruction -> {
+				if (dependencies.contains(instruction)) {
+					return false; // keep used instructions
 				}
-
+				if (instruction instanceof Push) {
+					return removeInstruction(instruction); // remove unused pushed variables
+				}
+				if (instruction instanceof _VirtualAssignment) {
+					return removeInstruction(instruction); // remove unused reassignments
+				}
+				if (instruction.getOutput().length >= 1 && instruction.getRawInstruction() != null) {
+					int opcode = instruction.getRawInstruction().opcode;
+					if ((OpCodes.ADD <= opcode && opcode <= OpCodes.BYTE)) {
+						return removeInstruction(instruction); // remove unused arithmetic instructions
+					}
+				}
+				return false; // keep the rest
 			});
 		} while (removedSomething);
 	}
 
-	protected static BiMap<Integer, String> findTags(final PrintStream log, List<Integer> jumpDestinations) {
+	static BiMap<Integer, String> findTags(final PrintStream log, List<Integer> jumpDestinations) {
 		// print tags (jumpdests)
 		log.println();
 		log.println("Tags:");
@@ -100,7 +97,7 @@ public class AbstractDecompiler {
 		return tags;
 	}
 
-	protected static void parseRawInstructions(final byte[] bytecode, RawInstruction[] rawInstructions, List<Integer> jumpDestinations) {
+	static void parseRawInstructions(final byte[] bytecode, RawInstruction[] rawInstructions, List<Integer> jumpDestinations) {
 		rawInstructions[rawInstructions.length - 1] =
 				new RawInstruction(OpCodes.getInvalid(), null, rawInstructions.length - 1, -1);
 
@@ -113,8 +110,8 @@ public class AbstractDecompiler {
 		});
 	}
 
-	protected static Multimap<Integer, Integer> dectectControlFlow(final PrintStream log, RawInstruction[] rawInstructions, List<Integer> jumpDestinations, BiMap<Integer, String> tags, ControlFlowDetector controlFlowDetector,
-			Multimap<Integer, Integer> mapJumpsToDests) {
+	static Multimap<Integer, Integer> dectectControlFlow(final PrintStream log, RawInstruction[] rawInstructions, List<Integer> jumpDestinations, BiMap<Integer, String> tags, ControlFlowDetector controlFlowDetector,
+														 Multimap<Integer, Integer> mapJumpsToDests) {
 				// scan for branches, generate a control flow graph
 				log.println();
 				log.println("Control Flow (Branches):");
@@ -194,7 +191,7 @@ public class AbstractDecompiler {
 	 * @param instruction Instruction instance of which we scan through the dependencies.
 	 * @return 4-byte ABI method ID.
 	 */
-	protected static byte[] findMethodId(Instruction instruction, int recursionDepth) {
+	static byte[] findMethodId(Instruction instruction, int recursionDepth) {
 		for (Instruction dependencyInstr : instruction.getDependencies()) {
 			// assume all 4-byte pushes are method IDs
 			if (dependencyInstr instanceof Push && ((Push)dependencyInstr).getData().length == 4) {

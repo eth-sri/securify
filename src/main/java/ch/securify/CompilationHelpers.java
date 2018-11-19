@@ -20,10 +20,10 @@ import static java.util.Collections.reverse;
 
 class SmallPatternResult {
     private String name;
-    private TreeSet<Integer> violations;
-    private TreeSet<Integer> warnings;
-    private TreeSet<Integer> safe;
-    private TreeSet<Integer> conflicts;
+    private final TreeSet<Integer> violations;
+    private final TreeSet<Integer> warnings;
+    private final TreeSet<Integer> safe;
+    private final TreeSet<Integer> conflicts;
 
     SmallPatternResult(TreeSet<Integer> violations, TreeSet<Integer> warnings, TreeSet<Integer> safe, TreeSet<Integer> conflicts) {
         this.violations = violations;
@@ -34,7 +34,7 @@ class SmallPatternResult {
 }
 
 class MappingNotFoundException extends RuntimeException {
-    RuntimeException baseException;
+    private RuntimeException baseException;
 
     public MappingNotFoundException(){
     }
@@ -45,7 +45,7 @@ class MappingNotFoundException extends RuntimeException {
 }
 
 public class CompilationHelpers {
-    public static String sanitizeLibraries(String hexCode) {
+    private static String sanitizeLibraries(String hexCode) {
         final String dummyAddress = "1000000000000000000000000000000000000010";
         String sanitized = "";
         for (int i = 0; i < hexCode.length(); i++) {

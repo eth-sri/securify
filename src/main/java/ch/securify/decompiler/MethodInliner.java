@@ -93,13 +93,10 @@ public class MethodInliner {
 		// TODO: may need to copy all methods because later processed methods may use methods that have already inlined stuff
 		// (should not be a problem, worst case just generates more code, e.g. inlines recursive method once)
 
-		methods.forEach((methodHead, methodBody) -> {
-			processMethod(methodBody, StackUtil.create(methodHead));
-		});
+		methods.forEach((methodHead, methodBody) -> processMethod(methodBody, StackUtil.create(methodHead)));
 
 		// stitch new code together
-		List<Instruction> inlinedProgram = new ArrayList<>();
-		inlinedProgram.addAll(initInstructions);
+		List<Instruction> inlinedProgram = new ArrayList<>(initInstructions);
 		methods.forEach((methodHead, methodBody) -> inlinedProgram.addAll(methodBody));
 
 		return inlinedProgram;
@@ -215,15 +212,11 @@ public class MethodInliner {
 				// relink incoming branches
 				Collection<Instruction> incomingBranches = new ArrayList<>(bInstruction.getIncomingBranches());
 				bInstruction.clearIncomingBranches();
-				incomingBranches.forEach(incomingBranch -> {
-					bInstruction.addIncomingBranch(copyMap.get(incomingBranch));
-				});
+				incomingBranches.forEach(incomingBranch -> bInstruction.addIncomingBranch(copyMap.get(incomingBranch)));
 				// relink outgoing branches
 				Collection<Instruction> outgoingBranches = new ArrayList<>(bInstruction.getOutgoingBranches());
 				bInstruction.clearOutgoingBranches();
-				outgoingBranches.forEach(outgoingBranch -> {
-					bInstruction.addOutgoingBranch(copyMap.get(outgoingBranch));
-				});
+				outgoingBranches.forEach(outgoingBranch -> bInstruction.addOutgoingBranch(copyMap.get(outgoingBranch)));
 			}
 			else if (instruction instanceof _VirtualMethodReturn) {
 				// create variable reassignments

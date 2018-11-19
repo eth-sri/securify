@@ -18,7 +18,7 @@
 
 package ch.securify.decompiler.instructions;
 
-public class _AddressType extends Instruction {
-    public static int addressLength = 20; // Bytes
+class _AddressType extends Instruction {
+    static final int addressLength = 20; // Bytes
 
 }

@@ -21,7 +21,7 @@ package ch.securify.utils;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MapUtil {
+class MapUtil {
 
 
 	public static <K, V> Map<K, V> createWith(K key, V value) {

@@ -24,7 +24,7 @@ import java.nio.file.Files;
 
 import javax.xml.bind.DatatypeConverter;
 
-public class FileUtil {
+class FileUtil {
 
 
 	/**

@@ -54,27 +54,23 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
 import static ch.securify.decompiler.instructions.Instruction.NO_VARIABLES;
-import static ch.securify.decompiler.printer.HexPrinter.toHex;
 import static ch.securify.utils.ArrayUtil.nextNonNullIndex;
 import static ch.securify.utils.ArrayUtil.nextNonNullItem;
 import static ch.securify.utils.ArrayUtil.prevNonNullIndex;
 import static ch.securify.utils.ArrayUtil.prevNonNullItem;
 
-public class DestackerFallback {
+class DestackerFallback {
 
 	private PrintStream log;
 
 	private RawInstruction[] rawInstructions;
 	private Multimap<Integer, Integer> jumps;
 	private Multimap<Integer, Integer> jumpsInv;
-	private Multimap<Integer, Integer> controlFlowGraph;
 	private InstructionFactory instructionFactory;
 	private Collection<Integer> methodHeads;
 	private MethodDetector methodDetector;
 
 	private Instruction[] instructions;
-	private Map<Integer, Variable[]> argumentsForMethod, returnVarsForMethod;
-	private Map<Integer, Variable[]> argumentsForMethodCall, returnVarsForMethodCall;
 
 	private Map<Integer, Stack<Variable>> canonicalStackForBranchJoinJumpdest;
 	private Map<Instruction, Map<Variable, Variable>> variableReassignments;
@@ -105,14 +101,14 @@ public class DestackerFallback {
 
 		this.rawInstructions = rawInstructions;
 		this.jumps = jumps;
-		this.controlFlowGraph = controlFlowGraph;
+		Multimap<Integer, Integer> controlFlowGraph1 = controlFlowGraph;
 		this.instructionFactory = instructionFactory;
 
 		this.instructions = new Instruction[rawInstructions.length];
-		this.argumentsForMethod = new HashMap<>();
-		this.returnVarsForMethod = new HashMap<>();
-		this.argumentsForMethodCall = new HashMap<>();
-		this.returnVarsForMethodCall = new HashMap<>();
+		Map<Integer, Variable[]> argumentsForMethod = new HashMap<>();
+		Map<Integer, Variable[]> returnVarsForMethod = new HashMap<>();
+		Map<Integer, Variable[]> argumentsForMethodCall = new HashMap<>();
+		Map<Integer, Variable[]> returnVarsForMethodCall = new HashMap<>();
 
 		this.jumpsInv = HashMultimap.create();
 		jumps.asMap().forEach((src, dsts) -> dsts.forEach(dst -> jumpsInv.put(dst, src)));
@@ -208,7 +204,7 @@ public class DestackerFallback {
 				}
 				else {
 					int jumpdest = jumps.get(pc).iterator().next();
-					if (!ControlFlowDetector.isVirtualJumpDest(jumpdest)) {
+					if (ControlFlowDetector.isRealJumpDest(jumpdest)) {
 						if (instructions[jumpdest] == null) {
 							Stack<Variable> branchedStack = StackUtil.copyStack(evmStack);
 							ensureUniqueCanonicalStack(instructions[pc], jumpdest, branchedStack);
@@ -230,7 +226,7 @@ public class DestackerFallback {
 					throw new AssumptionViolatedException("conditional jump @" + HexPrinter.toHex(pc) + " has multiple jump targets");
 				}
 				int jumpdest = jumps.get(pc).iterator().next();
-				if (!ControlFlowDetector.isVirtualJumpDest(jumpdest)) {
+				if (ControlFlowDetector.isRealJumpDest(jumpdest)) {
 					if (instructions[jumpdest] == null) {
 						Stack<Variable> branchedStack = StackUtil.copyStack(evmStack);
 						ensureUniqueCanonicalStack(instructions[pc], jumpdest, branchedStack);
@@ -241,8 +237,6 @@ public class DestackerFallback {
 						handleStackMerging(evmStack, pc, instructions[pc], jumpdest);
 					}
 				}
-				// continue on current branch
-				continue;
 			}
 			else if (opcode == OpCodes.STOP || opcode == OpCodes.RETURN || opcode == OpCodes.REVERT || opcode == OpCodes.SELFDESTRUCT || OpCodes.isInvalid(opcode)) {
 				// end of execution

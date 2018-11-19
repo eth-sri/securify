@@ -53,13 +53,10 @@ public class UnrestrictedEtherFlow extends AbstractInstructionPattern {
             return true;
         }
 
-        if (dataflow.varMustDepOn(call, amount, CallDataLoad.class) == Status.SATISFIABLE) {
-            // the amount can be influenced by the caller
-            return true;
-        }
+        // the amount can be influenced by the caller
+        return dataflow.varMustDepOn(call, amount, CallDataLoad.class) == Status.SATISFIABLE;
 
 
-        return false;
     }
 
     @Override

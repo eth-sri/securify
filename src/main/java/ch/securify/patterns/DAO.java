@@ -40,10 +40,7 @@ public class DAO extends AbstractInstructionPattern {
             return false;
 
         Variable gasVar = instr.getInput()[0];
-        if (dataflow.varMayDepOn(instr, gasVar, Gas.class) == Status.UNSATISFIABLE)
-            return false;
-
-        return true;
+        return dataflow.varMayDepOn(instr, gasVar, Gas.class) != Status.UNSATISFIABLE;
     }
 
     @Override

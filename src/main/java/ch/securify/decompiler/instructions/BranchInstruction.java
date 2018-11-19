@@ -24,15 +24,14 @@ import java.util.Set;
 
 public class BranchInstruction extends Instruction {
 
-	private Set<Instruction> incomingBranches = new LinkedHashSet<>();
-	private Set<Instruction> outgoingBranches = new LinkedHashSet<>();
+	private final Set<Instruction> incomingBranches = new LinkedHashSet<>();
+	private final Set<Instruction> outgoingBranches = new LinkedHashSet<>();
 
 
-	public BranchInstruction addIncomingBranch(Instruction prev) {
+	public void addIncomingBranch(Instruction prev) {
 		if (prev != null) {
 			incomingBranches.add(prev);
 		}
-		return this;
 	}
 
 
@@ -51,11 +50,10 @@ public class BranchInstruction extends Instruction {
 	}
 
 
-	public BranchInstruction addOutgoingBranch(Instruction next) {
+	public void addOutgoingBranch(Instruction next) {
 		if (next != null) {
 			outgoingBranches.add(next);
 		}
-		return this;
 	}
 
 

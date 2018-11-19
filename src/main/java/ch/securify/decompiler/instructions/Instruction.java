@@ -35,9 +35,9 @@ public abstract class Instruction implements Cloneable {
 
 	private Variable[] input, output;
 
-	private Set<Variable> memInput = new HashSet<>();
+	private final Set<Variable> memInput = new HashSet<>();
 
-	private Set<Instruction> dependsOn = new HashSet<>();
+	private final Set<Instruction> dependsOn = new HashSet<>();
 
 	private Instruction prev;
 	private Instruction next;
@@ -172,13 +172,12 @@ public abstract class Instruction implements Cloneable {
 	 * @param comment arbitrary single-line text.
 	 * @return this Instruction instance.
 	 */
-	public Instruction setComment(String comment) {
+	public void setComment(String comment) {
 		this.comment = comment;
-		return this;
 	}
 
 
-	public String getComment() {
+	private String getComment() {
 		return comment;
 	}
 

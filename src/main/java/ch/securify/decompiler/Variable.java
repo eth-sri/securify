@@ -104,13 +104,13 @@ public class Variable {
 	private String name;
 
 	public static final Class<Any> TYPE_ANY = Any.class;
-	private Set<Class<? extends Instruction>> valueTypes = new HashSet<>();
+	private final Set<Class<? extends Instruction>> valueTypes = new HashSet<>();
 
 	public static final byte[] VALUE_ANY = new byte[0];
 	public static final byte[] VALUE_UNDEFINED = new byte[0];
 
 	private byte[] constantValue = VALUE_UNDEFINED;
-	private Set<byte[]> hashConstants = new HashSet<>();
+	private final Set<byte[]> hashConstants = new HashSet<>();
 
 	public Variable() {
 		name = generateVarName();

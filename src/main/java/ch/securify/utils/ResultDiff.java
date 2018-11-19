@@ -34,9 +34,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ResultDiff {
+class ResultDiff {
 
-    private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     private static Map<String, ContractResult> parseJSON(String pathToJSON) throws FileNotFoundException {
         Map<String, ContractResult> tmp = new HashMap<>();
