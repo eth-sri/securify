@@ -31,4 +31,11 @@ public class UnhandledExceptionTest {
         HelperInstructionPattern helperInstructionPattern = new HelperInstructionPattern(hex, new UnhandledException());
         assertEquals(1, helperInstructionPattern.pattern.violations.size());
     }
+
+    @Test
+    public void isViolation2() throws IOException {
+        String hex = "src/test/resources/solidity/UnhandledException2.bin.hex";
+        HelperInstructionPattern helperInstructionPattern = new HelperInstructionPattern(hex, new UnhandledException());
+        assertEquals(1, helperInstructionPattern.pattern.violations.size());
+    }
 }
