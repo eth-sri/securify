@@ -73,10 +73,13 @@ def parse_sol_version(source):
                 return DEFAULT_SOLC_VERSION
             else:
                 solc_version = next(COMP_VERSION1_REX.finditer(l))
-                if solc_version not in SOLC_VERSIONS:
+                if solc_version is None:
+                    continue
+                solc_version_str = solc_version.group(0)
+                if solc_version_str not in SOLC_VERSIONS:
                     raise CompilerVersionNotSupported(
-                        solc_version, solc_version < SOLC_VERSIONS[0])
-                return solc_version
+                        solc_version_str, solc_version_str < SOLC_VERSIONS[0])
+                return solc_version_str
     return DEFAULT_SOLC_VERSION
 
 
