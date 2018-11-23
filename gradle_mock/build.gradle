@@ -1,0 +1,27 @@
+group 'ch.securify'
+version '0.1'
+
+apply plugin: 'java'
+apply plugin: 'idea'
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'ch.securify.Main'
+    }
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile "com.beust:jcommander:1.48"
+    compile group: 'com.google.guava', name: 'guava', version: '19.0'
+    compile group: 'com.google.code.gson', name: 'gson', version: '2.8.0'
+    // https://mvnrepository.com/artifact/org.apache.commons/commons-csv
+    compile group: 'org.apache.commons', name: 'commons-csv', version: '1.4'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}

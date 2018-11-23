@@ -29,6 +29,13 @@ RUN apt-get update && apt-get -y install\
         openjdk-8-jdk\
         python3-pip
 
+## use a gradle mock prohect to cache the gradle zip (there must be a better
+## way, good enough for now)
+COPY gradle_mock /tmp/gradle_mock
+WORKDIR /tmp/gradle_mock
+RUN ./gradlew jar
+
+## python dependencies
 RUN pip3 install --user py-solc psutil
 
 RUN mkdir /isolc
