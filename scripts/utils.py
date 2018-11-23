@@ -72,11 +72,17 @@ def parse_sol_version(source):
             if '^' in l or '>' in l:
                 return DEFAULT_SOLC_VERSION
             else:
-                solc_version = next(COMP_VERSION1_REX.finditer(l))
-                if solc_version not in SOLC_VERSIONS:
-                    raise CompilerVersionNotSupported(
-                        solc_version, solc_version < SOLC_VERSIONS[0])
-                return solc_version
+                match = COMP_VERSION1_REX.search(l)
+                if match is None:
+                    raise RuntimeError('Could not parse compiler pragma.')
+                else:
+                    solc_version = match.group(0)
+                    if solc_version not in SOLC_VERSIONS:
+                        raise CompilerVersionNotSupported(
+                            solc_version, solc_version < SOLC_VERSIONS[0])
+                    else:
+                        return solc_version
+
     return DEFAULT_SOLC_VERSION
 
 
