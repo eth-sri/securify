@@ -44,10 +44,15 @@ RUN apt-get update && apt-get install -y\
 ARG truffle="latest"
 RUN npm install -g truffle@$truffle
 
+WORKDIR /sec
+
+# To cache gradle distribution
+COPY gradlew build.gradle settings.gradle /sec/
+COPY gradle /sec/gradle/
+RUN ./gradlew jar
+
 # copy and compile securify
 COPY . /sec
-
-WORKDIR /sec
 
 RUN ./gradlew jar
 
