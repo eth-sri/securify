@@ -40,7 +40,7 @@ class SolcProject(project.Project):
     def __init__(self, project_root):
         super().__init__(project_root)
 
-    def compile_(self):
+    def compile_(self, compilation_output):
         """Compile the project and dump the output to an intermediate file."""
         sources = self._get_sol_files()
 
@@ -49,7 +49,7 @@ class SolcProject(project.Project):
 
         comp_output = self._compile_solfiles(sources)
 
-        with open(self.compilation_output, 'w') as fs:
+        with open(compilation_output, 'w') as fs:
             json.dump(comp_output, fs)
 
     def _get_sol_files(self):

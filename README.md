@@ -73,6 +73,10 @@ To run the tests (which use JUnit4):
 ./gradlew test
 ```
 
+A Python wrapper helps to deal with `solc` and `truffle`. The requirements are
+in the [requirements.txt](requirements.txt) file. The Dockerfile can be used as
+a reference to set-up your local environment to use this wrapper.
+
 ### Docker
 
 The installation should be simple enough on Debian derivatives, or any other
@@ -96,10 +100,10 @@ You can change the files analyzed by specifying a volume to mount, and every
 docker run -v $(pwd)/folder_with_solidity_files:/project securify
 ```
 
-Adding a `--truffle` flag should allow Securify to run over Truffle project in which dependencies
-have already been installed (so run `npm install` before if need be). Without
-this flag, the project is compiled using `solc`. Add a `-h` to obtain the full
-list of options.
+Adding a `--truffle` flag should allow Securify to run over Truffle project in
+which dependencies have already been installed (so run `npm install` before if
+need be). Without this flag, the project is compiled using `solc`. Add a `-h`
+to obtain the full list of options.
 
 The indices of the lines matched are 0-based, meaning that a match to line `i`
 means that the `i+1`th line is matched. In particular, the first line has an

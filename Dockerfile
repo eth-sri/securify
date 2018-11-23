@@ -29,7 +29,8 @@ RUN apt-get update && apt-get -y install\
         openjdk-8-jdk\
         python3-pip
 
-RUN pip3 install --user py-solc psutil
+COPY requirements.txt /tmp/
+RUN pip3 install --user -r /tmp/requirements.txt
 
 RUN mkdir /isolc
 COPY scripts/isolc/* /isolc/
@@ -50,21 +51,9 @@ WORKDIR /sec
 
 RUN ./gradlew jar
 
-RUN mkdir /securify_jar
-
-RUN cp build/libs/*.jar /securify_jar/securify.jar
-
-COPY ./smt_files /smt_files
-
 # Solidity example
 COPY src/test/resources/solidity/transaction-reordering.sol /project/example.sol
 
-# Copy python scripts
-COPY ./scripts /scripts
-
-COPY docker_run_securify.py /
-
-WORKDIR /
-
 # run_securify.py allows arguments to be passed (e.g. "--truffle").
 ENTRYPOINT ["python3", "docker_run_securify.py"]
+CMD ["-p", "/project"]

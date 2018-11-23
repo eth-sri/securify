@@ -34,7 +34,7 @@ class TruffleProject(project.Project):
         super().__init__(project_root)
         self.build_dir = self.project_root / pathlib.Path("build/contracts/")
 
-    def compile_(self):
+    def compile_(self, compilation_output):
         with utils.working_directory(self.project_root):
             try:
                 subprocess.check_output(["truffle", "compile"],
@@ -43,9 +43,9 @@ class TruffleProject(project.Project):
                 utils.log_error("Error compiling truffle project.")
                 utils.handle_process_output_and_exit(e)
 
-        self._merge_compiled_files()
+        self._merge_compiled_files(compilation_output)
 
-    def _merge_compiled_files(self):
+    def _merge_compiled_files(self, compilation_output):
         """Merges individual truffle files into an aggregate file for securify."""
         result = {}
         for entry in os.scandir(self.build_dir):
@@ -70,5 +70,5 @@ class TruffleProject(project.Project):
                 result[contract_name] = data
 
         # dump aggregate compiled output to file
-        with open(self.compilation_output, mode='w') as file:
+        with open(compilation_output, mode='w') as file:
             json.dump(result, file, indent=4)

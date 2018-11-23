@@ -30,14 +30,19 @@ class Controller:
         """Initialise the controller. This sets up the command line argument parsing etc."""
         self._parser = argparse.ArgumentParser(description='Run securify.')
         self._parser.add_argument('-t', '--truffle',
-                                  action="store_true", help="use truffle project as base")
+                                  action="store_true",
+                                  help="use truffle project as base")
         self._parser.add_argument('-p', '--project',
-                                  action="store", help="the project root", default="/project")
+                                  action="store", help="the project root",
+                                  required=True)
         verbosity_group = self._parser.add_mutually_exclusive_group()
         verbosity_group.add_argument('-v', '--verbose',
-                                     action="store_true", help="provide verbose output")
+                                     action="store_true",
+                                     help="provide verbose output")
         verbosity_group.add_argument('-q', '--quiet',
-                                     action="store_true", help="suppress most output")
+                                     action="store_true",
+                                     help="suppress most output")
+
         self.args = self._parser.parse_args()
 
         if self.args.truffle:
@@ -53,7 +58,7 @@ class Controller:
             utils.set_logger_level("warning")
 
     def compile_and_report(self):
-        """Executes securify on the project and returns any violations and warnings found.
+        """Executes securify and returns violations and warnings.
 
         This function returns 0 if no violations are found, and 1 otherwise.
         """

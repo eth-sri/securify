@@ -24,6 +24,7 @@ import pathlib
 import psutil
 import subprocess
 import sys
+import tempfile
 
 from . import utils
 
@@ -31,9 +32,7 @@ from . import utils
 class Project(metaclass=abc.ABCMeta):
     """Abstract Project implemented by all different kinds projects requiring compilation and reporting."""
 
-    compilation_output = pathlib.Path("/comp.json")
-    securify_target_output = pathlib.Path("/securify_res.json")
-    securify_jar = pathlib.Path("/securify_jar/securify.jar")
+    securify_jar = pathlib.Path("build/libs/securify-0.1.jar")
 
     def __init__(self, project_root):
         """Sets the project root."""
@@ -44,19 +43,26 @@ class Project(metaclass=abc.ABCMeta):
 
         This function returns 0 if no violations are found, and 1 otherwise.
         """
-        logging.info("Compiling project")
-        self.compile_()
-        logging.info("Running Securify")
-        self.run_securify()
-        logging.info("Generating report")
-        return self.report()
+        with tempfile.TemporaryDirectory() as d:
+            tmpdir = pathlib.Path(d)
 
-    def run_securify(self):
+            logging.info("Compiling project")
+            compilation_output = tmpdir / "comp.json"
+            self.compile_(compilation_output)
+
+            logging.info("Running Securify")
+            securify_target_output = tmpdir / "securify_res.json"
+            self.run_securify(compilation_output, securify_target_output)
+
+            logging.info("Generating report")
+            return self.report(securify_target_output)
+
+    def run_securify(self, compilation_output, securify_target_output):
         """Runs the securify command."""
         memory = psutil.virtual_memory().available // 1024 ** 3
         cmd = ["java", f"-Xmx{memory}G", "-jar", str(self.securify_jar),
-               "-co", self.compilation_output,
-               "-o", self.securify_target_output]
+               "-co", compilation_output,
+               "-o", securify_target_output]
         try:
             subprocess.check_output(cmd, shell=False, stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
@@ -64,16 +70,16 @@ class Project(metaclass=abc.ABCMeta):
             utils.handle_process_output_and_exit(e)
 
     @abc.abstractmethod
-    def compile_(self):
+    def compile_(self, compilation_output):
         """Compile the project."""
         pass
 
-    def report(self):
+    def report(self, securify_target_output):
         """Report findings.
 
         This function returns 0 if no violations are found, and 1 otherwise.
         """
-        with open(self.securify_target_output) as file:
+        with open(securify_target_output) as file:
             json_report = json.load(file)
 
         print(json.dumps(json_report, indent=4))
