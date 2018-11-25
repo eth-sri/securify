@@ -69,11 +69,10 @@ public abstract class AbstractDataflow {
     protected final boolean DEBUG = false;
 
     // input predicates
-
-    protected String WORKSPACE, WORKSPACE_OUT;
-    protected final String SOUFFLE_COMPILE_FLAG = "-c", SOUFFLE_BIN = "souffle";
-    protected String SOUFFLE_RULES;
-    protected final String TIMEOUT_COMMAND = System.getProperty("os.name").toLowerCase().startsWith("mac") ? "gtimeout" : "timeout";
+    protected String DL_EXEC;
+    private String WORKSPACE, WORKSPACE_OUT;
+    private final String SOUFFLE_BIN = "souffle";
+    private final String TIMEOUT_COMMAND = System.getProperty("os.name").toLowerCase().startsWith("mac") ? "gtimeout" : "timeout";
 
     protected boolean isSouffleInstalled() {
         try {
@@ -143,19 +142,10 @@ public abstract class AbstractDataflow {
         createProgramRulesFile();
         log("Number of instructions: " + instrToCode.size());
         log("Threshold: " + Config.THRESHOLD_COMPILE);
+        String cmd = TIMEOUT_COMMAND + " " + Config.PATTERN_TIMEOUT+ "s " + DL_EXEC + " -F " + WORKSPACE + " -D " + WORKSPACE_OUT;
         long start = System.currentTimeMillis();
-        if (instructions.size() > Config.THRESHOLD_COMPILE) {
-            /* compile Souffle program and run */
-            String cmd = TIMEOUT_COMMAND + " " + Config.PATTERN_TIMEOUT + "s " + SOUFFLE_BIN + " -w -F " + WORKSPACE + " -D " + WORKSPACE_OUT + " " + SOUFFLE_COMPILE_FLAG + " "
-                    + SOUFFLE_RULES;
-            log(cmd);
-            runCommand(cmd);
-        } else {
-            /* run interpreter */
-            String cmd = TIMEOUT_COMMAND + " " + Config.PATTERN_TIMEOUT + "s " + SOUFFLE_BIN + " -w -F " + WORKSPACE + " -D " + WORKSPACE_OUT + " " + SOUFFLE_RULES;
-            log(cmd);
-            runCommand(cmd);
-        }
+        log(cmd);
+        runCommand(cmd);
         long elapsedTime = System.currentTimeMillis() - start;
         String elapsedTimeStr = String.format("%d min, %d sec",
                 TimeUnit.MILLISECONDS.toMinutes(elapsedTime),

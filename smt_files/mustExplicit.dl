@@ -24,19 +24,34 @@
 //
 // Inputs
 //
-.decl assignType        (l:Label, v:Var, f:Fact) input
-.decl assignVar		(l:Label, v1: Var, v2: Var) input
-.decl follows		(l1: Label, l2: Label) input
-.decl jump		(l1: Label, l2: Label, l3: Label) input
-.decl tag       (l1: Label) input
-.decl oneBranchTag       (l1: Label) input
-.decl join		(l1: Label, l2: Label, l3: Label) input
-.decl mload		(l: Label, v:Var, f:VarFact) input
-.decl mstore		(l: Label, v:Var, f:VarFact) input
-.decl sload		(l: Label, v:Var, f:VarFact) input
-.decl sstore		(l: Label, v:Var, f:VarFact) input
-.decl sha3		(l: Label, v:Var, f:VarFact) input
-.decl unk		(v:Var) input
+.decl assignType        (l:Label, v:Var, f:Fact)
+.decl assignVar		(l:Label, v1: Var, v2: Var)
+.decl follows		(l1: Label, l2: Label)
+.decl jump		(l1: Label, l2: Label, l3: Label)
+.decl tag       (l1: Label)
+.decl oneBranchTag       (l1: Label)
+.decl join		(l1: Label, l2: Label, l3: Label)
+.decl mload		(l: Label, v:Var, f:VarFact)
+.decl mstore		(l: Label, v:Var, f:VarFact)
+.decl sload		(l: Label, v:Var, f:VarFact)
+.decl sstore		(l: Label, v:Var, f:VarFact)
+.decl sha3		(l: Label, v:Var, f:VarFact)
+.decl unk		(v:Var)
+
+// Retrieve inputs
+.input assignType
+.input assignVar
+.input follows
+.input jump
+.input tag
+.input oneBranchTag
+.input join
+.input mload
+.input mstore
+.input sload
+.input sstore
+.input sha3
+.input unk
 
 //
 // Derived
@@ -49,10 +64,16 @@
 //
 // Output
 //
-.decl memory			(l:Label, v:Var, f:VarFact) output
-.decl storage			(l:Label, v:Var, f:VarFact) output
-.decl reach				(l: Label, v:Var, f:VarFact) output
-.decl mustPrecede		(l1: Label, l2: Label) output
+.decl memory			(l:Label, v:Var, f:VarFact)
+.decl storage			(l:Label, v:Var, f:VarFact)
+.decl reach				(l: Label, v:Var, f:VarFact)
+.decl mustPrecede		(l1: Label, l2: Label)
+
+// Declare outputs
+.output memory
+.output storage
+.output reach
+.output mustPrecede
 
 
 //

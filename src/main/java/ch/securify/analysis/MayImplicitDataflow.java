@@ -29,7 +29,7 @@ public class MayImplicitDataflow extends AbstractDataflow {
     public MayImplicitDataflow(){}
 
     public MayImplicitDataflow(List<Instruction> decompiledInstructions) throws IOException, InterruptedException {
-        SOUFFLE_RULES = "smt_files/mayImplicit.dl";
+        DL_EXEC = "build/mayImplicit";
         instructions = decompiledInstructions;
         initDataflow();
     }

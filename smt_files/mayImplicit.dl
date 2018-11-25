@@ -25,17 +25,30 @@
 //
 // Inputs
 //
-.decl assignType        (l:Label, v:Var, f:Fact) input
-.decl assignVar		(l:Label, v1: Var, v2: Var) input
-.decl follows		(l1: Label, l2: Label) input
-.decl taint		(l1:Label, l2:Label, v:Var) input
-.decl endIf		(l1: Label, l2: Label) input
-.decl mload		(l: Label, v:Var, f:VarFact) input
-.decl mstore		(l: Label, v:Var, f:VarFact) input
-.decl sload		(l: Label, v:Var, f:VarFact) input
-.decl sstore		(l: Label, v:Var, f:VarFact) input
-.decl sha3		(l: Label, v:Var, f:VarFact) input
-.decl unk	(f:VarFact) input
+.decl assignType        (l:Label, v:Var, f:Fact)
+.decl assignVar		(l:Label, v1: Var, v2: Var)
+.decl follows		(l1: Label, l2: Label)
+.decl taint		(l1:Label, l2:Label, v:Var)
+.decl endIf		(l1: Label, l2: Label)
+.decl mload		(l: Label, v:Var, f:VarFact)
+.decl mstore		(l: Label, v:Var, f:VarFact)
+.decl sload		(l: Label, v:Var, f:VarFact)
+.decl sstore		(l: Label, v:Var, f:VarFact)
+.decl sha3		(l: Label, v:Var, f:VarFact)
+.decl unk	(f:VarFact)
+
+// Retrieve inputs
+.input assignType
+.input assignVar
+.input follows
+.input taint
+.input endIf
+.input mload
+.input mstore
+.input sload
+.input sstore
+.input sha3
+.input unk
 
 //
 // Derived
@@ -46,12 +59,20 @@
 //
 // Outputs
 //
-.decl reach		(v:Var, f:VarFact) output
-.decl reachInstr        (l:Label, f:VarFact) output
-.decl memory		(l:Label, v:Var, f:VarFact) output
-.decl memoryTags		(l:Label, f:VarFact) output
-.decl storage		(l:Label, v:Var, f:VarFact) output
-.decl isAfter		(l1: Label, l2: Label) output
+.decl reach		(v:Var, f:VarFact)
+.decl reachInstr        (l:Label, f:VarFact)
+.decl memory		(l:Label, v:Var, f:VarFact)
+.decl memoryTags		(l:Label, f:VarFact)
+.decl storage		(l:Label, v:Var, f:VarFact)
+.decl isAfter		(l1: Label, l2: Label)
+
+// Declare outputs
+.output reach
+.output reachInstr
+.output memory
+.output memoryTags
+.output storage
+.output isAfter
 
 //
 // Rules

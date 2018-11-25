@@ -34,7 +34,7 @@ public class MustExplicitDataflow extends AbstractDataflow {
     public MustExplicitDataflow(){}
 
     public MustExplicitDataflow(List<Instruction> decompiledInstructions) throws IOException, InterruptedException {
-        SOUFFLE_RULES = "smt_files/mustExplicit.dl";
+        DL_EXEC = "build/mustExplicit";
         instructions = decompiledInstructions;
         initDataflow();
     }
