@@ -1,0 +1,465 @@
+{
+  "src/test/resources/solidity/swc_registry/ENS.sol:AbstractENS": {
+    "results": {
+      "DAO": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "DAOConstantGas": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "LockedEther": {
+        "violations": [],
+        "warnings": [
+          -1
+        ],
+        "safe": [],
+        "conflicts": []
+      },
+      "MissingInputValidation": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "TODAmount": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "TODReceiver": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnhandledException": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnrestrictedEtherFlow": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnrestrictedWrite": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      }
+    },
+    "securifyErrors": {
+      "errors": [
+        {
+          "error": "mapping_error",
+          "stackTrace": "ch.securify.MappingNotFoundException\n\tat ch.securify.CompilationHelpers.bytecodeOffsetToSourceOffset(CompilationHelpers.java:72)\n\tat ch.securify.CompilationHelpers.getMatchedLines(CompilationHelpers.java:126)\n\tat ch.securify.CompilationHelpers.getMappingsFromStatusFile(CompilationHelpers.java:154)\n\tat ch.securify.Main.processCompilationOutput(Main.java:125)\n\tat ch.securify.Main.processSolidityFile(Main.java:91)\n\tat ch.securify.Main.main(Main.java:224)\n"
+        }
+      ]
+    }
+  },
+  "src/test/resources/solidity/swc_registry/ENS.sol:Deed": {
+    "results": {
+      "DAO": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "DAOConstantGas": {
+        "violations": [],
+        "warnings": [
+          87,
+          96,
+          110
+        ],
+        "safe": [],
+        "conflicts": []
+      },
+      "LockedEther": {
+        "violations": [],
+        "warnings": [
+          41
+        ],
+        "safe": [],
+        "conflicts": []
+      },
+      "MissingInputValidation": {
+        "violations": [
+          78,
+          94
+        ],
+        "warnings": [
+          42,
+          44,
+          45,
+          46,
+          47,
+          71,
+          82,
+          104
+        ],
+        "safe": [],
+        "conflicts": []
+      },
+      "TODAmount": {
+        "violations": [
+          110
+        ],
+        "warnings": [],
+        "safe": [],
+        "conflicts": [
+          87,
+          96
+        ]
+      },
+      "TODReceiver": {
+        "violations": [
+          87,
+          110
+        ],
+        "warnings": [
+          96
+        ],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnhandledException": {
+        "violations": [],
+        "warnings": [
+          87,
+          96,
+          110
+        ],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnrestrictedEtherFlow": {
+        "violations": [],
+        "warnings": [
+          110
+        ],
+        "safe": [
+          110
+        ],
+        "conflicts": [
+          87,
+          96
+        ]
+      },
+      "UnrestrictedWrite": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": [
+          73,
+          74,
+          79,
+          85,
+          95
+        ]
+      }
+    },
+    "securifyErrors": {
+      "errors": []
+    }
+  },
+  "src/test/resources/solidity/swc_registry/ENS.sol:Registrar": {
+    "results": {
+      "DAO": {
+        "violations": [
+          578,
+          584,
+          587
+        ],
+        "warnings": [
+          182,
+          187,
+          295,
+          296,
+          396,
+          403,
+          422,
+          426,
+          463,
+          465,
+          466,
+          478,
+          497,
+          550,
+          551,
+          553,
+          554,
+          560,
+          568,
+          569
+        ],
+        "safe": [
+          182,
+          401,
+          410,
+          490,
+          521,
+          522,
+          523,
+          550,
+          551,
+          553,
+          554
+        ],
+        "conflicts": []
+      },
+      "DAOConstantGas": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "LockedEther": {
+        "violations": [],
+        "warnings": [],
+        "safe": [
+          120
+        ],
+        "conflicts": []
+      },
+      "MissingInputValidation": {
+        "violations": [
+          125,
+          156,
+          191,
+          339,
+          356,
+          384,
+          435,
+          458,
+          474,
+          487,
+          577
+        ],
+        "warnings": [
+          120,
+          121,
+          122,
+          131,
+          134,
+          213,
+          226,
+          238,
+          276,
+          285,
+          294,
+          326,
+          509,
+          542,
+          549,
+          558,
+          603
+        ],
+        "safe": [
+          310,
+          373
+        ],
+        "conflicts": []
+      },
+      "TODAmount": {
+        "violations": [],
+        "warnings": [],
+        "safe": [
+          182,
+          187,
+          295,
+          296,
+          396,
+          401,
+          403,
+          410,
+          422,
+          426,
+          463,
+          465,
+          466,
+          478,
+          490,
+          497,
+          521,
+          522,
+          523,
+          550,
+          551,
+          553,
+          554,
+          560,
+          568,
+          569,
+          578,
+          584,
+          587
+        ],
+        "conflicts": []
+      },
+      "TODReceiver": {
+        "violations": [],
+        "warnings": [],
+        "safe": [
+          182,
+          187,
+          295,
+          296,
+          396,
+          401,
+          403,
+          410,
+          422,
+          426,
+          463,
+          465,
+          466,
+          478,
+          490,
+          497,
+          521,
+          522,
+          523,
+          550,
+          551,
+          553,
+          554,
+          560,
+          568,
+          569,
+          578,
+          584,
+          587
+        ],
+        "conflicts": []
+      },
+      "UnhandledException": {
+        "violations": [],
+        "warnings": [
+          182,
+          187,
+          295,
+          296,
+          390,
+          391,
+          396,
+          401,
+          403,
+          410,
+          422,
+          426,
+          445,
+          448,
+          449,
+          463,
+          465,
+          466,
+          478,
+          490,
+          497,
+          521,
+          522,
+          523,
+          550,
+          551,
+          553,
+          554,
+          560,
+          568,
+          569,
+          578,
+          584,
+          587
+        ],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnrestrictedEtherFlow": {
+        "violations": [],
+        "warnings": [
+          187,
+          390,
+          391,
+          445,
+          448,
+          449
+        ],
+        "safe": [
+          182,
+          187,
+          295,
+          296,
+          396,
+          401,
+          403,
+          410,
+          422,
+          426,
+          463,
+          465,
+          466,
+          478,
+          490,
+          497,
+          521,
+          522,
+          523,
+          550,
+          551,
+          553,
+          554,
+          560,
+          568,
+          569,
+          578,
+          584,
+          587
+        ],
+        "conflicts": []
+      },
+      "UnrestrictedWrite": {
+        "violations": [
+          316,
+          317,
+          318,
+          415,
+          416,
+          417,
+          421,
+          450,
+          462,
+          492,
+          493,
+          494,
+          520,
+          528,
+          529,
+          530,
+          590,
+          591,
+          592,
+          593
+        ],
+        "warnings": [
+          361,
+          388
+        ],
+        "safe": [],
+        "conflicts": []
+      }
+    },
+    "securifyErrors": {
+      "errors": []
+    }
+  }
+}

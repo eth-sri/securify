@@ -1,0 +1,140 @@
+{
+  "src/test/resources/solidity/swc_registry/rubixi.sol:Rubixi": {
+    "results": {
+      "DAO": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "DAOConstantGas": {
+        "violations": [
+          63,
+          74,
+          84,
+          92
+        ],
+        "warnings": [
+          63
+        ],
+        "safe": [],
+        "conflicts": []
+      },
+      "LockedEther": {
+        "violations": [],
+        "warnings": [
+          0
+        ],
+        "safe": [],
+        "conflicts": []
+      },
+      "MissingInputValidation": {
+        "violations": [
+          97
+        ],
+        "warnings": [
+          12,
+          33,
+          48,
+          71,
+          78,
+          101,
+          107,
+          114,
+          119,
+          124,
+          129,
+          133,
+          137,
+          141,
+          145
+        ],
+        "safe": [
+          88
+        ],
+        "conflicts": []
+      },
+      "TODAmount": {
+        "violations": [
+          74
+        ],
+        "warnings": [
+          84
+        ],
+        "safe": [
+          63
+        ],
+        "conflicts": [
+          92
+        ]
+      },
+      "TODReceiver": {
+        "violations": [
+          74,
+          84,
+          92
+        ],
+        "warnings": [],
+        "safe": [
+          63
+        ],
+        "conflicts": []
+      },
+      "UnhandledException": {
+        "violations": [
+          63,
+          74,
+          84,
+          92
+        ],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnrestrictedEtherFlow": {
+        "violations": [],
+        "warnings": [
+          74,
+          84,
+          92
+        ],
+        "safe": [
+          63,
+          74
+        ],
+        "conflicts": []
+      },
+      "UnrestrictedWrite": {
+        "violations": [
+          2,
+          13,
+          36,
+          50,
+          53,
+          54,
+          57,
+          58,
+          65,
+          66
+        ],
+        "warnings": [
+          75,
+          85,
+          93,
+          98,
+          104,
+          110
+        ],
+        "safe": [
+          65,
+          66,
+          75
+        ],
+        "conflicts": []
+      }
+    },
+    "securifyErrors": {
+      "errors": []
+    }
+  }
+}
