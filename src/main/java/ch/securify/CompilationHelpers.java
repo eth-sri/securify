@@ -100,13 +100,18 @@ public class CompilationHelpers {
         File f = File.createTempFile("securify_compilation_", ".json");
         f.deleteOnExit();
 
-        final Process process = p.redirectOutput(f).redirectError(ProcessBuilder.Redirect.INHERIT).start();
+        File fErr = File.createTempFile("securify_compilation_error", ".log");
+        fErr.deleteOnExit();
 
+        final Process process = p.redirectOutput(f).redirectError(fErr).start();
         process.waitFor();
+
         int exitValue = process.exitValue();
         if(exitValue != 0){
+            System.err.print(readFile(fErr.getPath()));
             throw new RuntimeException();
         }
+
 
         JsonObject jsonObject = new JsonParser().parse(readFile(f.getPath())).getAsJsonObject();
 
