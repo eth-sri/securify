@@ -1,0 +1,68 @@
+{
+  "src/test/resources/solidity/LockedEther.sol:MarketPlace": {
+    "results": {
+      "DAO": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "DAOConstantGas": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "LockedEther": {
+        "violations": [
+          0
+        ],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "MissingInputValidation": {
+        "violations": [],
+        "warnings": [
+          1,
+          4
+        ],
+        "safe": [],
+        "conflicts": []
+      },
+      "TODAmount": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "TODReceiver": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnhandledException": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnrestrictedEtherFlow": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnrestrictedWrite": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      }
+    },
+    "securifyErrors": {
+      "errors": []
+    }
+  }
+}

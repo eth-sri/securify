@@ -1,0 +1,65 @@
+{
+  "src/test/resources/solidity/locked-money-self-destruct-safe.sol:MarketPlace": {
+    "results": {
+      "DAO": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "DAOConstantGas": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "LockedEther": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": [
+          1
+        ]
+      },
+      "MissingInputValidation": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "TODAmount": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "TODReceiver": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnhandledException": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnrestrictedEtherFlow": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnrestrictedWrite": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      }
+    },
+    "securifyErrors": {
+      "errors": []
+    }
+  }
+}

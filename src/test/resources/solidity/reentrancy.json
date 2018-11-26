@@ -1,0 +1,87 @@
+{
+  "src/test/resources/solidity/reentrancy.sol:MarketPlace": {
+    "results": {
+      "DAO": {
+        "violations": [
+          12
+        ],
+        "warnings": [
+          7
+        ],
+        "safe": [],
+        "conflicts": []
+      },
+      "DAOConstantGas": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "LockedEther": {
+        "violations": [],
+        "warnings": [
+          1
+        ],
+        "safe": [],
+        "conflicts": []
+      },
+      "MissingInputValidation": {
+        "violations": [],
+        "warnings": [
+          4,
+          10
+        ],
+        "safe": [],
+        "conflicts": []
+      },
+      "TODAmount": {
+        "violations": [
+          7,
+          12
+        ],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "TODReceiver": {
+        "violations": [],
+        "warnings": [
+          7,
+          12
+        ],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnhandledException": {
+        "violations": [
+          7,
+          12
+        ],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnrestrictedEtherFlow": {
+        "violations": [],
+        "warnings": [],
+        "safe": [
+          7,
+          12
+        ],
+        "conflicts": []
+      },
+      "UnrestrictedWrite": {
+        "violations": [
+          6,
+          13
+        ],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      }
+    },
+    "securifyErrors": {
+      "errors": []
+    }
+  }
+}

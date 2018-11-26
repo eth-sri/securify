@@ -1,0 +1,79 @@
+{
+  "src/test/resources/solidity/UnrestrictedEtherFlow2.sol:Wallet": {
+    "results": {
+      "DAO": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "DAOConstantGas": {
+        "violations": [],
+        "warnings": [
+          9
+        ],
+        "safe": [],
+        "conflicts": []
+      },
+      "LockedEther": {
+        "violations": [],
+        "warnings": [],
+        "safe": [
+          2
+        ],
+        "conflicts": []
+      },
+      "MissingInputValidation": {
+        "violations": [],
+        "warnings": [
+          6
+        ],
+        "safe": [],
+        "conflicts": []
+      },
+      "TODAmount": {
+        "violations": [],
+        "warnings": [
+          9
+        ],
+        "safe": [],
+        "conflicts": []
+      },
+      "TODReceiver": {
+        "violations": [
+          9
+        ],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnhandledException": {
+        "violations": [],
+        "warnings": [
+          9
+        ],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnrestrictedEtherFlow": {
+        "violations": [
+          9
+        ],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnrestrictedWrite": {
+        "violations": [
+          8
+        ],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      }
+    },
+    "securifyErrors": {
+      "errors": []
+    }
+  }
+}

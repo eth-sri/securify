@@ -113,7 +113,27 @@ Alternatively, add the `--pretty` flag in order to get clang style output rather
 than JSON based output.
 
 
-### Travis
+### Tests
+
+Basic end to end tests can be run through the [test.py](test.py) file:
+```py
+python3 test.py
+```
+
+The requirements can be installed using Pipenv:
+```sh
+pipenv install
+```
+
+or using `pip`:
+```sh
+pip install -r requirements.txt
+```
+
+These tests compare the current json output given by Securify with some past
+output, and report differences between the two.
+
+### Travis Integration
 
 You can add the following `.travis.yml` to your project to run Securify on new
 commits:

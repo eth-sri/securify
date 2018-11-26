@@ -1,0 +1,727 @@
+{
+  "src/test/resources/solidity/end_to_end_testing_quick/kybernetwork_flattened.sol:ERC20": {
+    "results": {
+      "DAO": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "DAOConstantGas": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "LockedEther": {
+        "violations": [],
+        "warnings": [
+          -1
+        ],
+        "safe": [],
+        "conflicts": []
+      },
+      "MissingInputValidation": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "TODAmount": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "TODReceiver": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnhandledException": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnrestrictedEtherFlow": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnrestrictedWrite": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      }
+    },
+    "securifyErrors": {
+      "errors": [
+        {
+          "error": "mapping_error",
+          "stackTrace": "ch.securify.MappingNotFoundException\n\tat ch.securify.CompilationHelpers.bytecodeOffsetToSourceOffset(CompilationHelpers.java:72)\n\tat ch.securify.CompilationHelpers.getMatchedLines(CompilationHelpers.java:131)\n\tat ch.securify.CompilationHelpers.getMappingsFromStatusFile(CompilationHelpers.java:159)\n\tat ch.securify.Main.processCompilationOutput(Main.java:128)\n\tat ch.securify.Main.processSolidityFile(Main.java:94)\n\tat ch.securify.Main.main(Main.java:227)\n"
+        }
+      ]
+    }
+  },
+  "src/test/resources/solidity/end_to_end_testing_quick/kybernetwork_flattened.sol:ExpectedRateInterface": {
+    "results": {
+      "DAO": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "DAOConstantGas": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "LockedEther": {
+        "violations": [],
+        "warnings": [
+          -1
+        ],
+        "safe": [],
+        "conflicts": []
+      },
+      "MissingInputValidation": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "TODAmount": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "TODReceiver": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnhandledException": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnrestrictedEtherFlow": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnrestrictedWrite": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      }
+    },
+    "securifyErrors": {
+      "errors": [
+        {
+          "error": "mapping_error",
+          "stackTrace": "ch.securify.MappingNotFoundException\n\tat ch.securify.CompilationHelpers.bytecodeOffsetToSourceOffset(CompilationHelpers.java:72)\n\tat ch.securify.CompilationHelpers.getMatchedLines(CompilationHelpers.java:131)\n\tat ch.securify.CompilationHelpers.getMappingsFromStatusFile(CompilationHelpers.java:159)\n\tat ch.securify.Main.processCompilationOutput(Main.java:128)\n\tat ch.securify.Main.processSolidityFile(Main.java:94)\n\tat ch.securify.Main.main(Main.java:227)\n"
+        }
+      ]
+    }
+  },
+  "src/test/resources/solidity/end_to_end_testing_quick/kybernetwork_flattened.sol:FeeBurnerInterface": {
+    "results": {
+      "DAO": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "DAOConstantGas": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "LockedEther": {
+        "violations": [],
+        "warnings": [
+          -1
+        ],
+        "safe": [],
+        "conflicts": []
+      },
+      "MissingInputValidation": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "TODAmount": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "TODReceiver": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnhandledException": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnrestrictedEtherFlow": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnrestrictedWrite": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      }
+    },
+    "securifyErrors": {
+      "errors": [
+        {
+          "error": "mapping_error",
+          "stackTrace": "ch.securify.MappingNotFoundException\n\tat ch.securify.CompilationHelpers.bytecodeOffsetToSourceOffset(CompilationHelpers.java:72)\n\tat ch.securify.CompilationHelpers.getMatchedLines(CompilationHelpers.java:131)\n\tat ch.securify.CompilationHelpers.getMappingsFromStatusFile(CompilationHelpers.java:159)\n\tat ch.securify.Main.processCompilationOutput(Main.java:128)\n\tat ch.securify.Main.processSolidityFile(Main.java:94)\n\tat ch.securify.Main.main(Main.java:227)\n"
+        }
+      ]
+    }
+  },
+  "src/test/resources/solidity/end_to_end_testing_quick/kybernetwork_flattened.sol:KyberNetwork": {
+    "results": {
+      "DAO": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "DAOConstantGas": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "LockedEther": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "MissingInputValidation": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "TODAmount": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "TODReceiver": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnhandledException": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnrestrictedEtherFlow": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnrestrictedWrite": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      }
+    },
+    "securifyErrors": {
+      "errors": [
+        {
+          "error": "pattern_error",
+          "stackTrace": "java.lang.RuntimeException\n\tat ch.securify.analysis.Dataflow.\u003cinit\u003e(Dataflow.java:37)\n\tat ch.securify.analysis.DataflowFactory.getDataflow(DataflowFactory.java:55)\n\tat ch.securify.Main.checkPatterns(Main.java:353)\n\tat ch.securify.Main.processHexFile(Main.java:178)\n\tat ch.securify.Main.processCompilationOutput(Main.java:120)\n\tat ch.securify.Main.processSolidityFile(Main.java:94)\n\tat ch.securify.Main.main(Main.java:227)\n"
+        }
+      ]
+    }
+  },
+  "src/test/resources/solidity/end_to_end_testing_quick/kybernetwork_flattened.sol:KyberNetworkInterface": {
+    "results": {
+      "DAO": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "DAOConstantGas": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "LockedEther": {
+        "violations": [],
+        "warnings": [
+          -1
+        ],
+        "safe": [],
+        "conflicts": []
+      },
+      "MissingInputValidation": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "TODAmount": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "TODReceiver": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnhandledException": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnrestrictedEtherFlow": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnrestrictedWrite": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      }
+    },
+    "securifyErrors": {
+      "errors": [
+        {
+          "error": "mapping_error",
+          "stackTrace": "ch.securify.MappingNotFoundException\n\tat ch.securify.CompilationHelpers.bytecodeOffsetToSourceOffset(CompilationHelpers.java:72)\n\tat ch.securify.CompilationHelpers.getMatchedLines(CompilationHelpers.java:131)\n\tat ch.securify.CompilationHelpers.getMappingsFromStatusFile(CompilationHelpers.java:159)\n\tat ch.securify.Main.processCompilationOutput(Main.java:128)\n\tat ch.securify.Main.processSolidityFile(Main.java:94)\n\tat ch.securify.Main.main(Main.java:227)\n"
+        }
+      ]
+    }
+  },
+  "src/test/resources/solidity/end_to_end_testing_quick/kybernetwork_flattened.sol:KyberReserveInterface": {
+    "results": {
+      "DAO": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "DAOConstantGas": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "LockedEther": {
+        "violations": [],
+        "warnings": [
+          -1
+        ],
+        "safe": [],
+        "conflicts": []
+      },
+      "MissingInputValidation": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "TODAmount": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "TODReceiver": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnhandledException": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnrestrictedEtherFlow": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnrestrictedWrite": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      }
+    },
+    "securifyErrors": {
+      "errors": [
+        {
+          "error": "mapping_error",
+          "stackTrace": "ch.securify.MappingNotFoundException\n\tat ch.securify.CompilationHelpers.bytecodeOffsetToSourceOffset(CompilationHelpers.java:72)\n\tat ch.securify.CompilationHelpers.getMatchedLines(CompilationHelpers.java:131)\n\tat ch.securify.CompilationHelpers.getMappingsFromStatusFile(CompilationHelpers.java:159)\n\tat ch.securify.Main.processCompilationOutput(Main.java:128)\n\tat ch.securify.Main.processSolidityFile(Main.java:94)\n\tat ch.securify.Main.main(Main.java:227)\n"
+        }
+      ]
+    }
+  },
+  "src/test/resources/solidity/end_to_end_testing_quick/kybernetwork_flattened.sol:PermissionGroups": {
+    "results": {
+      "DAO": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "DAOConstantGas": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "LockedEther": {
+        "violations": [
+          79
+        ],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "MissingInputValidation": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "TODAmount": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "TODReceiver": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnhandledException": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnrestrictedEtherFlow": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnrestrictedWrite": {
+        "violations": [
+          79,
+          168,
+          193
+        ],
+        "warnings": [],
+        "safe": [],
+        "conflicts": [
+          2,
+          125,
+          136,
+          147,
+          148,
+          158,
+          159,
+          164,
+          183,
+          184,
+          189
+        ]
+      }
+    },
+    "securifyErrors": {
+      "errors": []
+    }
+  },
+  "src/test/resources/solidity/end_to_end_testing_quick/kybernetwork_flattened.sol:Utils": {
+    "results": {},
+    "securifyErrors": {
+      "errors": [
+        {
+          "error": "decompilation_error",
+          "stackTrace": "java.util.EmptyStackException\n\tat java.util.Stack.peek(Stack.java:102)\n\tat java.util.Stack.pop(Stack.java:84)\n\tat ch.securify.decompiler.Variable.takeFromStack(Variable.java:83)\n\tat ch.securify.decompiler.InstructionFactory.createAndApply(InstructionFactory.java:92)\n\tat ch.securify.decompiler.DecompilerFallback.decompile(DecompilerFallback.java:111)\n\tat ch.securify.Main.decompileContract(Main.java:276)\n\tat ch.securify.Main.processHexFile(Main.java:157)\n\tat ch.securify.Main.processCompilationOutput(Main.java:120)\n\tat ch.securify.Main.processSolidityFile(Main.java:94)\n\tat ch.securify.Main.main(Main.java:227)\n"
+        }
+      ]
+    }
+  },
+  "src/test/resources/solidity/end_to_end_testing_quick/kybernetwork_flattened.sol:Utils2": {
+    "results": {
+      "DAO": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "DAOConstantGas": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "LockedEther": {
+        "violations": [],
+        "warnings": [
+          299
+        ],
+        "safe": [],
+        "conflicts": []
+      },
+      "MissingInputValidation": {
+        "violations": [
+          304
+        ],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "TODAmount": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "TODReceiver": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnhandledException": {
+        "violations": [],
+        "warnings": [
+          308
+        ],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnrestrictedEtherFlow": {
+        "violations": [],
+        "warnings": [
+          308
+        ],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnrestrictedWrite": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      }
+    },
+    "securifyErrors": {
+      "errors": []
+    }
+  },
+  "src/test/resources/solidity/end_to_end_testing_quick/kybernetwork_flattened.sol:WhiteListInterface": {
+    "results": {
+      "DAO": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "DAOConstantGas": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "LockedEther": {
+        "violations": [],
+        "warnings": [
+          -1
+        ],
+        "safe": [],
+        "conflicts": []
+      },
+      "MissingInputValidation": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "TODAmount": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "TODReceiver": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnhandledException": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnrestrictedEtherFlow": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnrestrictedWrite": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      }
+    },
+    "securifyErrors": {
+      "errors": [
+        {
+          "error": "mapping_error",
+          "stackTrace": "ch.securify.MappingNotFoundException\n\tat ch.securify.CompilationHelpers.bytecodeOffsetToSourceOffset(CompilationHelpers.java:72)\n\tat ch.securify.CompilationHelpers.getMatchedLines(CompilationHelpers.java:131)\n\tat ch.securify.CompilationHelpers.getMappingsFromStatusFile(CompilationHelpers.java:159)\n\tat ch.securify.Main.processCompilationOutput(Main.java:128)\n\tat ch.securify.Main.processSolidityFile(Main.java:94)\n\tat ch.securify.Main.main(Main.java:227)\n"
+        }
+      ]
+    }
+  },
+  "src/test/resources/solidity/end_to_end_testing_quick/kybernetwork_flattened.sol:Withdrawable": {
+    "results": {
+      "DAO": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "DAOConstantGas": {
+        "violations": [],
+        "warnings": [
+          228
+        ],
+        "safe": [],
+        "conflicts": []
+      },
+      "LockedEther": {
+        "violations": [],
+        "warnings": [
+          209
+        ],
+        "safe": [],
+        "conflicts": []
+      },
+      "MissingInputValidation": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "TODAmount": {
+        "violations": [],
+        "warnings": [
+          228
+        ],
+        "safe": [],
+        "conflicts": []
+      },
+      "TODReceiver": {
+        "violations": [],
+        "warnings": [
+          228
+        ],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnhandledException": {
+        "violations": [],
+        "warnings": [
+          218,
+          228
+        ],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnrestrictedEtherFlow": {
+        "violations": [],
+        "warnings": [
+          218
+        ],
+        "safe": [],
+        "conflicts": [
+          228
+        ]
+      },
+      "UnrestrictedWrite": {
+        "violations": [
+          168,
+          193,
+          209
+        ],
+        "warnings": [],
+        "safe": [],
+        "conflicts": [
+          2,
+          125,
+          136,
+          147,
+          148,
+          158,
+          159,
+          164,
+          183,
+          184,
+          189
+        ]
+      }
+    },
+    "securifyErrors": {
+      "errors": []
+    }
+  }
+}

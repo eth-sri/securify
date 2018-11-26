@@ -1,0 +1,79 @@
+{
+  "src/test/resources/solidity/UnhandledException.sol:SimpleBank": {
+    "results": {
+      "DAO": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "DAOConstantGas": {
+        "violations": [
+          4
+        ],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "LockedEther": {
+        "violations": [],
+        "warnings": [
+          0
+        ],
+        "safe": [],
+        "conflicts": []
+      },
+      "MissingInputValidation": {
+        "violations": [],
+        "warnings": [
+          3
+        ],
+        "safe": [],
+        "conflicts": []
+      },
+      "TODAmount": {
+        "violations": [],
+        "warnings": [],
+        "safe": [
+          4
+        ],
+        "conflicts": []
+      },
+      "TODReceiver": {
+        "violations": [],
+        "warnings": [
+          4
+        ],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnhandledException": {
+        "violations": [
+          4
+        ],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnrestrictedEtherFlow": {
+        "violations": [],
+        "warnings": [],
+        "safe": [
+          4
+        ],
+        "conflicts": []
+      },
+      "UnrestrictedWrite": {
+        "violations": [],
+        "warnings": [
+          5
+        ],
+        "safe": [],
+        "conflicts": []
+      }
+    },
+    "securifyErrors": {
+      "errors": []
+    }
+  }
+}
