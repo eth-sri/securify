@@ -60,5 +60,4 @@ RUN ./gradlew jar
 COPY src/test/resources/solidity/transaction-reordering.sol /project/example.sol
 
 # run_securify.py allows arguments to be passed (e.g. "--truffle").
-ENTRYPOINT ["python3", "docker_run_securify.py"]
-CMD ["-p", "/project"]
+ENTRYPOINT ["python3", "docker_run_securify.py", "-p", "/project"]

@@ -40,7 +40,7 @@ class TruffleProject(project.Project):
                 subprocess.check_output(["truffle", "compile"],
                                         stderr=subprocess.STDOUT)
             except subprocess.CalledProcessError as e:
-                utils.log_error("Error compiling truffle project.")
+                logging.error("Error compiling truffle project.")
                 utils.handle_process_output_and_exit(e)
 
         self._merge_compiled_files(compilation_output)
