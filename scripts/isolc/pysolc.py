@@ -28,13 +28,15 @@ from solc.exceptions import SolcError
 import solc.install
 
 
-class NoSolidityProject(BaseException):
-    def __init__(self, dir):
-        self.dir = dir
+class NoSolidityProject(Exception):
+    def __init__(self, folder):
+        super().__init__()
+        self.folder = folder
 
 
-class CompilerVersionNotSupported(BaseException):
+class CompilerVersionNotSupported(Exception):
     def __init__(self, version, too_old=True):
+        super().__init__()
         self.version = version
         self.too_old = too_old
 
@@ -111,7 +113,7 @@ def compile_solfiles(files, proj_dir, solc_version=None, output_values=OUTPUT_VA
 
     if solc_version is None:
         solc_version = min(map(parse_version, files),
-                           key=lambda x: _version_to_tuple(x))
+                           key=_version_to_tuple)
 
     binary = os.path.join(Path.home(), f'.py-solc/solc-v{solc_version}/bin/solc')
 

@@ -21,16 +21,16 @@ import abc
 import json
 import logging
 import pathlib
-import psutil
 import subprocess
-import sys
 import tempfile
 
+import psutil
 from . import utils
 
 
 class Project(metaclass=abc.ABCMeta):
-    """Abstract Project implemented by all different kinds projects requiring compilation and reporting."""
+    """Abstract Project implemented by projects requiring compilation and reporting.
+    """
 
     securify_jar = pathlib.Path("build/libs/securify-0.1.jar")
 

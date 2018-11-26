@@ -18,27 +18,26 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import os
-import sys
-from pathlib import Path
 import json
-import subprocess
+import os
+from pathlib import Path
 
-from solc import install_solc
+from solc.exceptions import SolcError
 from solc.main import _parse_compiler_output
 from solc.wrapper import solc_wrapper
-from solc.exceptions import SolcError
-import solc.install
 
-from . import project
-from . import utils
+from . import project, utils
+
+
+def _get_binary(version):
+    """Returns the binary for some version of solc."""
+    binary = os.path.join(Path.home(), f'.py-solc/solc-v{version}/bin/solc')
+    assert os.path.exists(binary), 'solc binary not found'
+    return binary
 
 
 class SolcProject(project.Project):
     """A project that uses the `solc` compiler."""
-
-    def __init__(self, project_root):
-        super().__init__(project_root)
 
     def compile_(self, compilation_output):
         """Compile the project and dump the output to an intermediate file."""
@@ -60,12 +59,6 @@ class SolcProject(project.Project):
                 '/test/' not in p[len(str(self.project_root)):] and
                 not p.endswith('/test')]
 
-    def _get_binary(self, version):
-        """Returns the binary for some version of solc."""
-        binary = os.path.join(Path.home(), f'.py-solc/solc-v{version}/bin/solc')
-        assert os.path.exists(binary), 'solc binary not found'
-        return binary
-
     def _compile_solfiles(self, files, solc_version=None, output_values=utils.OUTPUT_VALUES):
         """Compiles the files using the solc compiler."""
         node_modules_dir = utils.find_node_modules_dir(self.project_root)
@@ -84,9 +77,9 @@ class SolcProject(project.Project):
 
         if solc_version is None:
             solc_version = min(map(utils.parse_sol_version, files),
-                               key=lambda x: utils.version_to_tuple(x))
+                               key=utils.version_to_tuple)
 
-        binary = self._get_binary(solc_version)
+        binary = _get_binary(solc_version)
 
         combined_json = ','.join(output_values)
         compiler_kwargs = {'import_remappings': remappings,

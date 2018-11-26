@@ -27,13 +27,15 @@ from solc.exceptions import SolcError
 import solc.install
 
 
-class NoSolidityProject(BaseException):
-    def __init__(self, dir):
-        self.dir = dir
+class NoSolidityProject(Exception):
+    def __init__(self, folder):
+        super().__init__()
+        self.folder = folder
 
 
-class CompilerVersionNotSupported(BaseException):
+class CompilerVersionNotSupported(Exception):
     def __init__(self, version, too_old=True):
+        super().__init__()
         self.version = version
         self.too_old = too_old
 
@@ -71,17 +73,17 @@ def parse_sol_version(source):
         if 'pragma' in l and not 'experimental' in l:
             if '^' in l or '>' in l:
                 return DEFAULT_SOLC_VERSION
-            else:
-                match = COMP_VERSION1_REX.search(l)
-                if match is None:
-                    raise RuntimeError('Could not parse compiler pragma.')
-                else:
-                    solc_version = match.group(0)
-                    if solc_version not in SOLC_VERSIONS:
-                        raise CompilerVersionNotSupported(
-                            solc_version, solc_version < SOLC_VERSIONS[0])
-                    else:
-                        return solc_version
+
+            match = COMP_VERSION1_REX.search(l)
+            if match is None:
+                raise RuntimeError('Could not parse compiler pragma.')
+
+            solc_version = match.group(0)
+            if solc_version not in SOLC_VERSIONS:
+                raise CompilerVersionNotSupported(
+                    solc_version, solc_version < SOLC_VERSIONS[0])
+
+            return solc_version
 
     return DEFAULT_SOLC_VERSION
 
@@ -121,11 +123,11 @@ OUTPUT_VALUES = ('abi',
                  'bin-runtime',
                  'srcmap-runtime')
 
-_versions = (getattr(solc.install, item)[1:]
+_VERSIONS = (getattr(solc.install, item)[1:]
              for item in dir(solc.install) if item.startswith('V'))
 
 SOLC_VERSIONS = tuple(filter(
     lambda x: version_to_tuple(x) >= version_to_tuple('0.4.11'),
-    _versions))
+    _VERSIONS))
 
 DEFAULT_SOLC_VERSION = SOLC_VERSIONS[-1]
