@@ -47,9 +47,9 @@ RUN npm install -g truffle@$truffle
 WORKDIR /sec
 
 # To cache gradle distribution
-COPY gradlew build.gradle settings.gradle /sec/
+COPY gradlew settings.gradle /sec/
 COPY gradle /sec/gradle/
-RUN ./gradlew jar
+RUN ./gradlew -v
 
 # copy and compile securify
 COPY . /sec
