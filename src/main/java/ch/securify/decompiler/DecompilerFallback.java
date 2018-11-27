@@ -102,6 +102,9 @@ public class DecompilerFallback extends AbstractDecompiler {
 
 				if (OpCodes.isInvalid(rawInstruction.opcode) || rawInstruction.opcode == OpCodes.JUMP
 						|| rawInstruction.opcode == OpCodes.STOP
+						|| rawInstruction.opcode == OpCodes.RETURN
+						|| rawInstruction.opcode == OpCodes.REVERT
+						|| rawInstruction.opcode == OpCodes.SELFDESTRUCT
 						|| rawInstruction.opcode == OpCodes.JUMPI
 						&& controlFlowGraph.get(rawInstruction.offset).contains(ControlFlowDetector.DEST_ERROR)) {
 					// end of first block, stop
