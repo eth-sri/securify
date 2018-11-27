@@ -6,5 +6,9 @@ import ch.securify.analysis.SecurifyErrors;
 public class SolidityResult {
     TreeMap<String, SmallPatternResult> results = new TreeMap<>();
 
-    SecurifyErrors securifyErrors = null;
+    SolidityResult(SecurifyErrors securifyErrors) {
+        this.securifyErrors = securifyErrors;
+    }
+
+    SecurifyErrors securifyErrors;
 }
