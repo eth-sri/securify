@@ -245,8 +245,7 @@ public class DestackerFallback {
 				// continue on current branch
 				continue;
 			}
-			else if (opcode == OpCodes.STOP || opcode == OpCodes.RETURN || opcode == OpCodes.REVERT || opcode == OpCodes.SELFDESTRUCT || OpCodes.isInvalid(opcode)) {
-				// end of execution
+			else if (OpCodes.endsExecution(opcode)) {
 				return;
 			}
 			else if (opcode == OpCodes.JUMPDEST && !canonicalStackForBranchJoinJumpdest.containsKey(pc)) {

@@ -209,6 +209,30 @@ public class OpCodes {
 		return "INVALID".equals(getOpName(opcode)) || opcode == INVALID;
 	}
 
+	/**
+	 * Indicate whether the opcode terminates a basic block
+	 * Ignores the case of JUMPI for which it depends on the CFG
+	 * @param opcode
+	 * @return whether the opcode belongs to the corresponding set
+	 */
+	public static boolean surelyEndsBlock(int opcode) {
+		return endsExecution(opcode) ||
+				opcode == OpCodes.RETURN ||
+				opcode == OpCodes.JUMP;
+	}
+
+	/**
+	 * Indicate whether the opcode ends the execution
+	 * @param opcode
+	 * @return whether the opcode belongs to the corresponding set
+	 */
+	public static boolean endsExecution(int opcode) {
+		return isInvalid(opcode) ||
+				opcode == OpCodes.REVERT ||
+				opcode == OpCodes.SELFDESTRUCT ||
+				opcode == OpCodes.STOP;
+	}
+
 
 	/**
 	 * Get an invalid opcode.
