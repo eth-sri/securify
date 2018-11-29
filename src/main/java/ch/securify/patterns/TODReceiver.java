@@ -28,6 +28,16 @@ import java.util.List;
 
 public class TODReceiver extends AbstractInstructionPattern {
 
+    public TODReceiver() {
+        super(new PatternDescription("TransactionReordering",
+                 "Transaction Reordering",
+                 TODReceiver.class,
+                "Transaction Order Affects Ether Receiver",
+               "The receiver of ether transfers must not be influenced by other transactions.",
+                PatternDescription.Severity.Critical,
+                PatternDescription.Type.Security));
+    }
+
     @Override
     protected boolean applicable(Instruction instr, AbstractDataflow dataflow) {
         if (!(instr instanceof Call))

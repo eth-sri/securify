@@ -35,6 +35,7 @@ import com.google.common.base.Strings;
 import com.google.gson.*;
 
 import java.io.*;
+import java.lang.reflect.Modifier;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
@@ -232,7 +233,8 @@ public class Main {
             } else {
                 allContractsResults = mainFromCompilationOutput(args.compilationoutput, livestatusfile);
             }
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            // by default, TRANSIENT and STATIC are excluded; include static here.
+            Gson gson = new GsonBuilder().excludeFieldsWithModifiers(Modifier.TRANSIENT).setPrettyPrinting().create();
             if (args.outputfile != null) {
                 try (Writer writer = new FileWriter(args.outputfile)) {
                     gson.toJson(allContractsResults, writer);
@@ -337,6 +339,7 @@ public class Main {
             patterns = allPatterns;
         }
 
+        SolidityResult.setPatternDescriptions(patterns);
     }
 
     /**

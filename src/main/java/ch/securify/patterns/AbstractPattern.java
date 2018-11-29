@@ -26,18 +26,28 @@ import java.util.LinkedList;
 import java.util.List;
 
 public abstract class AbstractPattern {
+    PatternDescription description;
+
+    public AbstractPattern(PatternDescription description){
+        assert description != null;
+        this.description = description;
+    }
 
     // Instructions that violate the pattern
-    Collection<Instruction> violations = new LinkedList<Instruction>();
+    Collection<Instruction> violations = new LinkedList<>();
 
     // Instruction that MAY violate the pattern (warnings)
-    Collection<Instruction> warnings = new LinkedList<Instruction>();
+    Collection<Instruction> warnings = new LinkedList<>();
 
     // Instructions that do NOT violate the pattern (safe uses)
-    Collection<Instruction> safe = new LinkedList<Instruction>();
+    Collection<Instruction> safe = new LinkedList<>();
 
     // Instructions that have conflicting pattern result (safe and violation)
-    Collection<Instruction> conflicts = new LinkedList<Instruction>();
+    Collection<Instruction> conflicts = new LinkedList<>();
+
+    public PatternDescription getDescription() {
+        return description;
+    }
 
     /**
      * @param instructions : instructions to be checked
@@ -89,14 +99,4 @@ public abstract class AbstractPattern {
     protected void addConflict(Instruction instr) {
         conflicts.add(instr);
     }
-
-    public boolean hasViolations() {
-        return violations.size() > 0;
-    }
-
-    public boolean hasWarnings() {return warnings.size() > 0; }
-
-    public boolean hasSafe() {return safe.size() > 0; }
-
-    public boolean hasConflicts() {return conflicts.size() > 0; }
 }

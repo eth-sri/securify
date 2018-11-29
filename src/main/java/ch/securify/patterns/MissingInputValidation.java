@@ -27,6 +27,16 @@ import java.util.*;
 
 public class MissingInputValidation extends AbstractInstructionPattern {
 
+    public MissingInputValidation() {
+        super(new PatternDescription("InsecureCodingPatterns",
+                "Insecure Coding Patterns",
+                MissingInputValidation.class,
+                "Missing Input Validation",
+                "Method arguments must be sanitized before they are used in computations.",
+                PatternDescription.Severity.Medium,
+                PatternDescription.Type.Trust));
+    }
+
     @Override
     protected boolean applicable(Instruction instr, AbstractDataflow dataflow) {
         return instr instanceof _VirtualMethodHead;

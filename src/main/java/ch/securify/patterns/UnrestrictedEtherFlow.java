@@ -27,6 +27,16 @@ import ch.securify.decompiler.instructions.*;
 
 public class UnrestrictedEtherFlow extends AbstractInstructionPattern {
 
+    public UnrestrictedEtherFlow() {
+        super(new PatternDescription("InsecureCodingPatterns",
+                "Insecure Coding Patterns",
+                UnrestrictedEtherFlow.class,
+                "Unrestricted ether flow",
+                "The execution of ether flows should be restricted to an authorized set of users.",
+                PatternDescription.Severity.Critical,
+                PatternDescription.Type.Security));
+    }
+
     @Override
     protected boolean applicable(Instruction instr, AbstractDataflow dataflow) {
         return instr instanceof Call;

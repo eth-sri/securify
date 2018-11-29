@@ -31,6 +31,17 @@ import ch.securify.utils.BigIntUtil;
 // TODO: buggy
 public class LockedEther extends AbstractContractPattern {
 
+    public LockedEther() {
+        super(new PatternDescription("LockedEther",
+                "Locked Ether",
+                LockedEther.class,
+                "Locked Ether",
+                "Contracts that may receive ether must also allow users to extract the deposited ether from the contract.",
+                PatternDescription.Severity.Medium,
+                PatternDescription.Type.Security));
+
+    }
+
     @Override
     protected boolean isSafe(List<Instruction> instructions, AbstractDataflow dataflow) {
         // Check if the contract cannot receive ether

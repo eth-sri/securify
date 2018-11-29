@@ -31,6 +31,16 @@ import ch.securify.decompiler.instructions.SStore;
 
 public class UnrestrictedWrite extends AbstractInstructionPattern {
 
+    public UnrestrictedWrite() {
+        super(new PatternDescription("InsecureCodingPatterns",
+                "Insecure Coding Patterns",
+                UnrestrictedWrite.class,
+                "Unrestricted write to storage",
+                "Contract fields that can be modified by any user must be inspected.",
+                PatternDescription.Severity.Critical,
+                PatternDescription.Type.Security));
+    }
+
     @Override
     protected boolean applicable(Instruction instr, AbstractDataflow dataflow) {
         return instr instanceof SStore;

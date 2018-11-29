@@ -25,6 +25,10 @@ import java.util.List;
 
 public abstract class AbstractContractPattern extends AbstractPattern {
 
+    public AbstractContractPattern(PatternDescription description) {
+        super(description);
+    }
+
     @Override
     public void checkPattern(List<Instruction> instructions, List<Instruction> allInstructions, AbstractDataflow dataflow) {
         if (instructions.size() < 1)
