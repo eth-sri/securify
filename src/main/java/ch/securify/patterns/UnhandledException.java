@@ -28,6 +28,15 @@ import ch.securify.decompiler.instructions.JumpI;
 
 public class UnhandledException extends AbstractInstructionPattern {
 
+    public UnhandledException() {
+        super(new PatternDescription("InsecureCodingPatterns",
+                UnhandledException.class,
+                "Unhandled Exception",
+                "The return value of statements that may return error values must be explicitly checked.",
+                PatternDescription.Severity.High,
+                PatternDescription.Type.Security));
+    }
+
     @Override
     protected boolean applicable(Instruction instr, AbstractDataflow dataflow) {
         return instr instanceof Call;

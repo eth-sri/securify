@@ -30,6 +30,15 @@ import java.util.List;
 
 public class DAO extends AbstractInstructionPattern {
 
+    public DAO() {
+        super(new PatternDescription("RecursiveCalls",
+                DAO.class,
+                "Gas-dependent Reentrancy",
+                "Calls into external contracts that receive all remaining gas and are followed by state changes may be reentrant.",
+                PatternDescription.Severity.Critical,
+                PatternDescription.Type.Security));
+    }
+
     @Override
     protected boolean applicable(Instruction instr, AbstractDataflow dataflow) {
         if (!(instr instanceof Call))
