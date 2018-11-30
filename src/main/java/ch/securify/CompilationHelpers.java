@@ -17,11 +17,11 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.reverse;
 
 class SmallPatternResult {
-    private String name;
-    private TreeSet<Integer> violations;
-    private TreeSet<Integer> warnings;
-    private TreeSet<Integer> safe;
-    private TreeSet<Integer> conflicts;
+    String name;
+    TreeSet<Integer> violations;
+    TreeSet<Integer> warnings;
+    TreeSet<Integer> safe;
+    TreeSet<Integer> conflicts;
 
     SmallPatternResult(TreeSet<Integer> violations, TreeSet<Integer> warnings, TreeSet<Integer> safe, TreeSet<Integer> conflicts) {
         this.violations = violations;

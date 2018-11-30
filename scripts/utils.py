@@ -91,7 +91,7 @@ def parse_sol_version(source):
 def handle_process_output_and_exit(error):
     """Processes stdout and stderr from a subprocess CalledProcessError."""
     if error.output:
-        logging.info(error.output.decode('ascii'))
+        logging.info(error.output)
     sys.exit(1)
 
 

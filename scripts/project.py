@@ -29,14 +29,14 @@ from . import utils
 
 
 class Project(metaclass=abc.ABCMeta):
-    """Abstract Project implemented by projects requiring compilation and reporting.
+    """Abstract class implemented by projects using compilation and reporting.
     """
-
     securify_jar = pathlib.Path("build/libs/securify-0.1.jar")
 
-    def __init__(self, project_root):
+    def __init__(self, project_root, pretty_output):
         """Sets the project root."""
         self.project_root = pathlib.Path(project_root)
+        self.pretty_output = pretty_output
 
     def execute(self):
         """Execute the project. This includes compilation and reporting.
@@ -63,8 +63,12 @@ class Project(metaclass=abc.ABCMeta):
         cmd = ["java", f"-Xmx{memory}G", "-jar", str(self.securify_jar),
                "-co", compilation_output,
                "-o", securify_target_output]
+        if self.pretty_output:
+            cmd += ["--pretty"]
+
         try:
-            subprocess.check_output(cmd, shell=False, stderr=subprocess.STDOUT)
+            self.sec_output = subprocess.check_output(
+                cmd, stderr=subprocess.STDOUT, universal_newlines=True)
         except subprocess.CalledProcessError as e:
             logging.error("Error running securify.")
             utils.handle_process_output_and_exit(e)
@@ -82,7 +86,10 @@ class Project(metaclass=abc.ABCMeta):
         with open(securify_target_output) as file:
             json_report = json.load(file)
 
-        print(json.dumps(json_report, indent=4))
+        if self.pretty_output:
+            print(self.sec_output)
+        else:
+            print(json.dumps(json_report, indent=4))
 
         for contract in json_report.values():
             for pattern in contract["results"].values():

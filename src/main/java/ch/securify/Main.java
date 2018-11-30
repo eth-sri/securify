@@ -76,6 +76,9 @@ public class Main {
 
         @Parameter(names = {"--progress"}, description = "show progress when contracts are being processed")
         private boolean progress;
+
+        @Parameter(names = {"--pretty"}, description = "display pretty 'clang style' output")
+        private boolean prettyOutput;
     }
 
     private static List<AbstractPattern> patterns;
@@ -232,6 +235,11 @@ public class Main {
                 } catch (Exception ex) {
                     throw new RuntimeException(ex);
                 }
+                if (args.prettyOutput) {
+                    OutputGenerator.print(allContractsResults);
+                }
+            } else if (args.prettyOutput) {
+                OutputGenerator.print(allContractsResults);
             } else {
                 gson.toJson(allContractsResults, System.out);
             }

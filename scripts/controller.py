@@ -35,6 +35,9 @@ class Controller:
         self._parser.add_argument('-p', '--project',
                                   action="store", help="the project root",
                                   required=True)
+        self._parser.add_argument('--pretty',
+                                  action="store_true",
+                                  help="provide clang style output instead of standard JSON")
         verbosity_group = self._parser.add_mutually_exclusive_group()
         verbosity_group.add_argument('-v', '--verbose',
                                      action="store_true",
@@ -46,9 +49,9 @@ class Controller:
         self.args = self._parser.parse_args()
 
         if self.args.truffle:
-            self._project = truffle_project.TruffleProject(self.args.project)
+            self._project = truffle_project.TruffleProject(self.args.project, self.args.pretty)
         else:
-            self._project = solc_project.SolcProject(self.args.project)
+            self._project = solc_project.SolcProject(self.args.project, self.args.pretty)
 
         if self.args.verbose:
             utils.set_logger_level("info")

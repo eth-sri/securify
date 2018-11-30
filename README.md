@@ -109,6 +109,9 @@ The indices of the lines matched are 0-based, meaning that a match to line `i`
 means that the `i+1`th line is matched. In particular, the first line has an
 index of 0.
 
+Alternatively, add the `--pretty` flag in order to get clang style output rather
+than JSON based output.
+
 
 ### Travis
 

@@ -30,8 +30,8 @@ from . import project
 class TruffleProject(project.Project):
     """A project that uses the truffle development environment to compile the project."""
 
-    def __init__(self, project_root):
-        super().__init__(project_root)
+    def __init__(self, project_root, pretty_output):
+        super().__init__(project_root, pretty_output)
         self.build_dir = self.project_root / pathlib.Path("build/contracts/")
 
     def compile_(self, compilation_output):
