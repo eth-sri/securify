@@ -146,7 +146,7 @@ still bugs, including:
 * the code in  the fallback function is currently not analyzed. A workaround is
   to name this function instead.
 * in some cases, a StackOverflowError exception is thrown, due to
-  `computeBranches` being non tail-recursive (but recursive). In most cases,
+  `computeBranches` being recursive. In most cases,
   it is enough to increase the stack size using the `-Xss` option of `java`,
   e.g. `java -Xss1G -jar ...`.
 * libraries are not properly supported
