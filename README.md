@@ -155,7 +155,8 @@ still bugs, including:
 
 ## Presentations, research, and blogs about Securify
 
-* [Securify research paper](https://files.sri.inf.ethz.ch/website/papers/ccs18-securify.pdf) to be presented at [ACM CCS'18](https://www.sigsac.org/ccs/CCS2018/) in Toronto, Canada
+* [Securify research paper](https://files.sri.inf.ethz.ch/website/papers/ccs18-securify.pdf) presented at [ACM CCS'18](https://www.sigsac.org/ccs/CCS2018/) in Toronto, Canada
+* [Summary of the Securify research paper in The Morning Paper](https://blog.acolyer.org/2018/12/03/securify-practical-security-analysis-of-smart-contracts/)
 * [TechCrunch: This smart contract scanner will ensure your token is tip-top](https://techcrunch.com/2018/07/02/this-smart-contract-scanner-will-ensure-your-token-is-tip-top/)
 * [Talk at EPFL in Lausanne](https://www.youtube.com/watch?v=YNbj_JElzuc)
 * [Talk at Devcon3 in Cancún](https://www.youtube.com/watch?v=ewOEEpJs-pg)
