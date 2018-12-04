@@ -172,7 +172,7 @@ public class DSLPatternsCompiler {
         AbstractDSLPattern patternViolationRW = pattFct.some(instrFct.sstore(l1, X, dcVar),
                 pattFct.and(pattFct.not(prdFct.mayDepOn(X, Caller.class)), pattFct.not(prdFct.mayDepOn(l1, Caller.class))));
         log(patternViolationRW.getStringRepresentation());
-        patterns.add(new CompletePattern("RW", patternComplianceNW, patternViolationRW));
+        patterns.add(new CompletePattern("RW", patternComplianceRW, patternViolationRW));
 
         log(" *** RT - restricted transfer");
         AbstractDSLPattern patternComplianceRT = pattFct.all(instrFct.call(dcLabel, dcVar, dcVar, amount),
@@ -225,7 +225,7 @@ public class DSLPatternsCompiler {
                                         prdFct.mayDepOn(Y, DSLArg.class))))));
         log(patternViolationVA.getStringRepresentation());
         patterns.add(new CompletePattern("VA", patternComplianceVA, patternViolationVA));
-
+        
         return patterns;
 
     }
