@@ -13,34 +13,14 @@ import java.util.Set;
 /**
  * The IsConst predicate, takes as input a variable
  */
-public class IsConst extends AbstractPredicate {
-    Variable x;
+public class IsConst extends AbstractVariablePredicate {
+
     public IsConst(Variable x) {
-        this.x = x;
+        super(x);
     }
 
     @Override
-    public String getStringRepresentation() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("isConst(");
-        sb.append(x.getName());
-        sb.append(")");
-
-        return sb.toString();
+    protected String getName() {
+        return "isConst";
     }
-
-    @Override
-    public Set<Variable> getVariables() {
-        Set<Variable> vars = new HashSet<>(1);
-        if(VariableDC.isValidVariable(x))
-            vars.add(x);
-        return vars;
-    }
-
-    @Override
-    public String getDatalogStringRep(DSLAnalysis analyzer) {
-        return getStringRepresentation();
-    }
-
-
 }

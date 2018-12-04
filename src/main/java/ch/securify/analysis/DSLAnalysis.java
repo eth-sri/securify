@@ -5,7 +5,6 @@ import ch.securify.decompiler.instructions.*;
 import ch.securify.dslpatterns.DSLPatternResult;
 import ch.securify.dslpatterns.DSLPatternsCompiler;
 import ch.securify.dslpatterns.tags.DSLArg;
-import ch.securify.dslpatterns.tags.DSLMsgdata;
 import ch.securify.utils.BigIntUtil;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -17,7 +16,6 @@ import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 public class DSLAnalysis {
 
@@ -82,7 +80,7 @@ public class DSLAnalysis {
 
         //fill in already the hashmap of types so that they always the same
         getCode(DSLArg.class); //todo: understand how to properly translate these two
-        getCode(DSLMsgdata.class);
+        getCode(CallDataLoad.class);
         getCode(SLoad.class);
         getCode(Balance.class);
 

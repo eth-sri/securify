@@ -3,13 +3,13 @@ package ch.securify.dslpatterns;
 import ch.securify.analysis.DSLAnalysis;
 import ch.securify.decompiler.Variable;
 import ch.securify.decompiler.instructions.Balance;
+import ch.securify.decompiler.instructions.CallDataLoad;
 import ch.securify.decompiler.instructions.Caller;
 import ch.securify.decompiler.instructions.SLoad;
 import ch.securify.dslpatterns.datalogpattern.DatalogRule;
 import ch.securify.dslpatterns.instructions.DSLInstructionFactory;
 import ch.securify.dslpatterns.predicates.PredicateFactory;
 import ch.securify.dslpatterns.tags.DSLArg;
-import ch.securify.dslpatterns.tags.DSLMsgdata;
 import ch.securify.dslpatterns.util.DSLLabel;
 import ch.securify.dslpatterns.util.DSLLabelDC;
 import ch.securify.dslpatterns.util.InvalidPatternException;
@@ -134,7 +134,7 @@ public class DSLPatternsCompiler {
         patterns.add(patternComplianceOneLQ);
 
         AbstractDSLPattern patternComplianceTwoLQ = pattFct.some(instrFct.call(l1, dcVar, dcVar, amount),
-                pattFct.or(pattFct.not(pattFct.eq(amount, 0)), prdFct.detBy(amount, DSLMsgdata.class)));
+                pattFct.or(pattFct.not(pattFct.eq(amount, 0)), prdFct.detBy(amount, CallDataLoad.class)));
 
         log(patternComplianceTwoLQ.getStringRepresentation());
 
@@ -180,9 +180,9 @@ public class DSLPatternsCompiler {
         log(patternComplianceRT.getStringRepresentation());
 
         AbstractDSLPattern patternViolationRT = pattFct.instructionPattern(instrFct.call(l1, dcVar, dcVar, amount),
-                pattFct.and(prdFct.detBy(amount, DSLMsgdata.class),
+                pattFct.and(prdFct.detBy(amount, CallDataLoad.class),
                         pattFct.not(prdFct.mayDepOn(l1, Caller.class)),
-                        pattFct.not(prdFct.mayDepOn(l1, DSLMsgdata.class))));
+                        pattFct.not(prdFct.mayDepOn(l1, CallDataLoad.class))));
         log(patternViolationRT.getStringRepresentation());
         patterns.add(new CompletePattern("RT", patternComplianceRT, patternViolationRT));
 
