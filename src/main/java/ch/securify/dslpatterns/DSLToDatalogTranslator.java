@@ -2,6 +2,7 @@ package ch.securify.dslpatterns;
 
 
 import ch.securify.decompiler.Variable;
+import ch.securify.decompiler.instructions.Instruction;
 import ch.securify.dslpatterns.datalogpattern.*;
 import ch.securify.dslpatterns.instructions.AbstractDSLInstruction;
 import ch.securify.dslpatterns.predicates.AdditionalTmpPredicate;
@@ -55,11 +56,11 @@ public class DSLToDatalogTranslator {
     /**
      * Translates a pattern into a query, should be called only with a Some or an All
      * @param completePattern the pattern to be translated
-     * @return teh String representing the pattern
+     * @return the list of datalog rules representing the pattern
      */
     public static List<DatalogRule> translateInstructionPattern(AbstractDSLPattern completePattern, String ruleName) throws InvalidPatternException {
-        if(!(completePattern instanceof All) && !(completePattern instanceof Some))
-            throw new InvalidPatternException("Not an All or a Some");
+        if(!(completePattern instanceof InstructionDSLPattern))
+            throw new InvalidPatternException("The outer class is not an instruction pattern class");
 
         supportingRules = new ArrayList<>();
         encounteredLabels = new HashSet<>();
