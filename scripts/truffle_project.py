@@ -28,28 +28,33 @@ from . import project
 
 
 class TruffleProject(project.Project):
-    """A project that uses the truffle development environment to compile the project."""
+    """A project that uses the truffle development environment to compile the
+    project."""
 
-    def __init__(self, project_root, pretty_output):
-        super().__init__(project_root, pretty_output)
+    def __init__(self, project_root, args):
+        super().__init__(project_root, args)
         self.build_dir = self.project_root / pathlib.Path("build/contracts/")
 
     def compile_(self, compilation_output):
         with utils.working_directory(self.project_root):
             try:
-                subprocess.check_output(["truffle", "compile"],
-                                        stderr=subprocess.STDOUT)
+                output = subprocess.check_output(["truffle", "compile"],
+                                                 universal_newlines=True,
+                                                 stderr=subprocess.STDOUT)
+                logging.debug(output)
             except subprocess.CalledProcessError as e:
-                logging.error("Error compiling truffle project.")
+                logging.error("Error compiling Truffle project")
                 utils.handle_process_output_and_exit(e)
 
         self._merge_compiled_files(compilation_output)
 
     def _merge_compiled_files(self, compilation_output):
-        """Merges individual truffle files into an aggregate file for securify."""
+        """Merges individual truffle files into an aggregate file for
+        securify."""
         result = {}
         for entry in os.scandir(self.build_dir):
-            if entry.is_file() and entry.name.endswith(".json") and entry.name != "Migrations.json":
+            if entry.is_file() and entry.name.endswith(".json") and\
+                    entry.name != "Migrations.json":
                 with open(entry) as file:
                     data = json.load(file)
                 contract_name = data["sourcePath"] + ":" + data["contractName"]

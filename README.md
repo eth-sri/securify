@@ -103,14 +103,15 @@ docker run -v $(pwd)/folder_with_solidity_files:/project securify
 Adding a `--truffle` flag should allow Securify to run over Truffle project in
 which dependencies have already been installed (so run `npm install` before if
 need be). Without this flag, the project is compiled using `solc`. Add a `-h`
-to obtain the full list of options.
+to obtain the full list of options. In particular, if the user wants to receive
+compilation information from Truffle, he should add the `-v` flag.
 
-The indices of the lines matched are 0-based, meaning that a match to line `i`
-means that the `i+1`th line is matched. In particular, the first line has an
-index of 0.
-
-Alternatively, add the `--pretty` flag in order to get clang style output rather
-than JSON based output.
+If one wants to receive JSON output, the docker supports a `--json` flag that
+will suppress the pretty output and return JSON instead. Make sure to add the
+`-q` flag if no progress information should be displayed, hence resulting in
+pure JSON output. The indices of the lines matched are 0-based, meaning that
+a match to line `i` means that the `i+1`th line is matched. In particular, the
+first line has an index of 0.
 
 
 ### Tests
@@ -153,8 +154,10 @@ have already been installed (so run `npm install` before if need be).
 
 ### Output
 
-The output is a in JSON and gives the vulnerabilities found over the files
-analyzed and the corresponding line numbers.
+The output loosely follows the clang style. Only warnings and vulnerabilities
+are reported. If one wishes to also get the compliance information, please use
+the `--json` flag in the docker, or `-co` flag on the Java executable to get
+all analysis information in JSON format.
 
 ## Contributing
 

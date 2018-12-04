@@ -28,18 +28,34 @@ import psutil
 from . import utils
 
 
+def report(securify_target_output):
+    """Report findings.
+
+    This function returns 0 if no violations are found, and 1 otherwise.
+    """
+    with open(securify_target_output) as file:
+        json_report = json.load(file)
+
+    for contract in json_report.values():
+        for pattern in contract["results"].values():
+            if pattern["violations"]:
+                return 1
+    return 0
+
+
 class Project(metaclass=abc.ABCMeta):
     """Abstract class implemented by projects using compilation and reporting.
     """
     securify_jar = pathlib.Path("build/libs/securify-0.1.jar")
 
-    def __init__(self, project_root, pretty_output):
-        """Sets the project root."""
+    def __init__(self, project_root, args):
+        """Sets the project root.
+        """
         self.project_root = pathlib.Path(project_root)
-        self.pretty_output = pretty_output
+        self.args = args
 
     def execute(self):
-        """Execute the project. This includes compilation and reporting.
+        """Executes the project. This includes compilation and reporting.
 
         This function returns 0 if no violations are found, and 1 otherwise.
         """
@@ -54,45 +70,30 @@ class Project(metaclass=abc.ABCMeta):
             securify_target_output = tmpdir / "securify_res.json"
             self.run_securify(compilation_output, securify_target_output)
 
-            logging.info("Generating report")
-            return self.report(securify_target_output)
+            return report(securify_target_output)
 
     def run_securify(self, compilation_output, securify_target_output):
-        """Runs the securify command."""
+        """Runs the securify command.
+        """
         memory = psutil.virtual_memory().available // 1024 ** 3
         cmd = ["java", f"-Xmx{memory}G", "-jar", str(self.securify_jar),
                "-co", compilation_output,
                "-o", securify_target_output]
-        if self.pretty_output:
-            cmd += ["--pretty"]
+        if self.args.json:
+            cmd += ["--json"]
+        if self.args.verbose:
+            cmd += ["-v"]
+        if self.args.quiet:
+            cmd += ["-q"]
 
         try:
-            self.sec_output = subprocess.check_output(
-                cmd, stderr=subprocess.STDOUT, universal_newlines=True)
+            subprocess.run(cmd, check=True, universal_newlines=True)
         except subprocess.CalledProcessError as e:
-            logging.error("Error running securify.")
+            logging.error("Error running Securify")
             utils.handle_process_output_and_exit(e)
 
     @abc.abstractmethod
     def compile_(self, compilation_output):
-        """Compile the project."""
-        pass
-
-    def report(self, securify_target_output):
-        """Report findings.
-
-        This function returns 0 if no violations are found, and 1 otherwise.
+        """Compile the project.
         """
-        with open(securify_target_output) as file:
-            json_report = json.load(file)
-
-        if self.pretty_output:
-            print(self.sec_output)
-        else:
-            print(json.dumps(json_report, indent=4))
-
-        for contract in json_report.values():
-            for pattern in contract["results"].values():
-                if pattern["violations"]:
-                    return 1
-        return 0
+        pass

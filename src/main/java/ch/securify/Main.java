@@ -61,8 +61,7 @@ public class Main {
         @Parameter(names = {"-fh", "--filehex"}, description = "contract runtime code to parse as a hex-encoded file")
         private String filehex;
 
-        @Parameter(names = {"-ca",
-                "--contractaddress"}, description = "specific contract address to search for in the provided set of contracts")
+        @Parameter(names = {"-ca", "--contractaddress"}, description = "specific contract address to search for in the provided set of contracts")
         private String contractaddress;
 
         @Parameter(names = {"-p", "--patterns"}, description = "csv list of patterns to be analyzed")
@@ -74,17 +73,20 @@ public class Main {
         @Parameter(names = {"--decompoutputfile"}, description = "output file for the decompiled code")
         private String decompoutputfile;
 
-        @Parameter(names = {"--progress"}, description = "show progress when contracts are being processed")
-        private boolean progress;
+        @Parameter(names = {"-v", "--verbose"}, description = "provide verbose output")
+        private boolean verbose;
 
-        @Parameter(names = {"--pretty"}, description = "display pretty 'clang style' output")
-        private boolean prettyOutput;
+        @Parameter(names = {"-q", "--quiet"}, description = "suppress most output")
+        private boolean quiet;
+
+        @Parameter(names = {"--json"}, description = "provide JSON output to console")
+        private boolean jsonOutput;
     }
 
     private static List<AbstractPattern> patterns;
     private static ContractResult contractResult;
-    private static boolean DEBUG = false;
-    private static PrintStream log = DEBUG ? System.out : new DevNullPrintStream();
+    private static PrintStream log = new DevNullPrintStream();
+    private static PrintStream progressPrinter = System.out;
     private static Args args;
 
 
@@ -105,8 +107,7 @@ public class Main {
         TreeMap<String, SolidityResult> allContractResults = new TreeMap<>();
         for (Map.Entry<String, JsonElement> elt : entries) {
             initPatterns(args);
-            log.println("Processing contract:");
-            log.println(elt.getKey());
+            progressPrinter.println("Processing contract: " + elt.getKey());
 
             String bin = elt.getValue().getAsJsonObject().get("bin-runtime").getAsString();
             String map = elt.getValue().getAsJsonObject().get("srcmap-runtime").getAsString();
@@ -126,12 +127,6 @@ public class Main {
             byte[] fileContent = Files.readAllBytes(new File(elt.getKey().split(":")[0]).toPath());
 
             SolidityResult allPatternResults = CompilationHelpers.getMappingsFromStatusFile(livestatusfile, map, fileContent);
-
-            if (args.progress) {
-                Gson gson = new GsonBuilder().setPrettyPrinting().create();
-                gson.toJson(allPatternResults, System.out);
-                System.out.println();
-            }
 
             allContractResults.put(elt.getKey(), allPatternResults);
         }
@@ -174,6 +169,7 @@ public class Main {
             updateContractAnalysisStatus(livestatusfile);
         }
 
+        progressPrinter.println("  Verifying patterns...");
         try {
             checkPatterns(instructions, livestatusfile);
         } catch(Exception e) {
@@ -203,6 +199,14 @@ public class Main {
             log.println(e.getMessage());
             new JCommander(args).usage();
             return;
+        }
+
+        if (args.verbose) {
+            log = System.out;
+        }
+
+        if (args.quiet) {
+            progressPrinter = new DevNullPrintStream();
         }
 
         initPatterns(args);
@@ -235,14 +239,14 @@ public class Main {
                 } catch (Exception ex) {
                     throw new RuntimeException(ex);
                 }
-                if (args.prettyOutput) {
-                    OutputGenerator.print(allContractsResults);
-                }
-            } else if (args.prettyOutput) {
-                OutputGenerator.print(allContractsResults);
-            } else {
-                gson.toJson(allContractsResults, System.out);
             }
+
+            if (args.jsonOutput) {
+                gson.toJson(allContractsResults, System.out);
+            } else {
+                OutputGenerator.print(allContractsResults);
+            }
+
             return;
         }
 
@@ -263,24 +267,24 @@ public class Main {
     public static List<Instruction> decompileContract(byte[] binary) {
         List<Instruction> instructions;
         try {
-            log.println("Attempt to decompile the contract with methods...");
+            progressPrinter.println("  Attempt to decompile the contract with methods...");
             instructions = Decompiler.decompile(binary, log);
 
-            log.println("Success. Inlining methods...");
+            progressPrinter.println("  Success. Inlining methods...");
             instructions = MethodInliner.inline(instructions, log);
         } catch (Exception e1) {
             log.println(e1.getMessage());
-            log.println("Failed to decompile methods. Attempt to decompile the contract without identifying methods...");
+            progressPrinter.println("  Failed to decompile methods. Attempt to decompile the contract without identifying methods...");
 
             try {
                 instructions = DecompilerFallback.decompile(binary, log);
             } catch (Exception e2) {
-                log.println("Decompilation failed.");
+                progressPrinter.println("  Decompilation failed.");
                 throw e2;
             }
         }
 
-        log.println("Propagating constants...");
+        progressPrinter.println("  Propagating constants...");
         ConstantPropagation.propagate(instructions);
 
         log.println();

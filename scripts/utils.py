@@ -52,12 +52,14 @@ class SolidityCompilationException(SolcError):
 
 
 def version_to_tuple(v):
-    """Converts a version string into a tuple."""
+    """Converts a version string into a tuple.
+    """
     return tuple(map(int, v.split('.')))
 
 
 def find_node_modules_dir(directory):
-    """Returns the path to the node module directory contained in the `directory` directory."""
+    """Returns the path of the node module folder contained in directory.
+    """
     for x in os.walk(directory):
         if os.path.isdir(os.path.join(x[0], 'node_modules')):
             return os.path.join(x[0], 'node_modules')
@@ -65,7 +67,8 @@ def find_node_modules_dir(directory):
 
 
 def parse_sol_version(source):
-    """Parses the solidity version from a contract using the pragma."""
+    """Parses the Solidity version from a contract using the pragma.
+    """
     with open(source, encoding='utf-8') as f:
         lines = f.readlines()
 
@@ -89,25 +92,17 @@ def parse_sol_version(source):
 
 
 def handle_process_output_and_exit(error):
-    """Processes stdout and stderr from a subprocess CalledProcessError."""
-    if error.output:
-        logging.info(error.output)
+    """Processes stderr from a process error.
+    """
+    if error.stdout:
+        logging.fatal(error.stdout.strip())
     sys.exit(1)
-
-
-def set_logger_level(level=None):
-    if level == "info":
-        log_level = logging.INFO
-    elif level == "error":
-        log_level = logging.ERROR
-    else:
-        log_level = logging.WARNING
-
-    logging.basicConfig(format="%(message)s", level=log_level)
 
 
 @contextlib.contextmanager
 def working_directory(path):
+    """Changes current directory to path.
+    """
     prev_cwd = os.getcwd()
     os.chdir(path)
     try:

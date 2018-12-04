@@ -30,17 +30,20 @@ from . import project, utils
 
 
 def _get_binary(version):
-    """Returns the binary for some version of solc."""
+    """Returns the binary for some version of solc.
+    """
     binary = os.path.join(Path.home(), f'.py-solc/solc-v{version}/bin/solc')
     assert os.path.exists(binary), 'solc binary not found'
     return binary
 
 
 class SolcProject(project.Project):
-    """A project that uses the `solc` compiler."""
+    """A project that uses the `solc` compiler.
+    """
 
     def compile_(self, compilation_output):
-        """Compile the project and dump the output to an intermediate file."""
+        """Compile the project and dump the output to an intermediate file.
+        """
         sources = self._get_sol_files()
 
         if not sources:
@@ -52,7 +55,8 @@ class SolcProject(project.Project):
             json.dump(comp_output, fs)
 
     def _get_sol_files(self):
-        """Returns the solidity files contained in the project root."""
+        """Returns the solidity files contained in the project root.
+        """
         return [os.path.join(p, f) for p, _, fs in os.walk(self.project_root) for f in fs if
                 f.endswith('.sol') and
                 'node_modules' not in p and
@@ -60,7 +64,8 @@ class SolcProject(project.Project):
                 not p.endswith('/test')]
 
     def _compile_solfiles(self, files, solc_version=None, output_values=utils.OUTPUT_VALUES):
-        """Compiles the files using the solc compiler."""
+        """Compiles the files using the solc compiler.
+        """
         node_modules_dir = utils.find_node_modules_dir(self.project_root)
 
         remappings = []
