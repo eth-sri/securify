@@ -105,8 +105,7 @@ public class Main {
         TreeMap<String, SolidityResult> allContractResults = new TreeMap<>();
         for (Map.Entry<String, JsonElement> elt : entries) {
             initPatterns(args);
-            log.println("Processing contract:");
-            log.println(elt.getKey());
+            System.out.println("Processing contract: " + elt.getKey());
 
             String bin = elt.getValue().getAsJsonObject().get("bin-runtime").getAsString();
             String map = elt.getValue().getAsJsonObject().get("srcmap-runtime").getAsString();
@@ -263,24 +262,24 @@ public class Main {
     public static List<Instruction> decompileContract(byte[] binary) {
         List<Instruction> instructions;
         try {
-            log.println("Attempt to decompile the contract with methods...");
+            System.out.println("  Attempt to decompile the contract with methods...");
             instructions = Decompiler.decompile(binary, log);
 
-            log.println("Success. Inlining methods...");
+            System.out.println("  Success. Inlining methods...");
             instructions = MethodInliner.inline(instructions, log);
         } catch (Exception e1) {
             log.println(e1.getMessage());
-            log.println("Failed to decompile methods. Attempt to decompile the contract without identifying methods...");
+            System.out.println("  Failed to decompile methods. Attempt to decompile the contract without identifying methods...");
 
             try {
                 instructions = DecompilerFallback.decompile(binary, log);
             } catch (Exception e2) {
-                log.println("Decompilation failed.");
+                System.out.println("  Decompilation failed.");
                 throw e2;
             }
         }
 
-        log.println("Propagating constants...");
+        System.out.println("  Propagating constants...");
         ConstantPropagation.propagate(instructions);
 
         log.println();

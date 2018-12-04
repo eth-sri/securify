@@ -136,6 +136,7 @@ public class CompilationHelpers {
     }
 
     static SolidityResult getMappingsFromStatusFile(String livestatusfile, String map, byte[] contract) throws IOException {
+        System.out.println("  Obtaining source mapping for contract...");
         JsonObject jsonObject = new JsonParser().parse(readFile(livestatusfile)).getAsJsonObject();
         Set<Map.Entry<String, JsonElement>> results = jsonObject.get("patternResults").getAsJsonObject().entrySet();
 

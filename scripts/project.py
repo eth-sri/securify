@@ -21,7 +21,6 @@ import abc
 import json
 import logging
 import pathlib
-import subprocess
 import tempfile
 
 import psutil
@@ -54,7 +53,6 @@ class Project(metaclass=abc.ABCMeta):
             securify_target_output = tmpdir / "securify_res.json"
             self.run_securify(compilation_output, securify_target_output)
 
-            logging.info("Generating report")
             return self.report(securify_target_output)
 
     def run_securify(self, compilation_output, securify_target_output):
@@ -66,12 +64,7 @@ class Project(metaclass=abc.ABCMeta):
         if self.pretty_output:
             cmd += ["--pretty"]
 
-        try:
-            self.sec_output = subprocess.check_output(
-                cmd, stderr=subprocess.STDOUT, universal_newlines=True)
-        except subprocess.CalledProcessError as e:
-            logging.error("Error running securify.")
-            utils.handle_process_output_and_exit(e)
+        utils.run_cmd(cmd)
 
     @abc.abstractmethod
     def compile_(self, compilation_output):
@@ -86,9 +79,7 @@ class Project(metaclass=abc.ABCMeta):
         with open(securify_target_output) as file:
             json_report = json.load(file)
 
-        if self.pretty_output:
-            print(self.sec_output)
-        else:
+        if not self.pretty_output:
             print(json.dumps(json_report, indent=4))
 
         for contract in json_report.values():

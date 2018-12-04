@@ -22,6 +22,7 @@ import logging
 import os
 import re
 import sys
+import subprocess
 
 from solc.exceptions import SolcError
 import solc.install
@@ -57,7 +58,8 @@ def version_to_tuple(v):
 
 
 def find_node_modules_dir(directory):
-    """Returns the path to the node module directory contained in the `directory` directory."""
+    """Returns the path to the node module directory contained in the
+    `directory` directory."""
     for x in os.walk(directory):
         if os.path.isdir(os.path.join(x[0], 'node_modules')):
             return os.path.join(x[0], 'node_modules')
@@ -88,10 +90,37 @@ def parse_sol_version(source):
     return DEFAULT_SOLC_VERSION
 
 
-def handle_process_output_and_exit(error):
-    """Processes stdout and stderr from a subprocess CalledProcessError."""
-    if error.output:
-        logging.info(error.output)
+def run_cmd(cmd, loglevel=logging.WARNING):
+    """Runs a command a prints output to console in realtime. If the command
+    fails, the standard error buffer is printed to console and the program
+    exits.
+
+    Args:
+        - cmd: a list of strings representing the command.
+        - loglevel: the log level at which the output from the command should
+          be logged.
+    """
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE,
+                            universal_newlines=True)
+    while True:
+        output = proc.stdout.readline()
+        if output == "" and proc.poll() is not None:
+            break
+        if output:
+            if output.endswith("\n"):
+                output = output[:-1]
+            logging.log(loglevel, output)
+
+    if proc.poll() != 0:
+        logging.error("Error running securify.")
+        utils.handle_process_output_and_exit(proc)
+
+
+def handle_process_output_and_exit(process):
+    """Processes stderr from a subprocess Popen object."""
+    if process.stderr:
+        logging.info(process.stderr.strip())
     sys.exit(1)
 
 
