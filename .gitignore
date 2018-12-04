@@ -10,3 +10,5 @@ __pycache__/
 
 #always possible to recreate the file by running DSLPatternsCompiler.java
 smt_files/CompiledPatterns.dl
+smt_files/CompiledPatternsNames.csv
+smt_files/finalTmpFile.dl

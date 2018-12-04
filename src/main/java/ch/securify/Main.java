@@ -25,6 +25,8 @@ import ch.securify.decompiler.*;
 import ch.securify.decompiler.instructions.Instruction;
 import ch.securify.decompiler.instructions._VirtualMethodHead;
 import ch.securify.decompiler.printer.DecompilationPrinter;
+import ch.securify.dslpatterns.DSLPatternResult;
+import ch.securify.model.Contract;
 import ch.securify.model.ContractResult;
 import ch.securify.model.PatternResult;
 import ch.securify.patterns.*;
@@ -87,7 +89,7 @@ public class Main {
 
     private static List<AbstractPattern> patterns;
     private static ContractResult contractResult;
-    private static boolean DEBUG = false;
+    private static boolean DEBUG = true;
     private static PrintStream log = DEBUG ? System.out : new DevNullPrintStream();
     private static Args args;
 
@@ -202,7 +204,7 @@ public class Main {
         updateContractAnalysisStatus(livestatusfile);
     }
 
-    private static void checkPatternsWithDSL(List<Instruction> instructions, String livestatusfile) {
+    private static void checkPatternsWithDSL(List<Instruction> instructions, String livestatusfile) throws IOException, InterruptedException {
         boolean methodsDecompiled = (instructions.stream().anyMatch(instruction -> instruction instanceof _VirtualMethodHead));
 
         DSLAnalysis analyzer;
@@ -217,6 +219,9 @@ public class Main {
             log.println("DSL: no methods found analysing whole body");
             try {
                 analyzer.analyse(instructions);
+                List<DSLPatternResult> results = analyzer.getResults();
+                System.out.println("result size = " + results.size());
+                updateStatusWithDSLPattResults(results);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -224,14 +229,15 @@ public class Main {
             // split instructions into methods and check them independently
             for (List<Instruction> body : splitInstructionsIntoMethods(instructions)) {
                 log.println("DSL: Analyzing method with " + body.size() + " instructions:");
-                try {
                     analyzer.analyse(body);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                    List<DSLPatternResult> results = analyzer.getResults();
+                    log.println("result size = " + results.size());
+                    updateStatusWithDSLPattResults(results);
             }
         }
 
+        updateContractAnalysisStatus(livestatusfile);
+        log.println("livestatusfile = " + livestatusfile);
 
 
             /*log.println("Computing global dataflow fixpoint over the entire contract...");
@@ -248,6 +254,32 @@ public class Main {
             }
             globalDataflow.dispose();
         }*/
+    }
+
+    private static void updateStatusWithDSLPattResults(List<DSLPatternResult> results) {
+
+        for (DSLPatternResult result : results) {
+
+            PatternResult status = new PatternResult();
+
+            log.println("Checking pattern " + result.getName() + ": ");
+
+            status.completed = true;
+            result.getViolations().stream()
+                    .filter(instruction -> instruction.getRawInstruction() != null)
+                    .forEach(instruction -> status.addViolation(instruction.getRawInstruction().instrNumber));
+            result.getWarnings().stream()
+                    .filter(instruction -> instruction.getRawInstruction() != null)
+                    .forEach(instruction -> status.addWarning(instruction.getRawInstruction().instrNumber));
+            result.getSafe().stream()
+                    .filter(instruction -> instruction.getRawInstruction() != null)
+                    .forEach(instruction -> status.addSafe(instruction.getRawInstruction().instrNumber));
+            result.getConflicts().stream()
+                    .filter(instruction -> instruction.getRawInstruction() != null)
+                    .forEach(instruction -> status.addConflict(instruction.getRawInstruction().instrNumber));
+
+            contractResult.patternResults.put(result.getName(), status);
+        }
     }
 
     public static void main(String[] rawrgs) throws IOException, InterruptedException {

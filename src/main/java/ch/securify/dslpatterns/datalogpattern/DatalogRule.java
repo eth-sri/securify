@@ -1,7 +1,10 @@
 package ch.securify.dslpatterns.datalogpattern;
 
 import ch.securify.analysis.DSLAnalysis;
+import ch.securify.decompiler.Variable;
 import ch.securify.dslpatterns.util.DSLLabel;
+
+import java.util.List;
 
 public class DatalogRule {
     private DatalogHead head;
@@ -34,6 +37,49 @@ public class DatalogRule {
         sb.append(".");
 
         return sb.toString();
+    }
+
+    public String getDeclaration() {
+        StringBuilder sb = new StringBuilder();
+
+        //example of declaration
+        //.decl jump		(l1: Label, l2: Label, l3: Label) output
+        sb.append(".decl ");
+        sb.append(head.getName());
+        sb.append("( ");
+
+        List<Variable> vars = head.getVars();
+
+        if(!vars.isEmpty()) {
+            sb.append(vars.get(0).getName());
+            sb.append(": Var");
+            for(int i = 1; i < vars.size(); i++) {
+                sb.append(", ");
+                sb.append(vars.get(i).getName());
+                sb.append(": Var");
+            }
+        }
+
+        List<DSLLabel> labels = head.getLabels();
+
+        if(!labels.isEmpty()) {
+            if(!vars.isEmpty())
+                sb.append(" , ");
+            sb.append(labels.get(0).getName());
+            sb.append(": Label");
+            for(int i = 1; i < labels.size(); i++) {
+                sb.append(", ");
+                sb.append(labels.get(i).getName());
+                sb.append(": Label");
+            }
+        }
+
+        sb.append(") output");
+
+
+        return sb.toString();
+
+
     }
 
     /**

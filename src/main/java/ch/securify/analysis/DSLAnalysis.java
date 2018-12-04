@@ -2,7 +2,9 @@ package ch.securify.analysis;
 
 import ch.securify.decompiler.Variable;
 import ch.securify.decompiler.instructions.*;
-import ch.securify.dslpatterns.tags.Arg;
+import ch.securify.dslpatterns.DSLPatternResult;
+import ch.securify.dslpatterns.DSLPatternsCompiler;
+import ch.securify.dslpatterns.tags.DSLArg;
 import ch.securify.dslpatterns.tags.DSLMsgdata;
 import ch.securify.utils.BigIntUtil;
 import com.google.common.collect.BiMap;
@@ -15,6 +17,7 @@ import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class DSLAnalysis {
 
@@ -32,7 +35,7 @@ public class DSLAnalysis {
     protected BiMap<String, StringBuffer> ruleToSB;
     protected Map<String, Set<Long>> fixedpoint;
 
-    protected int bvCounter = 1; // reserve 0 for the constant 0
+    protected int bvCounter = 1; //reserve 0 for the constant 0
 
     public int unk;
 
@@ -41,12 +44,12 @@ public class DSLAnalysis {
     // input predicates
 
     protected String WORKSPACE, WORKSPACE_OUT;
-    protected final String SOUFFLE_COMPILE_FLAG = "-c", SOUFFLE_BIN = "souffle";
-    protected String SOUFFLE_RULES;
+    protected static final String SOUFFLE_COMPILE_FLAG = "-c", SOUFFLE_BIN = "souffle";
+    protected static final String SOUFFLE_RULES = "smt_files/allInOneAnalysis.dl";
+    protected static final String FINAL_FILE = "smt_files/finalTmpFile.dl";
     protected final String TIMEOUT_COMMAND = System.getProperty("os.name").toLowerCase().startsWith("mac") ? "gtimeout" : "timeout";
 
     public DSLAnalysis() throws IOException, InterruptedException {
-        SOUFFLE_RULES = "smt_files/allInOneAnalysis.dl";
         initDataflow();
     }
 
@@ -78,7 +81,7 @@ public class DSLAnalysis {
         constToCode.put(new Integer(0), new Integer(0));
 
         //fill in already the hashmap of types so that they always the same
-        getCode(Arg.class); //todo: understand how to properly translate these two
+        getCode(DSLArg.class); //todo: understand how to properly translate these two
         getCode(DSLMsgdata.class);
         getCode(SLoad.class);
         getCode(Balance.class);
@@ -102,10 +105,12 @@ public class DSLAnalysis {
         ruleToSB.put("sload", new StringBuffer());
         ruleToSB.put("sstore", new StringBuffer());
         ruleToSB.put("goto", new StringBuffer());
-        //ruleToSB.put("isStorageVar", new StringBuffer());
+        ruleToSB.put("isConst", new StringBuffer());
+        ruleToSB.put("isStorageVar", new StringBuffer());
         ruleToSB.put("sha3", new StringBuffer());
         ruleToSB.put("call", new StringBuffer());
         ruleToSB.put("unk", new StringBuffer());
+        ruleToSB.put("assignVarMayImplicit", new StringBuffer());
 
         unk = getCode(UNK_CONST_VAL);
         appendRule("unk", unk);
@@ -135,16 +140,19 @@ public class DSLAnalysis {
         log("code for balance " + getCode(Balance.class));
         log("Number of instructions: " + instrToCode.size());
         log("Threshold: " + Config.THRESHOLD_COMPILE);
+
+        collapseSouffleRulesAndQueries();
+
         long start = System.currentTimeMillis();
         if (instructions.size() > Config.THRESHOLD_COMPILE) {
             /* compile Souffle program and run */
             String cmd = TIMEOUT_COMMAND + " " + Config.PATTERN_TIMEOUT + "s " + SOUFFLE_BIN + " -w -F " + WORKSPACE + " -D " + WORKSPACE_OUT + " " + SOUFFLE_COMPILE_FLAG + " "
-                    + SOUFFLE_RULES;
+                    + FINAL_FILE;
             log(cmd);
             runCommand(cmd);
         } else {
             /* run interpreter */
-            String cmd = TIMEOUT_COMMAND + " " + Config.PATTERN_TIMEOUT + "s " + SOUFFLE_BIN + " -w -F " + WORKSPACE + " -D " + WORKSPACE_OUT + " " + SOUFFLE_RULES;
+            String cmd = TIMEOUT_COMMAND + " " + Config.PATTERN_TIMEOUT + "s " + SOUFFLE_BIN + " -w -F " + WORKSPACE + " -D " + WORKSPACE_OUT + " " + FINAL_FILE;
             log(cmd);
             runCommand(cmd);
         }
@@ -154,6 +162,29 @@ public class DSLAnalysis {
                 TimeUnit.MILLISECONDS.toSeconds(elapsedTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(elapsedTime))
         );
         log(elapsedTimeStr);
+    }
+
+    private static void collapseSouffleRulesAndQueries() throws IOException {
+        PrintWriter pw = new PrintWriter(FINAL_FILE);
+        BufferedReader br = new BufferedReader(new FileReader(SOUFFLE_RULES));
+
+        String line = br.readLine();
+        while (line != null) {
+            pw.println(line);
+            line = br.readLine();
+        }
+        br = new BufferedReader(new FileReader(DSLPatternsCompiler.DATALOG_PATTERNS_FILE));
+        line = br.readLine();
+
+        while(line != null)
+        {
+            pw.println(line);
+            line = br.readLine();
+        }
+
+        pw.flush();
+        br.close();
+        pw.close();
     }
 
     public static int getInt(byte[] data) {
@@ -502,6 +533,24 @@ public class DSLAnalysis {
         }
     }
 
+    protected void deriveIsConstPredicates() {
+        Set<Variable> constants = new HashSet<>();
+        for (Instruction instr : instructions) {
+            for(Variable var : instr.getInput()) {
+                if(var.hasConstantValue())
+                    constants.add(var);
+            }
+
+            for(Variable var : instr.getOutput()) {
+                if(var.hasConstantValue())
+                    constants.add(var);
+            }
+        }
+
+        constants.forEach(var ->
+        appendRule("isConst", getCode(var)));
+    }
+
     protected void deriveAssignVarPredicates() {
         log(">> Derive assign predicates <<");
         for (Instruction instr : instructions) {
@@ -737,5 +786,68 @@ public class DSLAnalysis {
             createAssignVarMayImplicitRule(instr, var, offset);
         }
         appendRule("mload", getCode(instr), offsetCode, getCode(var));
+    }
+
+    public List<DSLPatternResult> getResults() throws IOException {
+        List<String> pattNames = getPatternNames();
+        List<DSLPatternResult> results = new ArrayList<>(pattNames.size());
+
+        for (String name : pattNames) {
+            results.add(readResults(name));
+        }
+
+        return results;
+    }
+
+    private DSLPatternResult readResults(String pattName) throws IOException {
+        Set<Integer> complIntInstr = readResFromFile(WORKSPACE_OUT + "/" + pattName + "Compliance.csv");
+        Set<Integer> violIntInstr = readResFromFile(WORKSPACE_OUT + "/" + pattName + "Violation.csv");
+
+        BiMap<Integer, Instruction> invMap = instrToCode.inverse();
+
+        Set<Instruction> complInstr = new HashSet<>(complIntInstr.size());
+        complIntInstr.forEach((integer -> complInstr.add(invMap.get(integer))));
+
+        Set<Instruction> violInstr = new HashSet<>(violIntInstr.size());
+        violIntInstr.forEach((integer -> violInstr.add(invMap.get(integer))));
+
+        Set<Instruction> intersection = new HashSet<>(violInstr);
+        intersection.retainAll(complInstr);
+
+        DSLPatternResult res = new DSLPatternResult(pattName,
+                violInstr,
+                intersection,
+                complInstr,
+                intersection //todo: what is the difference between these and warings?
+                );
+
+
+        return res;
+    }
+
+    private Set<Integer> readResFromFile(String filename) throws IOException {
+        Reader in = new FileReader(filename);
+        Iterable<CSVRecord> records = CSVFormat.TDF.parse(in);
+        Set<Integer> entries = new HashSet<>();
+
+        for (CSVRecord record : records) {
+            entries.add(Integer.parseInt(record.get(0)));
+        }
+        in.close();
+        //todo: get the real integer, something is wrong with the get
+        return entries;
+    }
+
+    private List<String> getPatternNames() throws IOException {
+        BufferedReader br = new BufferedReader(new FileReader(DSLPatternsCompiler.PATTERN_NAMES_CSV));
+        String line = br.readLine();
+        if(line != null) {
+            // use comma as separator
+            String[] patternNames = line.split(" , ");
+
+            return Arrays.asList(patternNames);
+        }
+        else
+            throw new IOException("File found, but empty");
     }
 }

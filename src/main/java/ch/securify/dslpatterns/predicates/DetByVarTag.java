@@ -50,13 +50,13 @@ public class DetByVarTag extends AbstractPredicate {
     @Override
     public String getDatalogStringRep(DSLAnalysis analyzer) {
         StringBuilder sb = new StringBuilder();
-        sb.append("MustDepOn(");
+        sb.append("mustDepOn(");
         sb.append("_ ,"); //todo: is it really ok? In the paper has only 2 elements, here 3, we are ignoring the label
         sb.append(var.getName());
         sb.append(" , ");
         sb.append(analyzer.getCode(tag));
         sb.append(")");
 
-        return getStringRepresentation();
+        return sb.toString();
     }
 }

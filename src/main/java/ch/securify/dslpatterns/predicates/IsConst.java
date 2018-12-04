@@ -22,7 +22,7 @@ public class IsConst extends AbstractPredicate {
     @Override
     public String getStringRepresentation() {
         StringBuilder sb = new StringBuilder();
-        sb.append("IsConst(");
+        sb.append("isConst(");
         sb.append(x.getName());
         sb.append(")");
 
@@ -39,7 +39,6 @@ public class IsConst extends AbstractPredicate {
 
     @Override
     public String getDatalogStringRep(DSLAnalysis analyzer) {
-        //todo
         return getStringRepresentation();
     }
 

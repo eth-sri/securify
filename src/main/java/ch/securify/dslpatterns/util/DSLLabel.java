@@ -22,7 +22,7 @@ public class DSLLabel {
             varId /= 26;
         } while (varId > 0);
         nextLabelId++;
-        sb.append("-L"); //it's a label and not a variable
+        sb.append("L"); //it's a label and not a variable
         return sb.reverse().toString();
     }
 

@@ -36,14 +36,14 @@ public class DetByVarVar extends AbstractPredicate {
     public String getDatalogStringRep(DSLAnalysis analyzer) {
 
         StringBuilder sb = new StringBuilder();
-        sb.append("MustDepOn(");
+        sb.append("mustDepOn(");
         sb.append("_ ,"); //todo: is it really ok?
         sb.append(var1.getName());
         sb.append(" , ");
         sb.append(var2.getName());
         sb.append(")");
 
-        return getStringRepresentation();
+        return sb.toString();
     }
 
     @Override

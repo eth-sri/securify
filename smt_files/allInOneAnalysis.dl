@@ -25,6 +25,7 @@
 // Inputs
 //
 
+.decl isConst (v: Var) input
 .decl assignType       (l:Label, v:Var, f:Fact) input //in order to manage to have same input this is split in two and then reassigned
 .decl assignVar		(l:Label, v1: Var, v2: Var) input
 

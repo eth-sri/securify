@@ -9,6 +9,7 @@ import ch.securify.decompiler.instructions.SLoad;
 import ch.securify.dslpatterns.datalogpattern.DatalogRule;
 import ch.securify.dslpatterns.instructions.AbstractDSLInstruction;
 import ch.securify.dslpatterns.instructions.DSLInstructionFactory;
+import ch.securify.dslpatterns.tags.DSLArg;
 import ch.securify.dslpatterns.util.DSLLabel;
 import ch.securify.dslpatterns.predicates.PredicateFactory;
 import ch.securify.dslpatterns.tags.DSLMsgdata;
@@ -94,7 +95,7 @@ public class DSLPatternFactory {
      * Still a bit of a mixture:
      * - Variable class is from decompiler
      * - SLoad.class is taken from the decompiler, but the DSLSLoad class is recreated
-     * - added the Arg class
+     * - added the DSLArg class
      */
     private static void testPatterns() {
 
@@ -212,7 +213,6 @@ public class DSLPatternFactory {
 
         translateAndPrintPattern(patternViolationHE, "patternViolationHE", analyzer);
 
-
         System.out.println(" *** TOD - transaction ordering dependency");
         AbstractDSLPattern patternComplianceTOD = all(instrFct.call(dcLabel, dcVar, dcVar, amount),
                and(not(prdFct.mayDepOn(amount, SLoad.class)), not(prdFct.mayDepOn(amount, Balance.class))));
@@ -232,20 +232,20 @@ public class DSLPatternFactory {
 
         System.out.println(" *** VA - validated arguments");
         AbstractDSLPattern patternComplianceVA = all(instrFct.sstore(l1, dcVar, X),
-                implies(prdFct.mayDepOn(X, Arg.class),
+                implies(prdFct.mayDepOn(X, DSLArg.class),
                         some(instrFct.dslgoto(l2, Y, dcLabel),
                                 and(prdFct.mustFollow(l2, l1),
-                                        prdFct.detBy(Y, Arg.class)))));
+                                        prdFct.detBy(Y, DSLArg.class)))));
         System.out.println(patternComplianceVA.getStringRepresentation());
 
         translateAndPrintPattern(patternComplianceVA, "patternComplianceVA", analyzer);
 
 
         AbstractDSLPattern patternViolationVA = some(instrFct.sstore(l1, dcVar, X),
-                implies(prdFct.mayDepOn(X, Arg.class),
+                implies(prdFct.mayDepOn(X, DSLArg.class),
                         not(some(instrFct.dslgoto(l2, Y, dcLabel),
                                 and(prdFct.mustFollow(l2, l1),
-                                        prdFct.mayDepOn(Y, Arg.class))))));
+                                        prdFct.mayDepOn(Y, DSLArg.class))))));
         System.out.println(patternViolationVA.getStringRepresentation());
 
         translateAndPrintPattern(patternViolationVA, "patternViolationVA", analyzer);
