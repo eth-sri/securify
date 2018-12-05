@@ -43,4 +43,8 @@ public class PredicateFactory {
     public IsConst isConst(Variable x) {
         return new IsConst(x);
     }
+
+    public IsArg isArg(Variable x) {
+        return new IsArg(x);
+    }
 }

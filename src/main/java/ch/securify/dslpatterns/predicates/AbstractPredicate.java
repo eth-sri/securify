@@ -34,4 +34,8 @@ public abstract class AbstractPredicate extends AbstractDSLPattern implements Da
     public Set<Variable> getVariables() {
         return new HashSet<>();
     }
+
+    public Set<Class> getTags() {
+        return new HashSet<>();
+    }
 }

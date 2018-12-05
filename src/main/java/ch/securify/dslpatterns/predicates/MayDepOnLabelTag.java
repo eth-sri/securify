@@ -53,6 +53,13 @@ public class MayDepOnLabelTag extends AbstractPredicate {
         return sb.toString();
     }
 
+    @Override
+    public Set<Class> getTags() {
+        HashSet tagSet = new HashSet<Class>();
+        tagSet.add(tag);
+        return tagSet;
+    }
+
     public DSLLabel getLabel() {
         return l;
     }

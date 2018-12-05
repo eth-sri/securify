@@ -104,6 +104,7 @@ public class DSLAnalysis {
         ruleToSB.put("sstore", new StringBuffer());
         ruleToSB.put("goto", new StringBuffer());
         ruleToSB.put("isConst", new StringBuffer());
+        ruleToSB.put("isArg", new StringBuffer());
         ruleToSB.put("isStorageVar", new StringBuffer());
         ruleToSB.put("sha3", new StringBuffer());
         ruleToSB.put("call", new StringBuffer());
@@ -129,6 +130,7 @@ public class DSLAnalysis {
         deriveAssignVarPredicates();
         deriveAssignTypePredicates();
         deriveInstructionsPredicates();
+        deriveIsConstIsArgPredicates();
 
         deriveFollowsPredicates();
         deriveIfPredicates();
@@ -531,8 +533,9 @@ public class DSLAnalysis {
         }
     }
 
-    protected void deriveIsConstPredicates() {
+    protected void deriveIsConstIsArgPredicates() {
         Set<Variable> constants = new HashSet<>();
+        Set<Variable> args = new HashSet<>();
         for (Instruction instr : instructions) {
             for(Variable var : instr.getInput()) {
                 if(var.hasConstantValue())
@@ -543,10 +546,18 @@ public class DSLAnalysis {
                 if(var.hasConstantValue())
                     constants.add(var);
             }
+
+            //if variable is argument we add it to the set of argument variables
+            if(instr instanceof _VirtualMethodHead) {
+                Collections.addAll(args, instr.getOutput());
+            }
         }
 
         constants.forEach(var ->
         appendRule("isConst", getCode(var)));
+
+        args.forEach(var ->
+                appendRule("isArg", getCode(var)));
     }
 
     protected void deriveAssignVarPredicates() {

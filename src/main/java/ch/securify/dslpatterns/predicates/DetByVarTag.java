@@ -48,6 +48,13 @@ public class DetByVarTag extends AbstractPredicate {
     }
 
     @Override
+    public Set<Class> getTags() {
+        HashSet tagSet = new HashSet<Class>();
+        tagSet.add(tag);
+        return tagSet;
+    }
+
+    @Override
     public String getDatalogStringRep(DSLAnalysis analyzer) {
         StringBuilder sb = new StringBuilder();
         sb.append("mustDepOn(");
@@ -58,5 +65,9 @@ public class DetByVarTag extends AbstractPredicate {
         sb.append(")");
 
         return sb.toString();
+    }
+
+    public Variable getVar() {
+        return var;
     }
 }

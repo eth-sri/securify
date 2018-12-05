@@ -5,10 +5,12 @@ import ch.securify.decompiler.Variable;
 import ch.securify.decompiler.instructions.Instruction;
 import ch.securify.dslpatterns.datalogpattern.*;
 import ch.securify.dslpatterns.instructions.AbstractDSLInstruction;
-import ch.securify.dslpatterns.predicates.AdditionalTmpPredicate;
+import ch.securify.dslpatterns.predicates.*;
+import ch.securify.dslpatterns.tags.DSLArg;
 import ch.securify.dslpatterns.util.DSLLabel;
 import ch.securify.dslpatterns.util.DSLLabelDC;
 import ch.securify.dslpatterns.util.InvalidPatternException;
+import ch.securify.dslpatterns.util.VariableArg;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -52,6 +54,8 @@ public class DSLToDatalogTranslator {
 
     private static Set<Variable> encounteredVars;
     private static Set<DSLLabel> encounteredLabels;
+
+    private static VariableArg varArg = new VariableArg();
 
     /**
      * Translates a pattern into a query, should be called only with a Some or an All
@@ -98,9 +102,10 @@ public class DSLToDatalogTranslator {
     private static List<DatalogBody> translateIntoBodies(AbstractDSLPattern patt) {
         List<DatalogBody> newBodies = new ArrayList<>();
         if(patt instanceof DatalogElem) {
-            newBodies.add(new DatalogBody((DatalogElem) patt));
             encounteredLabels.addAll(patt.getLabels());
             encounteredVars.addAll(patt.getVariables());
+
+            newBodies.add(handleArgTag((DatalogElem) patt, true));
         }
         else if(patt instanceof Not)
             newBodies = collapseBodies(newBodies, translateNot((Not)patt));
@@ -164,13 +169,50 @@ public class DSLToDatalogTranslator {
         return newBodies;
     }
 
+    private static DatalogBody handleArgTag(DatalogElem patt, boolean toBeNegated) {
+        DatalogBody newBody = new DatalogBody();
+
+            if (patt instanceof AbstractPredicate) {
+                Set<Class> tagsList = ((AbstractPredicate) patt).getTags();
+                if (tagsList.contains(DSLArg.class)) {
+                    AbstractPredicate newPredicate;
+                    //exchange the tag predicate with the variable one
+                    if(patt instanceof DetByVarTag)
+                        newPredicate = new DetByVarVar(((DetByVarTag) patt).getVar(), varArg);
+                    else if(patt instanceof MayDepOnVarTag)
+                        newPredicate = new MayDepOnVarVar(((MayDepOnVarTag) patt).getVar(), varArg);
+                    else
+                        newPredicate = (AbstractPredicate) patt;
+
+                    if(toBeNegated)
+                        newBody.addElement(new DatalogNot(newPredicate));
+                    else
+                        newBody.addElement(newPredicate);
+
+                    newBody.addElement(new IsArg(varArg));
+                }
+                else {
+                    if(toBeNegated)
+                        newBody.addElement(new DatalogNot(patt));
+                    else
+                        newBody.addElement(patt);
+                }
+            }
+
+            return newBody;
+    }
+
     private static List<DatalogBody> translateNot(Not not) {
 
         AbstractDSLPattern negatedPattern = not.getNegatedPattern();
         List<DatalogBody> newBodies = new ArrayList<>();
 
-        if(negatedPattern instanceof DatalogElem)
-            newBodies.add(new DatalogBody(new DatalogNot((DatalogElem) negatedPattern)));
+        if(negatedPattern instanceof DatalogElem) {
+            encounteredLabels.addAll(negatedPattern.getLabels());
+            encounteredVars.addAll(negatedPattern.getVariables());
+
+            newBodies.add(handleArgTag((DatalogElem) negatedPattern, true));
+        }
         else if(negatedPattern instanceof And) { //push negation inside
             List<AbstractDSLPattern> negatedPatterns = new ArrayList<>();
             ((And) negatedPattern).getPatterns().forEach((patt) -> negatedPatterns.add(new Not(patt)));

@@ -55,7 +55,14 @@ public class MayDepOnVarTag extends AbstractPredicate {
         return sb.toString();
     }
 
-    public Variable getVariable() {
+    @Override
+    public Set<Class> getTags() {
+        HashSet tagSet = new HashSet<Class>();
+        tagSet.add(tag);
+        return tagSet;
+    }
+
+    public Variable getVar() {
         return v;
     }
 
