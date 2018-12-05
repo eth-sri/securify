@@ -82,6 +82,9 @@ public class Main {
 
         @Parameter(names = {"--json"}, description = "provide JSON output to console")
         private boolean jsonOutput;
+
+        @Parameter(names = {"--descriptions"}, description= "add descriptions to the JSON output")
+        private boolean descriptions;
     }
 
     private static List<AbstractPattern> patterns;
@@ -237,8 +240,15 @@ public class Main {
             } else {
                 allContractsResults = mainFromCompilationOutput(args.compilationoutput, livestatusfile);
             }
-            // by default, TRANSIENT and STATIC are excluded; include static here.
-            Gson gson = new GsonBuilder().excludeFieldsWithModifiers(Modifier.TRANSIENT).setPrettyPrinting().create();
+
+            GsonBuilder gb = new GsonBuilder();
+            if (args.descriptions) {
+                // by default, TRANSIENT and STATIC are excluded; include static here, since the descriptions are a
+                // static field (sort of a hack).
+                gb.excludeFieldsWithModifiers(Modifier.TRANSIENT);
+             }
+            Gson gson = gb.setPrettyPrinting().create();
+
             if (args.outputfile != null) {
                 try (Writer writer = new FileWriter(args.outputfile)) {
                     gson.toJson(allContractsResults, writer);
