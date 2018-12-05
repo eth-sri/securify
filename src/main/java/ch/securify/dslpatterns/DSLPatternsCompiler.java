@@ -7,7 +7,9 @@ import ch.securify.decompiler.instructions.CallDataLoad;
 import ch.securify.decompiler.instructions.Caller;
 import ch.securify.decompiler.instructions.SLoad;
 import ch.securify.dslpatterns.datalogpattern.DatalogRule;
+import ch.securify.dslpatterns.instructions.AbstractDSLInstruction;
 import ch.securify.dslpatterns.instructions.DSLInstructionFactory;
+import ch.securify.dslpatterns.predicates.AbstractPredicate;
 import ch.securify.dslpatterns.predicates.PredicateFactory;
 import ch.securify.dslpatterns.tags.DSLArg;
 import ch.securify.dslpatterns.util.DSLLabel;
@@ -32,31 +34,31 @@ public class DSLPatternsCompiler {
     public static final String PATTERN_NAMES_CSV = "smt_files/CompiledPatternsNames.csv";
 
     private static class CompletePattern {
-        private AbstractDSLPattern DSLCompliancePattern;
-        private AbstractDSLPattern DSLViolationPattern;
+        private InstructionDSLPattern DSLCompliancePattern;
+        private InstructionDSLPattern DSLViolationPattern;
         private List<DatalogRule> translatedRules;
         private String name;
 
-        public CompletePattern(String name, AbstractDSLPattern DSLCompliancePattern, AbstractDSLPattern DSLViolationPattern) {
+        CompletePattern(String name, InstructionDSLPattern DSLCompliancePattern, InstructionDSLPattern DSLViolationPattern) {
             this.DSLCompliancePattern = DSLCompliancePattern;
             this.DSLViolationPattern = DSLViolationPattern;
             this.name = name;
             translatedRules = new ArrayList<>();
         }
 
-        public AbstractDSLPattern getDSLCompliancePattern() {
+        InstructionDSLPattern getDSLCompliancePattern() {
             return DSLCompliancePattern;
         }
 
-        public AbstractDSLPattern getDSLViolationPattern() {
+        InstructionDSLPattern getDSLViolationPattern() {
             return DSLViolationPattern;
         }
 
-        public void addTranslatedRules(List<DatalogRule> translatedRules) {
+        void addTranslatedRules(List<DatalogRule> translatedRules) {
             this.translatedRules.addAll(translatedRules);
         }
 
-        public List<DatalogRule> getTranslatedRules() {
+        List<DatalogRule> getTranslatedRules() {
             return translatedRules;
         }
 
@@ -64,12 +66,52 @@ public class DSLPatternsCompiler {
             return name;
         }
 
-        public String getComplianceName() {
+        String getComplianceName() {
             return name + "Compliance";
         }
 
-        public String getViolationName() {
+        String getViolationName() {
             return name + "Violation";
+        }
+
+        String getWaringRuleDeclaration() {
+            StringBuilder sb = new StringBuilder();
+
+            //example of declaration
+            //.decl jump		(l1: Label, l2: Label, l3: Label) output
+            sb.append(".decl ");
+            sb.append(name);
+            sb.append("Warnings(L: Label) output");
+
+            return sb.toString();
+        }
+
+        String getWarningRule() {
+            StringBuilder sb = new StringBuilder();
+
+            AbstractDSLInstruction quantifiedInst = DSLCompliancePattern.getQuantifiedInstr();
+            if(quantifiedInst.getLabel() instanceof DSLLabelDC) {
+                quantifiedInst = quantifiedInst.getCopy();
+                quantifiedInst.setLabel(new DSLLabel());
+            }
+            String label = quantifiedInst.getLabel().getName();
+
+            sb.append(name);
+            sb.append("Warnings(");
+            sb.append(label);
+            sb.append(") :- ");
+            sb.append(quantifiedInst.getStringRepresentation());
+            sb.append(" , !");
+            sb.append(name);
+            sb.append("Compliance(");
+            sb.append(label);
+            sb.append("), !");
+            sb.append(name);
+            sb.append("Violation(");
+            sb.append(label);
+            sb.append(").");
+
+            return sb.toString();
         }
     }
 
@@ -147,7 +189,7 @@ public class DSLPatternsCompiler {
         log(patternViolationLQ.getStringRepresentation());*/
 
         log(" *** NW - No writes after call - DAO");
-        AbstractDSLPattern patternComplianceNW = pattFct.instructionPattern(
+        InstructionDSLPattern patternComplianceNW = pattFct.instructionPattern(
                 instrFct.call(l1, dcVar, dcVar, dcVar),
                 pattFct.all(instrFct.sstore(l2, dcVar, dcVar),
                         pattFct.not(prdFct.mayFollow(l1, l2)))
@@ -155,7 +197,7 @@ public class DSLPatternsCompiler {
 
         log(patternComplianceNW.getStringRepresentation());
 
-        AbstractDSLPattern patternViolationNW = pattFct.instructionPattern(
+        InstructionDSLPattern patternViolationNW = pattFct.instructionPattern(
                 instrFct.call(l1, dcVar, dcVar, dcVar),
                 pattFct.some(instrFct.sstore(l2, dcVar, dcVar),
                         pattFct.not(prdFct.mustFollow(l1, l2)))
@@ -165,21 +207,21 @@ public class DSLPatternsCompiler {
         patterns.add(new CompletePattern("NW", patternComplianceNW, patternViolationNW));
 
         log(" *** RW - restricted write");
-        AbstractDSLPattern patternComplianceRW = pattFct.instructionPattern(instrFct.sstore(dcLabel, X, dcVar),
+        InstructionDSLPattern patternComplianceRW = pattFct.instructionPattern(instrFct.sstore(dcLabel, X, dcVar),
                 prdFct.detBy(X, Caller.class));
         log(patternComplianceRW.getStringRepresentation());
 
-        AbstractDSLPattern patternViolationRW = pattFct.instructionPattern(instrFct.sstore(l1, X, dcVar),
+        InstructionDSLPattern patternViolationRW = pattFct.instructionPattern(instrFct.sstore(l1, X, dcVar),
                 pattFct.and(pattFct.not(prdFct.mayDepOn(X, Caller.class)), pattFct.not(prdFct.mayDepOn(l1, Caller.class))));
         log(patternViolationRW.getStringRepresentation());
         patterns.add(new CompletePattern("RW", patternComplianceRW, patternViolationRW));
 
         log(" *** RT - restricted transfer");
-        AbstractDSLPattern patternComplianceRT = pattFct.instructionPattern(instrFct.call(dcLabel, dcVar, dcVar, amount),
+        InstructionDSLPattern patternComplianceRT = pattFct.instructionPattern(instrFct.call(dcLabel, dcVar, dcVar, amount),
                 pattFct.eq(amount, 0));
         log(patternComplianceRT.getStringRepresentation());
 
-        AbstractDSLPattern patternViolationRT = pattFct.instructionPattern(instrFct.call(l1, dcVar, dcVar, amount),
+        InstructionDSLPattern patternViolationRT = pattFct.instructionPattern(instrFct.call(l1, dcVar, dcVar, amount),
                 pattFct.and(prdFct.detBy(amount, CallDataLoad.class),
                         pattFct.not(prdFct.mayDepOn(l1, Caller.class)),
                         pattFct.not(prdFct.mayDepOn(l1, CallDataLoad.class))));
@@ -187,23 +229,23 @@ public class DSLPatternsCompiler {
         patterns.add(new CompletePattern("RT", patternComplianceRT, patternViolationRT));
 
         log(" *** HE - handled exception");
-        AbstractDSLPattern patternComplianceHE = pattFct.instructionPattern(instrFct.call(l1, Y, dcVar, dcVar),
+        InstructionDSLPattern patternComplianceHE = pattFct.instructionPattern(instrFct.call(l1, Y, dcVar, dcVar),
                 pattFct.some(instrFct.dslgoto(l2, X, dcLabel),
                         pattFct.and(prdFct.mustFollow(l1, l2), prdFct.detBy(X, Y))));
         log(patternComplianceHE.getStringRepresentation());
 
-        AbstractDSLPattern patternViolationHE = pattFct.instructionPattern(instrFct.call(l1, Y, dcVar, dcVar),
+        InstructionDSLPattern patternViolationHE = pattFct.instructionPattern(instrFct.call(l1, Y, dcVar, dcVar),
                 pattFct.all(instrFct.dslgoto(l2, X, dcLabel),
                         pattFct.implies(prdFct.mayFollow(l1, l2), pattFct.not(prdFct.mayDepOn(X, Y)))));
         log(patternViolationHE.getStringRepresentation());
         patterns.add(new CompletePattern("HE", patternComplianceHE, patternViolationHE));
 
         log(" *** TOD - transaction ordering dependency");
-        AbstractDSLPattern patternComplianceTOD = pattFct.instructionPattern(instrFct.call(dcLabel, dcVar, dcVar, amount),
+        InstructionDSLPattern patternComplianceTOD = pattFct.instructionPattern(instrFct.call(dcLabel, dcVar, dcVar, amount),
                 pattFct.and(pattFct.not(prdFct.mayDepOn(amount, SLoad.class)), pattFct.not(prdFct.mayDepOn(amount, Balance.class))));
         log(patternComplianceTOD.getStringRepresentation());
 
-        AbstractDSLPattern patternViolationTOD = pattFct.instructionPattern(instrFct.call(dcLabel, dcVar, dcVar, amount),
+        InstructionDSLPattern patternViolationTOD = pattFct.instructionPattern(instrFct.call(dcLabel, dcVar, dcVar, amount),
                 pattFct.some(instrFct.sload(dcLabel, Y, X),
                         pattFct.some(instrFct.sstore(dcLabel, X, dcVar),
                                 pattFct.and(prdFct.detBy(amount, Y), prdFct.isConst(X)))));
@@ -211,14 +253,14 @@ public class DSLPatternsCompiler {
         patterns.add(new CompletePattern("TOD", patternComplianceTOD, patternViolationTOD));
 
         log(" *** VA - validated arguments");
-        AbstractDSLPattern patternComplianceVA = pattFct.instructionPattern(instrFct.sstore(l1, dcVar, X),
+        InstructionDSLPattern patternComplianceVA = pattFct.instructionPattern(instrFct.sstore(l1, dcVar, X),
                 pattFct.implies(prdFct.mayDepOn(X, DSLArg.class),
                         pattFct.some(instrFct.dslgoto(l2, Y, dcLabel),
                                 pattFct.and(prdFct.mustFollow(l2, l1),
                                         prdFct.detBy(Y, DSLArg.class)))));
         log(patternComplianceVA.getStringRepresentation());
 
-        AbstractDSLPattern patternViolationVA = pattFct.instructionPattern(instrFct.sstore(l1, dcVar, X),
+        InstructionDSLPattern patternViolationVA = pattFct.instructionPattern(instrFct.sstore(l1, dcVar, X),
                 pattFct.implies(prdFct.mayDepOn(X, DSLArg.class),
                         pattFct.not(pattFct.some(instrFct.dslgoto(l2, Y, dcLabel),
                                 pattFct.and(prdFct.mustFollow(l2, l1),
@@ -276,6 +318,10 @@ public class DSLPatternsCompiler {
                 bwr.write(rule.getStingRepresentation(analyzer));
                 bwr.newLine();
             }
+            bwr.write(patt.getWaringRuleDeclaration());
+            bwr.newLine();
+            bwr.write(patt.getWarningRule());
+            bwr.newLine();
             bwr.newLine();
         }
         bwr.close();

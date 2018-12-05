@@ -41,7 +41,7 @@ public class DSLToDatalogTranslator {
     }
 
     /**
-     * Reset the naming of Variables to start again from 'a'.
+     * Reset the naming of tmp to start again from 'a'.
      */
     public static void resetLabelNameGenerator() {
         nextTmpPredId = 0;
@@ -105,7 +105,7 @@ public class DSLToDatalogTranslator {
             encounteredLabels.addAll(patt.getLabels());
             encounteredVars.addAll(patt.getVariables());
 
-            newBodies.add(handleArgTag((DatalogElem) patt, true));
+            newBodies.add(handleArgTag((DatalogElem) patt, false));
         }
         else if(patt instanceof Not)
             newBodies = collapseBodies(newBodies, translateNot((Not)patt));

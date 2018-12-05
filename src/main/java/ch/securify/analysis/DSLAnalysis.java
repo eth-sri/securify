@@ -811,6 +811,7 @@ public class DSLAnalysis {
     private DSLPatternResult readResults(String pattName) throws IOException {
         Set<Integer> complIntInstr = readResFromFile(WORKSPACE_OUT + "/" + pattName + "Compliance.csv");
         Set<Integer> violIntInstr = readResFromFile(WORKSPACE_OUT + "/" + pattName + "Violation.csv");
+        Set<Integer> warningsIntInstr = readResFromFile(WORKSPACE_OUT + "/" + pattName + "Warnings.csv");
 
         BiMap<Integer, Instruction> invMap = instrToCode.inverse();
 
@@ -820,14 +821,17 @@ public class DSLAnalysis {
         Set<Instruction> violInstr = new HashSet<>(violIntInstr.size());
         violIntInstr.forEach((integer -> violInstr.add(invMap.get(integer))));
 
+        Set<Instruction> warningsInstr = new HashSet<>(warningsIntInstr.size());
+        warningsIntInstr.forEach((integer -> warningsInstr.add(invMap.get(integer))));
+
         Set<Instruction> intersection = new HashSet<>(violInstr);
         intersection.retainAll(complInstr);
 
         DSLPatternResult res = new DSLPatternResult(pattName,
                 violInstr,
-                intersection,
+                warningsInstr,
                 complInstr,
-                intersection //todo: what is the difference between these and warings?
+                intersection
                 );
 
 
@@ -843,7 +847,6 @@ public class DSLAnalysis {
             entries.add(Integer.parseInt(record.get(0)));
         }
         in.close();
-        //todo: get the real integer, something is wrong with the get
         return entries;
     }
 
