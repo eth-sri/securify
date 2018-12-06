@@ -72,6 +72,15 @@ def check_all_patterns(curr_json, expc_json, contract):
                                 'from the new results.')
 
 
+def equal_string_modulo_digits(s1, s2):
+    """Returns whether two strings without their digits are the same
+    """
+    s1 = (c for c in s1 if not c.isdigit())
+    s2 = (c for c in s2 if not c.isdigit())
+
+    return all(c1 == c2 for c1, c2 in zip(s1, s2))
+
+
 def check_securify_errors(curr_json, expc_json, contract):
     """Checks that the error output is the same.
     """
@@ -79,7 +88,8 @@ def check_securify_errors(curr_json, expc_json, contract):
     curr_errors = curr_json[contract][err]
     expc_errors = expc_json[contract][err]
 
-    if curr_errors != expc_errors:
+    # we don't care if the line of the error changed in the Java source
+    if not equal_string_modulo_digits(curr_errors, expc_errors):
         print('Different Securify errors:')
         raise_mismatch(expc_errors, curr_errors)
 
