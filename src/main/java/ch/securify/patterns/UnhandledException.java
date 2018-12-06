@@ -30,7 +30,6 @@ public class UnhandledException extends AbstractInstructionPattern {
 
     public UnhandledException() {
         super(new PatternDescription("InsecureCodingPatterns",
-                "Insecure Coding Patterns",
                 UnhandledException.class,
                 "Unhandled Exception",
                 "The return value of statements that may return error values must be explicitly checked.",

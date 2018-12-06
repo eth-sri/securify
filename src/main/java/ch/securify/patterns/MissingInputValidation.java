@@ -29,7 +29,6 @@ public class MissingInputValidation extends AbstractInstructionPattern {
 
     public MissingInputValidation() {
         super(new PatternDescription("InsecureCodingPatterns",
-                "Insecure Coding Patterns",
                 MissingInputValidation.class,
                 "Missing Input Validation",
                 "Method arguments must be sanitized before they are used in computations.",

@@ -29,7 +29,6 @@ public class UnrestrictedEtherFlow extends AbstractInstructionPattern {
 
     public UnrestrictedEtherFlow() {
         super(new PatternDescription("InsecureCodingPatterns",
-                "Insecure Coding Patterns",
                 UnrestrictedEtherFlow.class,
                 "Unrestricted ether flow",
                 "The execution of ether flows should be restricted to an authorized set of users.",

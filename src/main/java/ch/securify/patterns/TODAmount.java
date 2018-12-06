@@ -30,7 +30,6 @@ public class TODAmount extends AbstractInstructionPattern {
 
     public TODAmount(){
         super(new PatternDescription("TransactionReordering",
-                "Transaction Reordering",
                 TODAmount.class,
                 "Transaction Order Affects Ether Amount",
                 "The amount of ether transferred must not be influenced by other transactions.",

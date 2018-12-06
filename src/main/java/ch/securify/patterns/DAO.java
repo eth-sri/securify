@@ -32,7 +32,6 @@ public class DAO extends AbstractInstructionPattern {
 
     public DAO() {
         super(new PatternDescription("RecursiveCalls",
-                "Recursive Calls",
                 DAO.class,
                 "Gas-dependent Reentrancy",
                 "Calls into external contracts that receive all remaining gas and are followed by state changes may be reentrant.",

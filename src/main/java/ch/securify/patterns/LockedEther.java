@@ -33,7 +33,6 @@ public class LockedEther extends AbstractContractPattern {
 
     public LockedEther() {
         super(new PatternDescription("LockedEther",
-                "Locked Ether",
                 LockedEther.class,
                 "Locked Ether",
                 "Contracts that may receive ether must also allow users to extract the deposited ether from the contract.",

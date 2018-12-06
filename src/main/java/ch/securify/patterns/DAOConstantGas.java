@@ -33,7 +33,6 @@ public class DAOConstantGas extends AbstractInstructionPattern {
 
     public DAOConstantGas() {
         super(new PatternDescription("RecursiveCalls",
-                "Recursive Calls",
                 DAOConstantGas.class,
                 "Gas-dependent Reentrancy",
                 "Calls into external contracts that receive all remaining gas and are followed by state changes may be reentrant.",

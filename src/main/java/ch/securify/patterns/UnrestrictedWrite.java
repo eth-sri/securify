@@ -33,7 +33,6 @@ public class UnrestrictedWrite extends AbstractInstructionPattern {
 
     public UnrestrictedWrite() {
         super(new PatternDescription("InsecureCodingPatterns",
-                "Insecure Coding Patterns",
                 UnrestrictedWrite.class,
                 "Unrestricted write to storage",
                 "Contract fields that can be modified by any user must be inspected.",

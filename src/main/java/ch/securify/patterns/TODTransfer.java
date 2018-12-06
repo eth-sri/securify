@@ -30,7 +30,6 @@ public class TODTransfer extends AbstractInstructionPattern {
 
     public TODTransfer() {
         super(new PatternDescription("TransactionReordering",
-                "Transaction Reordering",
                 TODTransfer.class,
                 "Transaction Order Affects Execution of Ether Transfer",
                 "Ether transfers whose execution can be manipulated by other transactions must be inspected for unintended behavior.",
