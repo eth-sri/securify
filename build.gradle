@@ -16,7 +16,13 @@ jar {
 task compileSouffle(dependsOn: ['mayImplicitBuild', 'mustExplicitBuild']) {
 }
 
+task buildDSLSolver(type: Exec) {
+     doFirst{mkdir project.buildDir}
+     executable "java"
+     args "-jar", "build/libs/securify-0.1.jar", "--compile-dsl-patterns"
+}
 compileJava.dependsOn compileSouffle
+buildDSLSolver.dependsOn jar
 
 task mayImplicitBuild(type: Exec) {
     doFirst {mkdir project.buildDir}
@@ -29,6 +35,7 @@ task mustExplicitBuild(type: Exec) {
     executable "souffle"
     args  "--dl-program=build/mustExplicit", "smt_files/mustExplicit.dl"
 }
+
 
 repositories {
     mavenCentral()

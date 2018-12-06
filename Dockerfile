@@ -54,7 +54,7 @@ RUN ./gradlew -v
 # copy and compile securify
 COPY . /sec
 
-RUN ./gradlew jar
+RUN ./gradlew buildDSLSolver
 
 # Solidity example
 COPY src/test/resources/solidity/transaction-reordering.sol /project/example.sol

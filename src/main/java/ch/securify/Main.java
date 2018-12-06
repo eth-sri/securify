@@ -183,18 +183,19 @@ public class Main {
             updateContractAnalysisStatus(livestatusfile);
         }
 
-        if(checkWithDSL)
-	    checkPatternsWithDSL(instructions, livestatusfile);
-	else {
-		try {
-		    checkPatterns(instructions, livestatusfile);
-		} catch(Exception e) {
-		    handleSecurifyError("pattern_error", e);
-		    throw e;
-		} finally {
-		    finishContractResult(livestatusfile);
-		}
-	}
+        if(checkWithDSL) {
+            checkPatternsWithDSL(instructions, livestatusfile);
+            finishContractResult(livestatusfile);
+        } else {
+            try {
+                checkPatterns(instructions, livestatusfile);
+            } catch(Exception e) {
+                handleSecurifyError("pattern_error", e);
+                throw e;
+            } finally {
+                finishContractResult(livestatusfile);
+            }
+        }
     }
 
     private static void handleSecurifyError(String errorMessage, Exception e){

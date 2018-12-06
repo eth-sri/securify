@@ -33,10 +33,11 @@ class Project(metaclass=abc.ABCMeta):
     """
     securify_jar = pathlib.Path("build/libs/securify-0.1.jar")
 
-    def __init__(self, project_root, pretty_output):
+    def __init__(self, project_root, pretty_output, usedsl):
         """Sets the project root."""
         self.project_root = pathlib.Path(project_root)
         self.pretty_output = pretty_output
+        self.usedsl = usedsl
 
     def execute(self):
         """Execute the project. This includes compilation and reporting.
@@ -63,6 +64,8 @@ class Project(metaclass=abc.ABCMeta):
         cmd = ["java", f"-Xmx{memory}G", "-jar", str(self.securify_jar),
                "-co", compilation_output,
                "-o", securify_target_output]
+        if self.usedsl:
+            cmd += ["--usedsl"]
         if self.pretty_output:
             cmd += ["--pretty"]
 
