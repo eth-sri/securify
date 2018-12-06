@@ -95,7 +95,7 @@
       "errors": [
         {
           "error": "decompilation_error",
-          "stackTrace": "java.util.EmptyStackException\n\tat java.util.Stack.peek(Stack.java:102)\n\tat java.util.Stack.pop(Stack.java:84)\n\tat ch.securify.decompiler.Variable.takeFromStack(Variable.java:83)\n\tat ch.securify.decompiler.InstructionFactory.createAndApply(InstructionFactory.java:92)\n\tat ch.securify.decompiler.DecompilerFallback.decompile(DecompilerFallback.java:111)\n\tat ch.securify.Main.decompileContract(Main.java:276)\n\tat ch.securify.Main.processHexFile(Main.java:157)\n\tat ch.securify.Main.processCompilationOutput(Main.java:120)\n\tat ch.securify.Main.processSolidityFile(Main.java:94)\n\tat ch.securify.Main.main(Main.java:227)\n"
+          "stackTrace": "java.util.EmptyStackException\n\tat java.util.Stack.peek(Stack.java:102)\n\tat java.util.Stack.pop(Stack.java:84)\n\tat ch.securify.decompiler.Variable.takeFromStack(Variable.java:83)\n\tat ch.securify.decompiler.InstructionFactory.createAndApply(InstructionFactory.java:92)\n\tat ch.securify.decompiler.DecompilerFallback.decompile(DecompilerFallback.java:111)\n\tat ch.securify.Main.decompileContract(Main.java:280)\n\tat ch.securify.Main.processHexFile(Main.java:161)\n\tat ch.securify.Main.processCompilationOutput(Main.java:124)\n\tat ch.securify.Main.processSolidityFile(Main.java:94)\n\tat ch.securify.Main.main(Main.java:231)\n"
         }
       ]
     }

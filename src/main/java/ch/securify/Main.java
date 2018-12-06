@@ -109,6 +109,10 @@ public class Main {
             log.println(elt.getKey());
 
             String bin = elt.getValue().getAsJsonObject().get("bin-runtime").getAsString();
+            if (bin.equals("")) {
+                log.println("Skipping empty contract: " + elt.getKey());
+                continue;
+            }
             String map = elt.getValue().getAsJsonObject().get("srcmap-runtime").getAsString();
 
             List<String> lines = Arrays.asList(bin);
