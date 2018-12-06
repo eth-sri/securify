@@ -91,8 +91,8 @@ def parse_sol_version(source):
 
 def handle_process_output_and_exit(error):
     """Processes stderr from a process error."""
-    if error.stderr:
-        logging.fatal(error.stderr.strip())
+    if error.stdout:
+        logging.fatal(error.stdout.strip())
     sys.exit(1)
 
 

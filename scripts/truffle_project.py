@@ -31,8 +31,8 @@ class TruffleProject(project.Project):
     """A project that uses the truffle development environment to compile the
     project."""
 
-    def __init__(self, project_root, clargs):
-        super().__init__(project_root, clargs)
+    def __init__(self, project_root, args):
+        super().__init__(project_root, args)
         self.build_dir = self.project_root / pathlib.Path("build/contracts/")
 
     def compile_(self, compilation_output):
@@ -40,7 +40,7 @@ class TruffleProject(project.Project):
             try:
                 output = subprocess.check_output(["truffle", "compile"],
                                                  universal_newlines=True,
-                                                 stderr=subprocess.PIPE)
+                                                 stderr=subprocess.STDOUT)
                 logging.info(output)
             except CalledProcessError as e:
                 logging.error("Error compiling Truffle project")

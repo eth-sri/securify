@@ -85,8 +85,7 @@ public class Main {
 
     private static List<AbstractPattern> patterns;
     private static ContractResult contractResult;
-    private static boolean DEBUG = false;
-    private static PrintStream log = DEBUG ? System.out : new DevNullPrintStream();
+    private static PrintStream log = new DevNullPrintStream();
     private static PrintStream progressPrinter = System.out;
     private static Args args;
 
