@@ -17,9 +17,12 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+
+import sys
 import abc
 import json
 import logging
+import subprocess
 import pathlib
 import tempfile
 
@@ -32,10 +35,10 @@ class Project(metaclass=abc.ABCMeta):
     """
     securify_jar = pathlib.Path("build/libs/securify-0.1.jar")
 
-    def __init__(self, project_root, json_output):
+    def __init__(self, project_root, clargs):
         """Sets the project root."""
         self.project_root = pathlib.Path(project_root)
-        self.json_output = json_output
+        self.clargs = clargs
 
     def execute(self):
         """Execute the project. This includes compilation and reporting.
@@ -45,11 +48,11 @@ class Project(metaclass=abc.ABCMeta):
         with tempfile.TemporaryDirectory() as d:
             tmpdir = pathlib.Path(d)
 
-            logging.info("Compiling project")
+            logging.warning("Compiling project")
             compilation_output = tmpdir / "comp.json"
             self.compile_(compilation_output)
 
-            logging.info("Running Securify")
+            logging.warning("Running Securify")
             securify_target_output = tmpdir / "securify_res.json"
             self.run_securify(compilation_output, securify_target_output)
 
@@ -61,10 +64,19 @@ class Project(metaclass=abc.ABCMeta):
         cmd = ["java", f"-Xmx{memory}G", "-jar", str(self.securify_jar),
                "-co", compilation_output,
                "-o", securify_target_output]
-        if self.json_output:
-            cmd += ["--no-output"]
+        if self.clargs.json:
+            cmd += ["--json"]
+        if self.clargs.verbose:
+            cmd += ["-v"]
+        if self.clargs.quiet:
+            cmd += ["-q"]
 
-        utils.run_cmd(cmd)
+        try:
+            subprocess.run(cmd, check=True, stdout=sys.stdout,
+                           stderr=sys.stderr, universal_newlines=True)
+        except CalledProcessError as e:
+            utils.handle_process_output_and_exit(e)
+
 
     @abc.abstractmethod
     def compile_(self, compilation_output):
@@ -78,9 +90,6 @@ class Project(metaclass=abc.ABCMeta):
         """
         with open(securify_target_output) as file:
             json_report = json.load(file)
-
-        if self.json_output:
-            print(json.dumps(json_report, indent=4))
 
         for contract in json_report.values():
             for pattern in contract["results"].values():

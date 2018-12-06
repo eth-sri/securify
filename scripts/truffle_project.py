@@ -31,13 +31,19 @@ class TruffleProject(project.Project):
     """A project that uses the truffle development environment to compile the
     project."""
 
-    def __init__(self, project_root, json_output):
-        super().__init__(project_root, json_output)
+    def __init__(self, project_root, clargs):
+        super().__init__(project_root, clargs)
         self.build_dir = self.project_root / pathlib.Path("build/contracts/")
 
     def compile_(self, compilation_output):
         with utils.working_directory(self.project_root):
-            utils.run_cmd(["truffle", "compile"], loglevel=logging.INFO)
+            try:
+                output = subprocess.check_output(["truffle", "compile"],
+                                                 universal_newlines=True,
+                                                 stderr=subprocess.PIPE)
+                logging.info(output)
+            except CalledProcessError as e:
+                utils.handle_process_output_and_exit(e)
 
         self._merge_compiled_files(compilation_output)
 
