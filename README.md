@@ -68,6 +68,11 @@ To run Securify on some EVM binary (produced e.g. by `solc`):
 java -jar build/libs/securify-0.1.jar -fh src/test/resources/solidity/transaction-reordering.bin.hex
 ```
 
+To see the full list of options:
+```sh
+java -jar build/libs/securify-0.1.jar -h
+```
+
 To run the tests (which use JUnit4):
 ```sh
 ./gradlew test
