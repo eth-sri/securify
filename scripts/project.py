@@ -75,6 +75,7 @@ class Project(metaclass=abc.ABCMeta):
             subprocess.run(cmd, check=True, stdout=sys.stdout,
                            stderr=sys.stderr, universal_newlines=True)
         except CalledProcessError as e:
+            logging.error("Error running Securify")
             utils.handle_process_output_and_exit(e)
 
 

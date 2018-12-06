@@ -43,6 +43,7 @@ class TruffleProject(project.Project):
                                                  stderr=subprocess.PIPE)
                 logging.info(output)
             except CalledProcessError as e:
+                logging.error("Error compiling Truffle project")
                 utils.handle_process_output_and_exit(e)
 
         self._merge_compiled_files(compilation_output)

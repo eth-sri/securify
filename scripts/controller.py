@@ -28,10 +28,10 @@ from . import utils
 class Controller:
     def __init__(self):
         """Initialise the controller. This sets up the command line argument parsing etc."""
-        self._parser = argparse.ArgumentParser(description='Run securify.')
+        self._parser = argparse.ArgumentParser(description='Run Securify.')
         self._parser.add_argument('-t', '--truffle',
                                   action="store_true",
-                                  help="use truffle project as base")
+                                  help="use Truffle project as base")
         self._parser.add_argument('-p', '--project',
                                   action="store", help="the project root",
                                   required=True)
