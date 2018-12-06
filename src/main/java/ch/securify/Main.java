@@ -199,7 +199,6 @@ public class Main {
     }
 
     private static void finishContractResult(String livestatusfile){
-            checkPatterns(instructions, livestatusfile);
         contractResult.finished = true;
         updateContractAnalysisStatus(livestatusfile);
     }
@@ -336,25 +335,6 @@ public class Main {
 
         if (args.filehex != null) {
             processHexFile(args.filehex, args.decompoutputfile, livestatusfile, args.usedsl);
-        } else if (args.filejsonlist != null) {
-            log.println("filejsonlist: " + args.filejsonlist);
-            if (!new File(args.filejsonlist).exists()) {
-                throw new IllegalArgumentException("File '" + args.filejsonlist + "' not found");
-            }
-
-            Contract[][] contracts = new Gson().fromJson(new FileReader(args.filejsonlist), Contract[][].class);
-
-            long contractsNonUniqueCount = Arrays.stream(contracts).filter(Objects::nonNull).flatMap(Arrays::stream)
-                    .filter(Objects::nonNull).count();
-            log.println("contractsNonUniqueCount = " + contractsNonUniqueCount);
-
-            List<Contract> uniqueContracts = Arrays.stream(contracts).filter(Objects::nonNull).flatMap(Arrays::stream)
-                    .filter(Objects::nonNull).filter(contract -> !contract.getCode().isEmpty())
-                    .filter(contract -> args.contractaddress == null
-                            || args.contractaddress.equalsIgnoreCase(contract.getContractAddress()))
-                    .filter(StreamUtil.distinctCustom(Contract::getCode)).collect(Collectors.toList());
-
-            handleContractList(uniqueContracts, livestatusfile);
         } else {
             new JCommander(args).usage();
             return;
