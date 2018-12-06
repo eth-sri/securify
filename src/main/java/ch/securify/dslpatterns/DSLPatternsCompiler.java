@@ -9,24 +9,27 @@ import ch.securify.decompiler.instructions.SLoad;
 import ch.securify.dslpatterns.datalogpattern.DatalogRule;
 import ch.securify.dslpatterns.instructions.AbstractDSLInstruction;
 import ch.securify.dslpatterns.instructions.DSLInstructionFactory;
-import ch.securify.dslpatterns.predicates.AbstractPredicate;
 import ch.securify.dslpatterns.predicates.PredicateFactory;
 import ch.securify.dslpatterns.tags.DSLArg;
 import ch.securify.dslpatterns.util.DSLLabel;
 import ch.securify.dslpatterns.util.DSLLabelDC;
 import ch.securify.dslpatterns.util.InvalidPatternException;
 import ch.securify.dslpatterns.util.VariableDC;
+import ch.securify.utils.CommandRunner;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class DSLPatternsCompiler {
+
+    private static final String SOUFFLE_RULES = "smt_files/allInOneAnalysis.dl";
+    private static final String TMP_DL_FILE = "smt_files/finalTmpFile.dl";
+    public static final String FINAL_EXECUTABLE = "build/dslSolver";
+
+    private static final String SOUFFLE_BIN = "souffle";
 
     private static final boolean debug = true;
 
@@ -115,7 +118,24 @@ public class DSLPatternsCompiler {
         }
     }
 
-    public static void main(String args[]) {
+    private static boolean isSouffleInstalled() {
+        try {
+            Process process = new ProcessBuilder(SOUFFLE_BIN).start();
+            process.waitFor();
+            return process.exitValue() == 0;
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static void generateDatalogExecutable() throws IOException, InterruptedException {
+
+        if(!isSouffleInstalled()){
+            System.err.println("Soufflé does not seem to be installed.");
+            System.exit(7);
+        }
+
         List<CompletePattern> patterns = createPatterns();
         translatePatterns(patterns);
         try {
@@ -125,12 +145,36 @@ public class DSLPatternsCompiler {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        collapseSouffleRulesAndQueries();
+
+        String cmd = SOUFFLE_BIN + " --dl-program=" + FINAL_EXECUTABLE + " " + TMP_DL_FILE;
+        log(cmd);
+        CommandRunner.runCommand(cmd);
     }
 
-    /*
-    DAO = no writes after call
+    private static void collapseSouffleRulesAndQueries() throws IOException {
+        PrintWriter pw = new PrintWriter(TMP_DL_FILE);
+        BufferedReader br = new BufferedReader(new FileReader(SOUFFLE_RULES));
 
-     */
+        String line = br.readLine();
+        while (line != null) {
+            pw.println(line);
+            line = br.readLine();
+        }
+        br = new BufferedReader(new FileReader(DSLPatternsCompiler.DATALOG_PATTERNS_FILE));
+        line = br.readLine();
+
+        while(line != null)
+        {
+            pw.println(line);
+            line = br.readLine();
+        }
+
+        pw.flush();
+        br.close();
+        pw.close();
+    }
 
     private static List<CompletePattern> createPatterns() {
 
