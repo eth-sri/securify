@@ -217,7 +217,6 @@ public class OpCodes {
 	 */
 	public static boolean surelyEndsBlock(int opcode) {
 		return endsExecution(opcode) ||
-				opcode == OpCodes.RETURN ||
 				opcode == OpCodes.JUMP;
 	}
 
@@ -230,6 +229,7 @@ public class OpCodes {
 		return isInvalid(opcode) ||
 				opcode == OpCodes.REVERT ||
 				opcode == OpCodes.SELFDESTRUCT ||
+				opcode == OpCodes.RETURN ||
 				opcode == OpCodes.STOP;
 	}
 
