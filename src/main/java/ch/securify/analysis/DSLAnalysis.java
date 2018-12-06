@@ -42,33 +42,14 @@ public class DSLAnalysis {
     // input predicates
 
     protected String WORKSPACE, WORKSPACE_OUT;
-    protected static final String SOUFFLE_COMPILE_FLAG = "-c", SOUFFLE_BIN = "souffle";
-    protected static final String SOUFFLE_RULES = "smt_files/allInOneAnalysis.dl";
-    protected static final String FINAL_FILE = "smt_files/finalTmpFile.dl";
     protected final String TIMEOUT_COMMAND = System.getProperty("os.name").toLowerCase().startsWith("mac") ? "gtimeout" : "timeout";
 
     public DSLAnalysis() throws IOException, InterruptedException {
         initDataflow();
     }
 
-    protected boolean isSouffleInstalled() {
-        try {
-            Process process = new ProcessBuilder(SOUFFLE_BIN).start();
-            process.waitFor();
-            return process.exitValue() == 0;
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
 
     protected void initDataflow() throws IOException, InterruptedException {
-        if(! isSouffleInstalled()){
-            System.err.println("Soufflé does not seem to be installed.");
-            System.exit(7);
-        }
-
-
         varToCode = HashBiMap.create();
         instrToCode = HashBiMap.create();
         typeToCode = HashBiMap.create();
@@ -136,55 +117,19 @@ public class DSLAnalysis {
         deriveIfPredicates();
 
         createProgramRulesFile();
-        log("code for SLoad " + getCode(SLoad.class));
-        log("code for balance " + getCode(Balance.class));
-        log("Number of instructions: " + instrToCode.size());
-        log("Threshold: " + Config.THRESHOLD_COMPILE);
-
-        collapseSouffleRulesAndQueries();
 
         long start = System.currentTimeMillis();
-        if (instructions.size() > Config.THRESHOLD_COMPILE) {
-            /* compile Souffle program and run */
-            String cmd = TIMEOUT_COMMAND + " " + Config.PATTERN_TIMEOUT + "s " + SOUFFLE_BIN + " -w -F " + WORKSPACE + " -D " + WORKSPACE_OUT + " " + SOUFFLE_COMPILE_FLAG + " "
-                    + FINAL_FILE;
-            log(cmd);
-            runCommand(cmd);
-        } else {
-            /* run interpreter */
-            String cmd = TIMEOUT_COMMAND + " " + Config.PATTERN_TIMEOUT + "s " + SOUFFLE_BIN + " -w -F " + WORKSPACE + " -D " + WORKSPACE_OUT + " " + FINAL_FILE;
-            log(cmd);
-            runCommand(cmd);
-        }
+        /* run compiled souffle */
+        String cmd = TIMEOUT_COMMAND + " " + Config.PATTERN_TIMEOUT + "s " + DSLPatternsCompiler.FINAL_EXECUTABLE + " -F " + WORKSPACE + " -D " + WORKSPACE_OUT;
+        log(cmd);
+        runCommand(cmd);
+
         long elapsedTime = System.currentTimeMillis() - start;
         String elapsedTimeStr = String.format("%d min, %d sec",
                 TimeUnit.MILLISECONDS.toMinutes(elapsedTime),
                 TimeUnit.MILLISECONDS.toSeconds(elapsedTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(elapsedTime))
         );
         log(elapsedTimeStr);
-    }
-
-    private static void collapseSouffleRulesAndQueries() throws IOException {
-        PrintWriter pw = new PrintWriter(FINAL_FILE);
-        BufferedReader br = new BufferedReader(new FileReader(SOUFFLE_RULES));
-
-        String line = br.readLine();
-        while (line != null) {
-            pw.println(line);
-            line = br.readLine();
-        }
-        br = new BufferedReader(new FileReader(DSLPatternsCompiler.DATALOG_PATTERNS_FILE));
-        line = br.readLine();
-
-        while(line != null)
-        {
-            pw.println(line);
-            line = br.readLine();
-        }
-
-        pw.flush();
-        br.close();
-        pw.close();
     }
 
     public static int getInt(byte[] data) {

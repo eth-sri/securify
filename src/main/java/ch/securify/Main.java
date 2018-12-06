@@ -26,6 +26,7 @@ import ch.securify.decompiler.instructions.Instruction;
 import ch.securify.decompiler.instructions._VirtualMethodHead;
 import ch.securify.decompiler.printer.DecompilationPrinter;
 import ch.securify.dslpatterns.DSLPatternResult;
+import ch.securify.dslpatterns.DSLPatternsCompiler;
 import ch.securify.model.Contract;
 import ch.securify.model.ContractResult;
 import ch.securify.model.PatternResult;
@@ -85,6 +86,9 @@ public class Main {
 
         @Parameter(names = {"--pretty"}, description = "display pretty 'clang style' output")
         private boolean prettyOutput;
+
+        @Parameter(names = {"--compile-dsl-patterns"}, description = "create the souffle executable with the datalog rules and the datalog patterns inside")
+        private boolean compiledslpatterns = false;
     }
 
     private static List<AbstractPattern> patterns;
@@ -289,6 +293,11 @@ public class Main {
         } catch (ParameterException e) {
             log.println(e.getMessage());
             new JCommander(args).usage();
+            return;
+        }
+
+        if(args.compiledslpatterns) {
+            DSLPatternsCompiler.generateDatalogExecutable();
             return;
         }
 
