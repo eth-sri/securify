@@ -123,7 +123,7 @@ public class Main {
             Files.write(Paths.get(binFile.getPath()), lines);
 
             try {
-                processHexFile(binFile.getPath(), null, livestatusfile, false);
+                processHexFile(binFile.getPath(), null, livestatusfile, args.usedsl);
             } catch(Exception e) {
                 e.printStackTrace();
                 System.err.println("Error, skipping: " + elt.getKey());
