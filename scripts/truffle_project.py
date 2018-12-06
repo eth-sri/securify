@@ -41,8 +41,8 @@ class TruffleProject(project.Project):
                 output = subprocess.check_output(["truffle", "compile"],
                                                  universal_newlines=True,
                                                  stderr=subprocess.STDOUT)
-                logging.info(output)
-            except CalledProcessError as e:
+                logging.debug(output)
+            except subprocess.CalledProcessError as e:
                 logging.error("Error compiling Truffle project")
                 utils.handle_process_output_and_exit(e)
 
@@ -54,7 +54,7 @@ class TruffleProject(project.Project):
         result = {}
         for entry in os.scandir(self.build_dir):
             if entry.is_file() and entry.name.endswith(".json") and\
-                                   entry.name != "Migrations.json":
+                    entry.name != "Migrations.json":
                 with open(entry) as file:
                     data = json.load(file)
                 contract_name = data["sourcePath"] + ":" + data["contractName"]

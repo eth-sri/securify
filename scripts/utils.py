@@ -96,17 +96,6 @@ def handle_process_output_and_exit(error):
     sys.exit(1)
 
 
-def set_logger_level(level=None):
-    if level == "info":
-        log_level = logging.INFO
-    elif level == "error":
-        log_level = logging.ERROR
-    else:
-        log_level = logging.WARNING
-
-    logging.basicConfig(format="%(message)s", level=log_level)
-
-
 @contextlib.contextmanager
 def working_directory(path):
     prev_cwd = os.getcwd()

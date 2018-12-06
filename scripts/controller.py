@@ -19,10 +19,10 @@ limitations under the License.
 """
 
 import argparse
+import logging
 
 from . import solc_project
 from . import truffle_project
-from . import utils
 
 
 class Controller:
@@ -49,16 +49,20 @@ class Controller:
         self.args = self._parser.parse_args()
 
         if self.args.truffle:
-            self._project = truffle_project.TruffleProject(self.args.project, self.args)
+            self._project = truffle_project.TruffleProject(
+                self.args.project, self.args)
         else:
-            self._project = solc_project.SolcProject(self.args.project, self.args)
+            self._project = solc_project.SolcProject(
+                self.args.project, self.args)
+
+        logging.basicConfig(format="%(message)s")
 
         if self.args.verbose:
-            utils.set_logger_level("info")
+            logging.basicConfig(level=logging.DEBUG)
         elif self.args.quiet:
-            utils.set_logger_level("error")
+            logging.basicConfig(level=logging.WARNING)
         else:
-            utils.set_logger_level("warning")
+            logging.basicConfig(level=logging.INFO)
 
     def compile_and_report(self):
         """Executes securify and returns violations and warnings.

@@ -47,11 +47,11 @@ class Project(metaclass=abc.ABCMeta):
         with tempfile.TemporaryDirectory() as d:
             tmpdir = pathlib.Path(d)
 
-            logging.warning("Compiling project")
+            logging.info("Compiling project")
             compilation_output = tmpdir / "comp.json"
             self.compile_(compilation_output)
 
-            logging.warning("Running Securify")
+            logging.info("Running Securify")
             securify_target_output = tmpdir / "securify_res.json"
             self.run_securify(compilation_output, securify_target_output)
 
@@ -72,10 +72,9 @@ class Project(metaclass=abc.ABCMeta):
 
         try:
             subprocess.run(cmd, check=True, universal_newlines=True)
-        except CalledProcessError as e:
+        except subprocess.CalledProcessError as e:
             logging.error("Error running Securify")
             utils.handle_process_output_and_exit(e)
-
 
     @abc.abstractmethod
     def compile_(self, compilation_output):
