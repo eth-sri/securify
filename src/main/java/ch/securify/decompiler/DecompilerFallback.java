@@ -18,37 +18,16 @@
 
 package ch.securify.decompiler;
 
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Queue;
-import java.util.Set;
-import java.util.Stack;
-
+import ch.securify.decompiler.evm.RawInstruction;
+import ch.securify.decompiler.instructions.*;
 import ch.securify.utils.DevNullPrintStream;
 import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
 
-import ch.securify.decompiler.evm.OpCodes;
-import ch.securify.decompiler.evm.RawInstruction;
-import ch.securify.decompiler.instructions.BranchInstruction;
-import ch.securify.decompiler.instructions.Instruction;
-import ch.securify.decompiler.instructions.Jump;
-import ch.securify.decompiler.instructions.JumpDest;
-import ch.securify.decompiler.instructions.JumpI;
-import ch.securify.decompiler.instructions._NoOp;
-import ch.securify.decompiler.instructions._VirtualAssignment;
-import ch.securify.decompiler.instructions._VirtualInstruction;
-import ch.securify.decompiler.printer.HexPrinter;
-import ch.securify.utils.ArrayUtil;
+import java.io.PrintStream;
+import java.util.*;
 
 public class DecompilerFallback extends AbstractDecompiler {
 
@@ -76,83 +55,10 @@ public class DecompilerFallback extends AbstractDecompiler {
         /* Map bytecode offsets of JUMP/JUMPI instructions to known bytecode offsets of JUMPDEST instructions.
          * These are the edges of the control flow graph the correspond to explicit jumps.
          * assumption: there are no dynamic jumps that may have multiple jump targets. */
-        Multimap<Integer, Integer> mapJumpsToDests = HashMultimap.create();;
+        Multimap<Integer, Integer> mapJumpsToDests = HashMultimap.create();
 
         Multimap<Integer, Integer> controlFlowGraph = dectectControlFlow(log, rawInstructions, jumpDestinations, tags,
                 controlFlowDetector, mapJumpsToDests);
-
-        // get ABI method IDs
-        log.println();
-        log.println("ABI Method IDs:");
-        /* Map bytecode offsets of tags of branch starts to the corresponding method IDs and vice versa. */
-        BiMap<Integer, byte[]> branchBcoToAbiMethodId = HashBiMap.create();
-        {
-            // use decompiler to parse the instructions of the first code block
-            // (i.e. until the first hard jump or conditional jump to error)
-            Instruction[] instructionsOfFirstBlock = new Instruction[bytecode.length];
-            InstructionFactory instructionFactory = new InstructionFactory()
-                    .setJumpResolver(instruction -> tags.get(Iterables.getFirst(mapJumpsToDests.get(instruction.offset), -42)))
-                    .setLabelResolver(instruction -> tags.get(instruction.offset));
-
-            // partial execution of first code block to get the stack variables
-            int endOfFirstBlock = 0;
-            Stack<Variable> stack = new Stack<>();
-            for (int offset = 0; offset < rawInstructions.length; offset = ArrayUtil.nextNonNullIndex(offset, rawInstructions)) {
-                RawInstruction rawInstruction = rawInstructions[offset];
-
-                if (OpCodes.surelyEndsBlock(rawInstruction.opcode) ||
-                        rawInstruction.opcode == OpCodes.JUMPI &&
-                                controlFlowGraph.get(rawInstruction.offset).contains(ControlFlowDetector.DEST_ERROR)) {
-                    // end of first block, stop
-                    endOfFirstBlock = rawInstruction.offset;
-                    break;
-                }
-
-                instructionsOfFirstBlock[offset] = instructionFactory.createAndApply(rawInstruction, stack);
-            }
-
-            // try to detect ABI method IDs by setting up instruction/variable dependencies,
-            // so we look out for conditional jumps that have a dependency on some
-            // previously push'd 4-byte value (which is most likely a ABI method ID)
-            for (int offset = 0; offset < instructionsOfFirstBlock.length;
-                 offset = ArrayUtil.nextNonNullIndex(offset, instructionsOfFirstBlock)) {
-                Instruction instruction = instructionsOfFirstBlock[offset];
-                if (offset >= endOfFirstBlock) {
-                    // end of first block reached
-                    break;
-                }
-
-                // determine dependencies for this instruction
-                for (Variable inputVar : instruction.getInput()) {
-                    backtrack:
-                    for (int offset2 = ArrayUtil.prevNonNullIndex(offset, instructionsOfFirstBlock);
-                         offset2 >= 0; offset2 = ArrayUtil.prevNonNullIndex(offset2, instructionsOfFirstBlock)) {
-                        Instruction prevInstr = instructionsOfFirstBlock[offset2];
-                        for (Variable prevOutputVar : prevInstr.getOutput()) {
-                            if (prevOutputVar == inputVar) {
-                                instruction.addDependency(prevInstr);
-                                break backtrack;
-                            }
-                        }
-                    }
-                }
-
-                // we have a conditional jump here, so search for a 4-byte push dependency to the ABI method ID
-                if (rawInstructions[offset].opcode == OpCodes.JUMPI) {
-                    // first call to method setup
-                    byte[] methodId = findMethodId(instruction, 0);
-                    if (methodId != null) {
-                        Collection<Integer> branch = mapJumpsToDests.get(rawInstructions[offset].offset);
-                        assert branch.size() == 1;
-                        branchBcoToAbiMethodId.put(branch.iterator().next(), methodId);
-                    }
-                }
-            }
-
-            branchBcoToAbiMethodId.forEach((bco, methodId) ->
-                    log.println(tags.get(bco) + " belongs to branch of ABI method ID " + HexPrinter.toHex(methodId)));
-        }
-
 
         // Decompile the whole thing
         log.println();
