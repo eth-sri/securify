@@ -28,6 +28,21 @@ import psutil
 from . import utils
 
 
+def report(securify_target_output):
+    """Report findings.
+
+    This function returns 0 if no violations are found, and 1 otherwise.
+    """
+    with open(securify_target_output) as file:
+        json_report = json.load(file)
+
+    for contract in json_report.values():
+        for pattern in contract["results"].values():
+            if pattern["violations"]:
+                return 1
+    return 0
+
+
 class Project(metaclass=abc.ABCMeta):
     """Abstract class implemented by projects using compilation and reporting.
     """
@@ -55,7 +70,7 @@ class Project(metaclass=abc.ABCMeta):
             securify_target_output = tmpdir / "securify_res.json"
             self.run_securify(compilation_output, securify_target_output)
 
-            return self.report(securify_target_output)
+            return report(securify_target_output)
 
     def run_securify(self, compilation_output, securify_target_output):
         """Runs the securify command.
@@ -79,19 +94,6 @@ class Project(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def compile_(self, compilation_output):
-        """Compile the project."""
-        pass
-
-    def report(self, securify_target_output):
-        """Report findings.
-
-        This function returns 0 if no violations are found, and 1 otherwise.
+        """Compile the project.
         """
-        with open(securify_target_output) as file:
-            json_report = json.load(file)
-
-        for contract in json_report.values():
-            for pattern in contract["results"].values():
-                if pattern["violations"]:
-                    return 1
-        return 0
+        pass
