@@ -26,8 +26,10 @@ from . import truffle_project
 
 
 class Controller:
+    """Handles CLI arguments.
+    """
+
     def __init__(self):
-        """Initialise the controller. This sets up the command line argument parsing etc."""
         self._parser = argparse.ArgumentParser(description='Run Securify.')
         self._parser.add_argument('-t', '--truffle',
                                   action="store_true",

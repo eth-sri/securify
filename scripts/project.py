@@ -17,7 +17,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-
 import abc
 import json
 import logging
@@ -35,12 +34,13 @@ class Project(metaclass=abc.ABCMeta):
     securify_jar = pathlib.Path("build/libs/securify-0.1.jar")
 
     def __init__(self, project_root, args):
-        """Sets the project root."""
+        """Sets the project root.
+        """
         self.project_root = pathlib.Path(project_root)
         self.args = args
 
     def execute(self):
-        """Execute the project. This includes compilation and reporting.
+        """Executes the project. This includes compilation and reporting.
 
         This function returns 0 if no violations are found, and 1 otherwise.
         """
@@ -58,7 +58,8 @@ class Project(metaclass=abc.ABCMeta):
             return self.report(securify_target_output)
 
     def run_securify(self, compilation_output, securify_target_output):
-        """Runs the securify command."""
+        """Runs the securify command.
+        """
         memory = psutil.virtual_memory().available // 1024 ** 3
         cmd = ["java", f"-Xmx{memory}G", "-jar", str(self.securify_jar),
                "-co", compilation_output,
