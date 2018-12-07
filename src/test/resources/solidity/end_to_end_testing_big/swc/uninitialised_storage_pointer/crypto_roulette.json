@@ -1,0 +1,91 @@
+{
+  "src/test/resources/solidity/end_to_end_testing_big/swc/uninitialised_storage_pointer/crypto_roulette.sol:CryptoRoulette": {
+    "results": {
+      "DAO": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "DAOConstantGas": {
+        "violations": [],
+        "warnings": [],
+        "safe": [
+          45
+        ],
+        "conflicts": []
+      },
+      "LockedEther": {
+        "violations": [],
+        "warnings": [
+          12
+        ],
+        "safe": [],
+        "conflicts": []
+      },
+      "MissingInputValidation": {
+        "violations": [],
+        "warnings": [
+          15,
+          16,
+          17,
+          23,
+          30,
+          52
+        ],
+        "safe": [
+          35
+        ],
+        "conflicts": []
+      },
+      "TODAmount": {
+        "violations": [
+          45
+        ],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "TODReceiver": {
+        "violations": [],
+        "warnings": [
+          45
+        ],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnhandledException": {
+        "violations": [],
+        "warnings": [
+          45
+        ],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnrestrictedEtherFlow": {
+        "violations": [],
+        "warnings": [],
+        "safe": [
+          45
+        ],
+        "conflicts": []
+      },
+      "UnrestrictedWrite": {
+        "violations": [
+          1,
+          32,
+          39,
+          40,
+          41,
+          49
+        ],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      }
+    },
+    "securifyErrors": {
+      "errors": []
+    }
+  }
+}

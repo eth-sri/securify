@@ -1,0 +1,76 @@
+{
+  "src/test/resources/solidity/end_to_end_testing_big/swc/integer_overflow_and_underflow/overflow_vulnerable_and_fixed.sol:OverflowVulnerableAndFixed": {
+    "results": {
+      "DAO": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "DAOConstantGas": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "LockedEther": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": [
+          7
+        ]
+      },
+      "MissingInputValidation": {
+        "violations": [
+          9,
+          12
+        ],
+        "warnings": [],
+        "safe": [
+          21
+        ],
+        "conflicts": []
+      },
+      "TODAmount": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "TODReceiver": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnhandledException": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnrestrictedEtherFlow": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnrestrictedWrite": {
+        "violations": [
+          17,
+          27
+        ],
+        "warnings": [
+          16,
+          26
+        ],
+        "safe": [],
+        "conflicts": []
+      }
+    },
+    "securifyErrors": {
+      "errors": []
+    }
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "src/test/resources/solidity/end_to_end_testing_big/swc/transaction_order_dependence/ERC20.sol:ERC20": {
+    "results": {
+      "DAO": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "DAOConstantGas": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "LockedEther": {
+        "violations": [],
+        "warnings": [
+          67
+        ],
+        "safe": [],
+        "conflicts": []
+      },
+      "MissingInputValidation": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "TODAmount": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "TODReceiver": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnhandledException": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnrestrictedEtherFlow": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnrestrictedWrite": {
+        "violations": [],
+        "warnings": [
+          97,
+          106,
+          118
+        ],
+        "safe": [
+          98,
+          116,
+          117
+        ],
+        "conflicts": []
+      }
+    },
+    "securifyErrors": {
+      "errors": []
+    }
+  },
+  "src/test/resources/solidity/end_to_end_testing_big/swc/transaction_order_dependence/ERC20.sol:SafeMath": {
+    "results": {},
+    "securifyErrors": {
+      "errors": [
+        {
+          "error": "decompilation_error",
+          "stackTrace": "java.util.EmptyStackException\n\tat java.util.Stack.peek(Stack.java:102)\n\tat java.util.Stack.pop(Stack.java:84)\n\tat ch.securify.decompiler.Variable.takeFromStack(Variable.java:83)\n\tat ch.securify.decompiler.InstructionFactory.createAndApply(InstructionFactory.java:92)\n\tat ch.securify.decompiler.DecompilerFallback.decompile(DecompilerFallback.java:111)\n\tat ch.securify.Main.decompileContract(Main.java:280)\n\tat ch.securify.Main.processHexFile(Main.java:152)\n\tat ch.securify.Main.processCompilationOutput(Main.java:121)\n\tat ch.securify.Main.processSolidityFile(Main.java:96)\n\tat ch.securify.Main.main(Main.java:231)\n"
+        }
+      ]
+    }
+  }
+}

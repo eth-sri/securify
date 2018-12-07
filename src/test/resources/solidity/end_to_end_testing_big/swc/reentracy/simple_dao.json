@@ -1,0 +1,85 @@
+{
+  "src/test/resources/solidity/end_to_end_testing_big/swc/reentracy/simple_dao.sol:SimpleDAO": {
+    "results": {
+      "DAO": {
+        "violations": [
+          16
+        ],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "DAOConstantGas": {
+        "violations": [],
+        "warnings": [],
+        "safe": [],
+        "conflicts": []
+      },
+      "LockedEther": {
+        "violations": [],
+        "warnings": [
+          7
+        ],
+        "safe": [],
+        "conflicts": []
+      },
+      "MissingInputValidation": {
+        "violations": [
+          8,
+          10,
+          21
+        ],
+        "warnings": [
+          14
+        ],
+        "safe": [],
+        "conflicts": []
+      },
+      "TODAmount": {
+        "violations": [],
+        "warnings": [
+          16
+        ],
+        "safe": [],
+        "conflicts": []
+      },
+      "TODReceiver": {
+        "violations": [],
+        "warnings": [
+          16
+        ],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnhandledException": {
+        "violations": [],
+        "warnings": [
+          16
+        ],
+        "safe": [],
+        "conflicts": []
+      },
+      "UnrestrictedEtherFlow": {
+        "violations": [],
+        "warnings": [],
+        "safe": [
+          16
+        ],
+        "conflicts": []
+      },
+      "UnrestrictedWrite": {
+        "violations": [
+          11
+        ],
+        "warnings": [
+          17
+        ],
+        "safe": [],
+        "conflicts": []
+      }
+    },
+    "securifyErrors": {
+      "errors": []
+    }
+  }
+}
