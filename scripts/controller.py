@@ -57,14 +57,14 @@ class Controller:
             self._project = solc_project.SolcProject(
                 self.args.project, self.args)
 
-        logging.basicConfig(format="%(message)s")
-
         if self.args.verbose:
-            logging.basicConfig(level=logging.DEBUG)
+            level = logging.DEBUG
         elif self.args.quiet:
-            logging.basicConfig(level=logging.WARNING)
+            level = logging.WARNING
         else:
-            logging.basicConfig(level=logging.INFO)
+            level = logging.INFO
+
+        logging.basicConfig(level=level, format="%(message)s")
 
     def compile_and_report(self):
         """Executes securify and returns violations and warnings.
