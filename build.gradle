@@ -13,22 +13,12 @@ jar {
     }
 }
 
-task compileSouffle(dependsOn: ['mayImplicitBuild', 'mustExplicitBuild']) {
+task compileSouffle(type: Exec) {
+    doFirst {mkdir project.buildDir}
+    executable "./build_souffle.sh"
 }
 
 compileJava.dependsOn compileSouffle
-
-task mayImplicitBuild(type: Exec) {
-    doFirst {mkdir project.buildDir}
-    executable "souffle"
-    args  "--dl-program=build/mayImplicit", "smt_files/mayImplicit.dl"
-}
-
-task mustExplicitBuild(type: Exec) {
-    doFirst {mkdir project.buildDir}
-    executable "souffle"
-    args  "--dl-program=build/mustExplicit", "smt_files/mustExplicit.dl"
-}
 
 repositories {
     mavenCentral()
