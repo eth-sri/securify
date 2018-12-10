@@ -131,14 +131,15 @@ def test_securify_analysis(c_file, json_output, memory=4, overwrite=False):
         check_all_patterns(curr_json, expc_json, contract)
 
 
-def test(tests_dir, overwrite=False):
+def test(tests_dir, overwrite=False, recursive=False):
     """Run all the tests in the given path
 
     Args:
         tests_dir: the path in which to look for .sol and .json files
         overwrite: whether to write the (new) .json output
     """
-    for contract_file in tests_dir.glob('*.sol'):
+    find = tests_dir.rglob if recursive else tests_dir.glob
+    for contract_file in find('*.sol'):
         print(f'Running on {contract_file}')
         json_output = contract_file.with_suffix('.json')
         assert (json_output.exists() or overwrite), f'Missing f{json_output}'
@@ -151,4 +152,6 @@ if __name__ == '__main__':
     test(UNIT)
     QUICK = Path('src/test/resources/solidity/end_to_end_testing_quick')
     test(QUICK)
+    BIG = Path('src/test/resources/solidity/end_to_end_testing_big')
+    test(BIG, recursive=True)
     print('Done.')
