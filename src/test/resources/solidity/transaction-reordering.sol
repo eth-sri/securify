@@ -1,4 +1,4 @@
-pragma solidity 0.4.24;
+pragma solidity ^0.4.24;
 contract MarketPlace {
     function safeTransfer1() {
         uint x = msg.value;
