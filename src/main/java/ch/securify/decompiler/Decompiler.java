@@ -179,9 +179,9 @@ public class Decompiler extends AbstractDecompiler {
 			for (int offset = 0; offset < rawInstructions.length; offset = ArrayUtil.nextNonNullIndex(offset, rawInstructions)) {
 				RawInstruction rawInstruction = rawInstructions[offset];
 
-				if (OpCodes.surelyEndsBlock(rawInstruction.opcode) ||
-						rawInstruction.opcode == OpCodes.JUMPI &&
-								controlFlowGraph.get(rawInstruction.offset).contains(ControlFlowDetector.DEST_ERROR)) {
+				if (OpCodes.isInvalid(rawInstruction.opcode) || rawInstruction.opcode == OpCodes.JUMP
+						|| rawInstruction.opcode == OpCodes.JUMPI
+						&& controlFlowGraph.get(rawInstruction.offset).contains(ControlFlowDetector.DEST_ERROR)) {
 					// end of first block, stop
 					endOfFirstBlock = rawInstruction.offset;
 					break;
