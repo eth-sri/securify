@@ -209,6 +209,17 @@ public class OpCodes {
 		return "INVALID".equals(getOpName(opcode)) || opcode == INVALID;
 	}
 
+	/**
+	 * Indicate whether the opcode ends the execution
+	 * @param opcode
+	 * @return whether the opcode belongs to the corresponding set
+	 */
+	public static boolean endsExecution(int opcode) {
+		return isInvalid(opcode) ||
+				opcode == OpCodes.REVERT ||
+				opcode == OpCodes.SELFDESTRUCT ||
+				opcode == OpCodes.STOP;
+	}
 
 	/**
 	 * Get an invalid opcode.
