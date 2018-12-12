@@ -72,7 +72,6 @@ public abstract class AbstractDataflow {
     protected String DL_EXEC;
     private String WORKSPACE, WORKSPACE_OUT;
     private final String SOUFFLE_BIN = "souffle";
-    private final String TIMEOUT_COMMAND = System.getProperty("os.name").toLowerCase().startsWith("mac") ? "gtimeout" : "timeout";
 
     protected boolean isSouffleInstalled() {
         try {
@@ -128,8 +127,8 @@ public abstract class AbstractDataflow {
         Random rnd = new Random();
         WORKSPACE = (new File(System.getProperty("java.io.tmpdir"), "souffle-" + UUID.randomUUID())).getAbsolutePath();
         WORKSPACE_OUT = WORKSPACE + "_OUT";
-        runCommand("mkdir " + WORKSPACE);
-        runCommand("mkdir " + WORKSPACE_OUT);
+        runCommand(new String[]{"mkdir", WORKSPACE});
+        runCommand(new String[]{"mkdir", WORKSPACE_OUT});
 
         deriveAssignVarPredicates();
         deriveAssignTypePredicates();
@@ -142,10 +141,10 @@ public abstract class AbstractDataflow {
         createProgramRulesFile();
         log("Number of instructions: " + instrToCode.size());
         log("Threshold: " + Config.THRESHOLD_COMPILE);
-        String cmd = TIMEOUT_COMMAND + " " + Config.PATTERN_TIMEOUT+ "s " + DL_EXEC + " -F " + WORKSPACE + " -D " + WORKSPACE_OUT;
+        String[] cmd = {DL_EXEC, "-F", WORKSPACE, "-D", WORKSPACE_OUT};
         long start = System.currentTimeMillis();
-        log(cmd);
-        runCommand(cmd);
+        log(String.join(" ", cmd));
+        runCommand(cmd, Config.PATTERN_TIMEOUT);
         long elapsedTime = System.currentTimeMillis() - start;
         String elapsedTimeStr = String.format("%d min, %d sec",
                 TimeUnit.MILLISECONDS.toMinutes(elapsedTime),
@@ -200,8 +199,8 @@ public abstract class AbstractDataflow {
     }
 
     public void dispose() throws IOException, InterruptedException {
-        runCommand("rm -r " + WORKSPACE);
-        runCommand("rm -r " + WORKSPACE_OUT);
+        runCommand(new String[]{"rm", "-r", WORKSPACE});
+        runCommand(new String[]{"rm", "-r", WORKSPACE_OUT});
     }
 
     protected void readFixedpoint(String ruleName) throws IOException {
@@ -230,23 +229,23 @@ public abstract class AbstractDataflow {
             } else {
                 return Status.UNSATISFIABLE;
             }
-        } catch (FileNotFoundException e) {
-            log("Souffle TIMEOUT, returns UNKNOWN");
-            return Status.UNKNOWN;
         } catch (IOException e) {
             log("Souffle TIMEOUT, returns UNKNOWN");
             return Status.UNKNOWN;
         }
     }
 
-    protected String runCommand(String command) throws IOException, InterruptedException {
-        Process proc;
-        String result = "";
-        log("CMD: " + command);
+    private void runCommand(String[] command) throws IOException, InterruptedException {
+        // one week used as infinity
+        runCommand(command, 604800);
+    }
+
+    private void runCommand(String[] command, int timeout) throws IOException, InterruptedException {
+        log("CMD: " + String.join(" ", command));
 
         // Souffle works with this PATH
-        String[] envp = {"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/dani/bin"};
-        proc = Runtime.getRuntime().exec(command, envp);
+        String[] envp = {"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"};
+        Process proc = Runtime.getRuntime().exec(command, envp);
 
         // Read the output
         BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
@@ -255,7 +254,6 @@ public abstract class AbstractDataflow {
         {
             String line;
             while ((line = reader.readLine()) != null) {
-                result = result + line + "\n";
                 log(line);
             }
         }
@@ -266,16 +264,15 @@ public abstract class AbstractDataflow {
             reader = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
 
             while ((line = reader.readLine()) != null) {
-                result = result + line + "\n";
                 log(line);
             }
         }
 
-        proc.waitFor();
+        proc.waitFor(timeout, TimeUnit.SECONDS);
+
         if (proc.exitValue() != 0) {
-            throw new IOException();
+            throw new IOException(String.join(" ", command));
         }
-        return result;
     }
 
     public Variable getStorageVarForIndex(int index) {
