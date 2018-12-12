@@ -218,7 +218,8 @@ public class OpCodes {
 		return isInvalid(opcode) ||
 				opcode == OpCodes.REVERT ||
 				opcode == OpCodes.SELFDESTRUCT ||
-				opcode == OpCodes.STOP;
+				opcode == OpCodes.STOP ||
+                                opcode == OpCodes.RETURN;
 	}
 
 	/**
