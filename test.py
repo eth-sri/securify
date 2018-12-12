@@ -94,7 +94,7 @@ def check_securify_errors(curr_json, expc_json, contract):
         raise_mismatch(expc_errors, curr_errors)
 
 
-def test_securify_analysis(c_file, json_output, memory=4, overwrite=False):
+def test_securify_analysis(c_file, json_output, memory=8, overwrite=False):
     """Compare the output of Securify on c_file with its expected output
 
     Args:
