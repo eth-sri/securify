@@ -40,6 +40,9 @@ class Controller:
         self._parser.add_argument('--json',
                                   action="store_true",
                                   help="provide JSON output to console")
+        self._parser.add_argument('--descriptions',
+                                  action="store_true",
+                                  help="add descriptions to the JSON output")
         verbosity_group = self._parser.add_mutually_exclusive_group()
         verbosity_group.add_argument('-v', '--verbose',
                                      action="store_true",

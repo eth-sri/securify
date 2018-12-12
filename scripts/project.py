@@ -81,6 +81,8 @@ class Project(metaclass=abc.ABCMeta):
                "-o", securify_target_output]
         if self.args.json:
             cmd += ["--json"]
+        if self.args.descriptions:
+            cmd += ["--descriptions"]
         if self.args.verbose:
             cmd += ["-v"]
         if self.args.quiet:
