@@ -28,12 +28,14 @@ public class PatternDescription {
     enum Severity {
         Critical,
         High,
-        Medium
+        Medium,
+        Low
     }
 
     enum Type {
         Security,
-        Trust
+        Trust,
+        Design
     }
 
     // fields used in JSON export
