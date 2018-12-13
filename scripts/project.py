@@ -48,11 +48,12 @@ class Project(metaclass=abc.ABCMeta):
     """
     securify_jar = pathlib.Path("build/libs/securify-0.1.jar")
 
-    def __init__(self, project_root, args):
+    def __init__(self, project_root, args, securify_flags):
         """Sets the project root.
         """
         self.project_root = pathlib.Path(project_root)
         self.args = args
+        self.securify_flags = securify_flags
 
     def execute(self):
         """Executes the project. This includes compilation and reporting.
@@ -87,6 +88,7 @@ class Project(metaclass=abc.ABCMeta):
             cmd += ["-v"]
         if self.args.quiet:
             cmd += ["-q"]
+        cmd += self.securify_flags
 
         try:
             subprocess.run(cmd, check=True, universal_newlines=True)
