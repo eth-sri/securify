@@ -51,14 +51,14 @@ class Controller:
                                      action="store_true",
                                      help="suppress most output")
 
-        self.args = self._parser.parse_args()
+        self.args, securify_flags = self._parser.parse_known_args()
 
         if self.args.truffle:
             self._project = truffle_project.TruffleProject(
-                self.args.project, self.args)
+                self.args.project, self.args, securify_flags)
         else:
             self._project = solc_project.SolcProject(
-                self.args.project, self.args)
+                self.args.project, self.args, securify_flags)
 
         if self.args.verbose:
             level = logging.DEBUG

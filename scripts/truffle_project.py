@@ -31,8 +31,8 @@ class TruffleProject(project.Project):
     """A project that uses the truffle development environment to compile the
     project."""
 
-    def __init__(self, project_root, args):
-        super().__init__(project_root, args)
+    def __init__(self, project_root, args, securify_flags):
+        super().__init__(project_root, args, securify_flags)
         self.build_dir = self.project_root / pathlib.Path("build/contracts/")
 
     def compile_(self, compilation_output):
