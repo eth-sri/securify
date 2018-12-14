@@ -94,8 +94,8 @@ public class CompilationHelpers {
         return new String(encoded, Charset.defaultCharset());
     }
 
-    static JsonObject compileContracts(String filesol) throws IOException, InterruptedException, RuntimeException {
-        ProcessBuilder p = new ProcessBuilder("solc", "--combined-json", "abi,ast,bin-runtime,srcmap-runtime", filesol);
+    static JsonObject compileContracts(String solc, String filesol) throws IOException, InterruptedException, RuntimeException {
+        ProcessBuilder p = new ProcessBuilder(solc, "--combined-json", "abi,ast,bin-runtime,srcmap-runtime", filesol);
 
         File f = File.createTempFile("securify_compilation_", ".json");
         f.deleteOnExit();

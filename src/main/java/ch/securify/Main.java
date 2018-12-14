@@ -83,8 +83,11 @@ public class Main {
         @Parameter(names = {"--json"}, description = "provide JSON output to console")
         private boolean jsonOutput;
 
-        @Parameter(names = {"--descriptions"}, description= "add descriptions to the JSON output")
+        @Parameter(names = {"--descriptions"}, description = "add descriptions to the JSON output")
         private boolean descriptions;
+
+        @Parameter(names = {"--solc-path"}, description = "manually specify the path for  the solc binary")
+        private String solcPath = "solc";
     }
 
     private static List<AbstractPattern> patterns;
@@ -94,8 +97,8 @@ public class Main {
     private static Args args;
 
 
-    public static TreeMap<String, SolidityResult> processSolidityFile(String filesol, String livestatusfile) throws IOException, InterruptedException {
-        JsonObject compilationOutput = CompilationHelpers.compileContracts(filesol);
+    public static TreeMap<String, SolidityResult> processSolidityFile(String solcPath, String filesol, String livestatusfile) throws IOException, InterruptedException {
+        JsonObject compilationOutput = CompilationHelpers.compileContracts(solcPath, filesol);
 
         return processCompilationOutput(compilationOutput, livestatusfile);
     }
@@ -236,7 +239,7 @@ public class Main {
         if (args.filesol != null || args.compilationoutput != null) {
             TreeMap<String, SolidityResult> allContractsResults;
             if (args.filesol != null) {
-                allContractsResults = processSolidityFile(args.filesol, livestatusfile);
+                allContractsResults = processSolidityFile(args.solcPath, args.filesol, livestatusfile);
             } else {
                 allContractsResults = mainFromCompilationOutput(args.compilationoutput, livestatusfile);
             }
