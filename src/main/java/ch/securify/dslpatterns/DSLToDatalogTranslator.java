@@ -123,6 +123,8 @@ public class DSLToDatalogTranslator {
         }
         else if(patt instanceof All)
             newBodies = translateAll((All) patt);
+        else if(patt instanceof Or)
+            newBodies = translateOr((Or) patt);
 
         return newBodies;
     }
@@ -197,6 +199,12 @@ public class DSLToDatalogTranslator {
                     else
                         newBody.addElement(patt);
                 }
+            }
+            else {
+                if(toBeNegated)
+                    newBody.addElement(new DatalogNot(patt));
+                else
+                    newBody.addElement(patt);
             }
 
             return newBody;

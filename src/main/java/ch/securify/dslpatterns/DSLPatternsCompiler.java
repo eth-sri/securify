@@ -8,8 +8,6 @@ import ch.securify.decompiler.instructions.Caller;
 import ch.securify.decompiler.instructions.SLoad;
 import ch.securify.dslpatterns.datalogpattern.DatalogRule;
 import ch.securify.dslpatterns.instructions.AbstractDSLInstruction;
-import ch.securify.dslpatterns.instructions.DSLInstructionFactory;
-import ch.securify.dslpatterns.predicates.PredicateFactory;
 import ch.securify.dslpatterns.tags.DSLArg;
 import ch.securify.dslpatterns.util.DSLLabel;
 import ch.securify.dslpatterns.util.DSLLabelDC;
@@ -180,8 +178,6 @@ public class DSLPatternsCompiler {
 
         List<CompletePattern> patterns = new ArrayList<>(12);
 
-        DSLInstructionFactory instrFct = new DSLInstructionFactory();
-        PredicateFactory prdFct = new PredicateFactory();
         DSLPatternFactory pattFct = new DSLPatternFactory();
 
         DSLLabel l1 = new DSLLabel();
@@ -234,83 +230,84 @@ public class DSLPatternsCompiler {
 
         log(" *** NW - No writes after call - DAO");
         InstructionDSLPattern patternComplianceNW = pattFct.instructionPattern(
-                instrFct.call(l1, dcVar, dcVar, dcVar),
-                pattFct.all(instrFct.sstore(l2, dcVar, dcVar),
-                        pattFct.not(prdFct.mayFollow(l1, l2)))
+                pattFct.call(l1, dcVar, dcVar, dcVar),
+                pattFct.all(pattFct.sstore(l2, dcVar, dcVar),
+                        pattFct.not(pattFct.mayFollow(l1, l2)))
         );
 
         log(patternComplianceNW.getStringRepresentation());
 
         InstructionDSLPattern patternViolationNW = pattFct.instructionPattern(
-                instrFct.call(l1, dcVar, dcVar, dcVar),
-                pattFct.some(instrFct.sstore(l2, dcVar, dcVar),
-                        pattFct.not(prdFct.mustFollow(l1, l2)))
+                pattFct.call(l1, dcVar, dcVar, dcVar),
+                pattFct.some(pattFct.sstore(l2, dcVar, dcVar),
+                        pattFct.mustFollow(l1, l2))
         );
 
         log(patternViolationNW.getStringRepresentation());
-        patterns.add(new CompletePattern("NW", patternComplianceNW, patternViolationNW));
+        patterns.add(new CompletePattern("NoWritesAfterCallDAO", patternComplianceNW, patternViolationNW));
 
         log(" *** RW - restricted write");
-        InstructionDSLPattern patternComplianceRW = pattFct.instructionPattern(instrFct.sstore(dcLabel, X, dcVar),
-                prdFct.detBy(X, Caller.class));
+        InstructionDSLPattern patternComplianceRW = pattFct.instructionPattern(pattFct.sstore(dcLabel, X, dcVar),
+                pattFct.detBy(X, Caller.class));
         log(patternComplianceRW.getStringRepresentation());
 
-        InstructionDSLPattern patternViolationRW = pattFct.instructionPattern(instrFct.sstore(l1, X, dcVar),
-                pattFct.and(pattFct.not(prdFct.mayDepOn(X, Caller.class)), pattFct.not(prdFct.mayDepOn(l1, Caller.class))));
+        InstructionDSLPattern patternViolationRW = pattFct.instructionPattern(pattFct.sstore(l1, X, dcVar),
+                pattFct.and(pattFct.not(pattFct.mayDepOn(X, Caller.class)), pattFct.not(pattFct.mayDepOn(l1, Caller.class))));
         log(patternViolationRW.getStringRepresentation());
-        patterns.add(new CompletePattern("RW", patternComplianceRW, patternViolationRW));
+        patterns.add(new CompletePattern("unRestrictedWrite", patternComplianceRW, patternViolationRW));
 
         log(" *** RT - restricted transfer");
-        InstructionDSLPattern patternComplianceRT = pattFct.instructionPattern(instrFct.call(dcLabel, dcVar, dcVar, amount),
+        InstructionDSLPattern patternComplianceRT = pattFct.instructionPattern(pattFct.call(dcLabel, dcVar, dcVar, amount),
                 pattFct.eq(amount, 0));
         log(patternComplianceRT.getStringRepresentation());
 
-        InstructionDSLPattern patternViolationRT = pattFct.instructionPattern(instrFct.call(l1, dcVar, dcVar, amount),
-                pattFct.and(prdFct.detBy(amount, CallDataLoad.class),
-                        pattFct.not(prdFct.mayDepOn(l1, Caller.class)),
-                        pattFct.not(prdFct.mayDepOn(l1, CallDataLoad.class))));
+        InstructionDSLPattern patternViolationRT = pattFct.instructionPattern(pattFct.call(l1, dcVar, dcVar, amount),
+                pattFct.or(pattFct.and(pattFct.detBy(amount, CallDataLoad.class),
+                        pattFct.not(pattFct.mayDepOn(l1, Caller.class)),
+                        pattFct.not(pattFct.mayDepOn(l1, CallDataLoad.class))), pattFct.and(pattFct.isConst(amount), pattFct.greaterThan(amount, 0))));
         log(patternViolationRT.getStringRepresentation());
-        patterns.add(new CompletePattern("RT", patternComplianceRT, patternViolationRT));
+        CompletePattern unrestTrans = new CompletePattern("unRestrictedTransferEtherFlow", patternComplianceRT, patternViolationRT);
+        patterns.add(unrestTrans);
 
         log(" *** HE - handled exception");
-        InstructionDSLPattern patternComplianceHE = pattFct.instructionPattern(instrFct.call(l1, Y, dcVar, dcVar),
-                pattFct.some(instrFct.dslgoto(l2, X, dcLabel),
-                        pattFct.and(prdFct.mustFollow(l1, l2), prdFct.detBy(X, Y))));
+        InstructionDSLPattern patternComplianceHE = pattFct.instructionPattern(pattFct.call(l1, Y, dcVar, dcVar),
+                pattFct.some(pattFct.dslgoto(l2, X, dcLabel),
+                        pattFct.and(pattFct.mustFollow(l1, l2), pattFct.detBy(X, Y))));
         log(patternComplianceHE.getStringRepresentation());
 
-        InstructionDSLPattern patternViolationHE = pattFct.instructionPattern(instrFct.call(l1, Y, dcVar, dcVar),
-                pattFct.all(instrFct.dslgoto(l2, X, dcLabel),
-                        pattFct.implies(prdFct.mayFollow(l1, l2), pattFct.not(prdFct.mayDepOn(X, Y)))));
+        InstructionDSLPattern patternViolationHE = pattFct.instructionPattern(pattFct.call(l1, Y, dcVar, dcVar),
+                pattFct.all(pattFct.dslgoto(l2, X, dcLabel),
+                        pattFct.implies(pattFct.mayFollow(l1, l2), pattFct.not(pattFct.mayDepOn(X, Y)))));
         log(patternViolationHE.getStringRepresentation());
-        patterns.add(new CompletePattern("HE", patternComplianceHE, patternViolationHE));
+        patterns.add(new CompletePattern("unHandledException", patternComplianceHE, patternViolationHE));
 
         log(" *** TOD - transaction ordering dependency");
-        InstructionDSLPattern patternComplianceTOD = pattFct.instructionPattern(instrFct.call(dcLabel, dcVar, dcVar, amount),
-                pattFct.and(pattFct.not(prdFct.mayDepOn(amount, SLoad.class)), pattFct.not(prdFct.mayDepOn(amount, Balance.class))));
+        InstructionDSLPattern patternComplianceTOD = pattFct.instructionPattern(pattFct.call(dcLabel, dcVar, dcVar, amount),
+                pattFct.and(pattFct.not(pattFct.mayDepOn(amount, SLoad.class)), pattFct.not(pattFct.mayDepOn(amount, Balance.class))));
         log(patternComplianceTOD.getStringRepresentation());
 
-        InstructionDSLPattern patternViolationTOD = pattFct.instructionPattern(instrFct.call(dcLabel, dcVar, dcVar, amount),
-                pattFct.some(instrFct.sload(dcLabel, Y, X),
-                        pattFct.some(instrFct.sstore(dcLabel, X, dcVar),
-                                pattFct.and(prdFct.detBy(amount, Y), prdFct.isConst(X)))));
+        InstructionDSLPattern patternViolationTOD = pattFct.instructionPattern(pattFct.call(dcLabel, dcVar, dcVar, amount),
+                pattFct.some(pattFct.sload(dcLabel, Y, X),
+                        pattFct.some(pattFct.sstore(dcLabel, X, dcVar),
+                                pattFct.and(pattFct.detBy(amount, Y), pattFct.isConst(X)))));
         log(patternViolationTOD.getStringRepresentation());
         patterns.add(new CompletePattern("TOD", patternComplianceTOD, patternViolationTOD));
 
         log(" *** VA - validated arguments");
-        InstructionDSLPattern patternComplianceVA = pattFct.instructionPattern(instrFct.sstore(l1, dcVar, X),
-                pattFct.implies(prdFct.mayDepOn(X, DSLArg.class),
-                        pattFct.some(instrFct.dslgoto(l2, Y, dcLabel),
-                                pattFct.and(prdFct.mustFollow(l2, l1),
-                                        prdFct.detBy(Y, DSLArg.class)))));
+        InstructionDSLPattern patternComplianceVA = pattFct.instructionPattern(pattFct.sstore(l1, dcVar, X),
+                pattFct.implies(pattFct.mayDepOn(X, DSLArg.class),
+                        pattFct.some(pattFct.dslgoto(l2, Y, dcLabel),
+                                pattFct.and(pattFct.mustFollow(l2, l1),
+                                        pattFct.detBy(Y, DSLArg.class)))));
         log(patternComplianceVA.getStringRepresentation());
 
-        InstructionDSLPattern patternViolationVA = pattFct.instructionPattern(instrFct.sstore(l1, dcVar, X),
-                pattFct.implies(prdFct.mayDepOn(X, DSLArg.class),
-                        pattFct.not(pattFct.some(instrFct.dslgoto(l2, Y, dcLabel),
-                                pattFct.and(prdFct.mustFollow(l2, l1),
-                                        prdFct.mayDepOn(Y, DSLArg.class))))));
+        InstructionDSLPattern patternViolationVA = pattFct.instructionPattern(pattFct.sstore(l1, dcVar, X),
+                pattFct.implies(pattFct.mayDepOn(X, DSLArg.class),
+                        pattFct.not(pattFct.some(pattFct.dslgoto(l2, Y, dcLabel),
+                                pattFct.and(pattFct.mustFollow(l2, l1),
+                                        pattFct.mayDepOn(Y, DSLArg.class))))));
         log(patternViolationVA.getStringRepresentation());
-        patterns.add(new CompletePattern("VA", patternComplianceVA, patternViolationVA));
+        patterns.add(new CompletePattern("ValidatedArgumentsMissingInputValidation", patternComplianceVA, patternViolationVA));
         
         return patterns;
 

@@ -1,10 +1,9 @@
 package ch.securify.dslpatterns;
 
 import ch.securify.decompiler.Variable;
-import ch.securify.dslpatterns.instructions.AbstractDSLInstruction;
-import ch.securify.dslpatterns.instructions.DSLInstructionFactory;
+import ch.securify.dslpatterns.instructions.*;
+import ch.securify.dslpatterns.predicates.*;
 import ch.securify.dslpatterns.util.DSLLabel;
-import ch.securify.dslpatterns.predicates.PredicateFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,9 +13,6 @@ import java.util.List;
  * The factory to create Patterns, can be called to generate the right objects
  */
 public class DSLPatternFactory {
-
-    private static DSLInstructionFactory instrFct = new DSLInstructionFactory();
-    private static PredicateFactory prdFct = new PredicateFactory();
 
     public static All all(AbstractDSLInstruction quantifiedInstr, AbstractDSLPattern quantifiedPattern){
         return new All(quantifiedInstr, quantifiedPattern);
@@ -79,5 +75,75 @@ public class DSLPatternFactory {
     public static InstructionDSLPattern instructionPattern(AbstractDSLInstruction quantifiedInstr,
                                                            AbstractDSLPattern quantifiedPattern) {
         return new InstructionDSLPattern(quantifiedInstr, quantifiedPattern);
+    }
+
+    public GreaterThanComparison greaterThan(Variable amount, int i) {
+        return new GreaterThanComparison(amount, i);
+    }
+
+
+    //Predicates
+
+    public static Follow follow(DSLLabel l1, DSLLabel l2) {
+        return new Follow(l1, l2);
+    }
+
+    public static MustFollow mustFollow(DSLLabel l1, DSLLabel l2) {
+        return new MustFollow(l1, l2);
+    }
+
+    public DetByVarTag detBy(Variable var, Class tag) {
+        return new DetByVarTag(var, tag);
+    }
+
+    public DetByVarVar detBy(Variable var1, Variable var2) {
+        return new DetByVarVar(var1, var2);
+    }
+
+    public MayDepOnLabelTag mayDepOn(DSLLabel l, Class tag) {
+        return new MayDepOnLabelTag(l, tag);
+    }
+
+    public MayDepOnVarVar mayDepOn(Variable var1, Variable var2) {
+        return new MayDepOnVarVar(var1, var2);
+    }
+
+    public MayDepOnVarTag mayDepOn(Variable v, Class tag) {
+        return new MayDepOnVarTag(v, tag);
+    }
+
+    public MayFollow mayFollow(DSLLabel l1, DSLLabel l2) {
+        return new MayFollow(l1, l2);
+    }
+
+    public IsConst isConst(Variable x) {
+        return new IsConst(x);
+    }
+
+    public IsArg isArg(Variable x) {
+        return new IsArg(x);
+    }
+
+
+    //instructions
+
+    public static DSLGoto dslgoto(DSLLabel label, Variable var, DSLLabel secondBranchLabel) {
+        return new DSLGoto(label, var, secondBranchLabel);
+    }
+
+    public static DSLStop stop(DSLLabel label) {
+        return new DSLStop(label);
+    }
+
+    public static DSLCall call(DSLLabel label, Variable out, Variable gas, Variable amount) {
+        return new DSLCall(label, out, gas, amount);
+    }
+
+    public static DSLSstore sstore(DSLLabel label, Variable offset, Variable var) {
+        return new DSLSstore(label, offset, var);
+    }
+
+    public static DSLSload sload(DSLLabel label, Variable offset, Variable var) {
+        return new DSLSload(label, offset, var);
     }
 }

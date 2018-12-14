@@ -60,10 +60,10 @@ public class DSLAnalysis {
         constToCode.put(new Integer(0), new Integer(0));
 
         //fill in already the hashmap of types so that they always the same
-        getCode(DSLArg.class); //todo: understand how to properly translate these two
         getCode(CallDataLoad.class);
         getCode(SLoad.class);
         getCode(Balance.class);
+        getCode(Caller.class);
 
 
         offsetToStorageVar = HashBiMap.create();
@@ -485,6 +485,7 @@ public class DSLAnalysis {
             for(Variable var : instr.getInput()) {
                 if(var.hasConstantValue())
                     constants.add(var);
+                log("Added constant: " + var.getName() + " from instr " + instr.getStringRepresentation());
             }
 
             for(Variable var : instr.getOutput()) {
@@ -496,10 +497,15 @@ public class DSLAnalysis {
             if(instr instanceof _VirtualMethodHead) {
                 Collections.addAll(args, instr.getOutput());
             }
+
+            if(instr instanceof Call) {
+
+            }
         }
 
-        constants.forEach(var ->
-        appendRule("isConst", getCode(var)));
+        constants.forEach(var -> {
+        appendRule("isConst", getCode(var));
+        log("isConst(" + var + ")");});
 
         args.forEach(var ->
                 appendRule("isArg", getCode(var)));

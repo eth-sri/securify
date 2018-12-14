@@ -68,6 +68,8 @@ class Project(metaclass=abc.ABCMeta):
             cmd += ["--usedsl"]
         if self.pretty_output:
             cmd += ["--pretty"]
+        
+        logging.info("command: " + str(cmd))
 
         try:
             self.sec_output = subprocess.check_output(
