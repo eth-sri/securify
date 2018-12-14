@@ -46,7 +46,7 @@ public class MayDepOnVarTag extends AbstractPredicate {
     public String getDatalogStringRep(DSLAnalysis analyzer) {
         StringBuilder sb = new StringBuilder();
 
-        sb.append("mayDepOn(");
+        sb.append("mustDepOn(");
         sb.append(v.getName());
         sb.append(" , ");
         sb.append(analyzer.getCode(tag));

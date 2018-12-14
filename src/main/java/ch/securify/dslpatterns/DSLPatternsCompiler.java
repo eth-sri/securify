@@ -21,7 +21,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class DSLPatternsCompiler {
+public class DSLPatternsCompiler extends DSLPatternFactory {
 
     private static final String SOUFFLE_RULES = "smt_files/allInOneAnalysis.dl";
     private static final String TMP_DL_FILE = "smt_files/finalTmpFile.dl";
@@ -251,7 +251,7 @@ public class DSLPatternsCompiler {
                 pattFct.detBy(X, Caller.class));
         log(patternComplianceRW.getStringRepresentation());
 
-        InstructionDSLPattern patternViolationRW = pattFct.instructionPattern(pattFct.sstore(l1, X, dcVar),
+        InstructionDSLPattern patternViolationRW = instructionPattern(pattFct.sstore(l1, X, dcVar),
                 pattFct.and(pattFct.not(pattFct.mayDepOn(X, Caller.class)), pattFct.not(pattFct.mayDepOn(l1, Caller.class))));
         log(patternViolationRW.getStringRepresentation());
         patterns.add(new CompletePattern("unRestrictedWrite", patternComplianceRW, patternViolationRW));
@@ -302,7 +302,7 @@ public class DSLPatternsCompiler {
         log(patternComplianceVA.getStringRepresentation());
 
         InstructionDSLPattern patternViolationVA = pattFct.instructionPattern(pattFct.sstore(l1, dcVar, X),
-                pattFct.implies(pattFct.mayDepOn(X, DSLArg.class),
+                pattFct.implies(pattFct.mayDepOn(X, DSLArg.class), //todo here it should be an and not in implies
                         pattFct.not(pattFct.some(pattFct.dslgoto(l2, Y, dcLabel),
                                 pattFct.and(pattFct.mustFollow(l2, l1),
                                         pattFct.mayDepOn(Y, DSLArg.class))))));
