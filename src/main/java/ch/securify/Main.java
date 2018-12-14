@@ -83,8 +83,11 @@ public class Main {
         @Parameter(names = {"--json"}, description = "provide JSON output to console")
         private boolean jsonOutput;
 
-        @Parameter(names = {"--descriptions"}, description= "add descriptions to the JSON output")
+        @Parameter(names = {"--descriptions"}, description = "add descriptions to the JSON output")
         private boolean descriptions;
+
+        @Parameter(names = {"--solc-path"}, description = "manually specify the path for  the solc binary")
+        private String solcPath = "solc";
     }
 
     private static List<AbstractPattern> patterns;
@@ -95,7 +98,7 @@ public class Main {
 
 
     public static TreeMap<String, SolidityResult> processSolidityFile(String filesol, String livestatusfile) throws IOException, InterruptedException {
-        JsonObject compilationOutput = CompilationHelpers.compileContracts(filesol);
+        JsonObject compilationOutput = CompilationHelpers.compileContracts(args.solcPath, filesol);
 
         return processCompilationOutput(compilationOutput, livestatusfile);
     }
