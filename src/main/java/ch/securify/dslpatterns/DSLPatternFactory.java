@@ -104,7 +104,7 @@ public class DSLPatternFactory {
         return new MayDepOnLabelTag(l, tag);
     }
 
-    public MayDepOnVarVar mayDepOn(Variable var1, Variable var2) {
+    public static MayDepOnVarVar mayDepOn(Variable var1, Variable var2) {
         return new MayDepOnVarVar(var1, var2);
     }
 
@@ -112,7 +112,7 @@ public class DSLPatternFactory {
         return new MayDepOnVarTag(v, tag);
     }
 
-    public MayFollow mayFollow(DSLLabel l1, DSLLabel l2) {
+    public static MayFollow mayFollow(DSLLabel l1, DSLLabel l2) {
         return new MayFollow(l1, l2);
     }
 

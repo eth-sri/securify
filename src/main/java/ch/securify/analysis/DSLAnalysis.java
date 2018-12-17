@@ -483,9 +483,10 @@ public class DSLAnalysis {
         Set<Variable> args = new HashSet<>();
         for (Instruction instr : instructions) {
             for(Variable var : instr.getInput()) {
-                if(var.hasConstantValue())
+                if(var != null && var.hasConstantValue()) {
                     constants.add(var);
-                log("Added constant: " + var.getName() + " from instr " + instr.getStringRepresentation());
+                    log("Added constant: " + var.getName() + " from instr " + instr.getStringRepresentation());
+                }
             }
 
             for(Variable var : instr.getOutput()) {

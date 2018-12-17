@@ -275,9 +275,11 @@ public class DSLPatternsCompiler extends DSLPatternFactory {
                         pattFct.and(pattFct.mustFollow(l1, l2), pattFct.detBy(X, Y))));
         log(patternComplianceHE.getStringRepresentation());
 
-        InstructionDSLPattern patternViolationHE = pattFct.instructionPattern(pattFct.call(l1, Y, dcVar, dcVar),
-                pattFct.all(pattFct.dslgoto(l2, X, dcLabel),
-                        pattFct.implies(pattFct.mayFollow(l1, l2), pattFct.not(pattFct.mayDepOn(X, Y)))));
+        InstructionDSLPattern patternViolationHE =
+                instructionPattern(call(l1, Y, dcVar, dcVar),
+                                    all(dslgoto(l2, X, dcLabel),
+                                            implies(mayFollow(l1, l2), not(mayDepOn(X, Y)))));
+
         log(patternViolationHE.getStringRepresentation());
         patterns.add(new CompletePattern("unHandledException", patternComplianceHE, patternViolationHE));
 
@@ -302,7 +304,7 @@ public class DSLPatternsCompiler extends DSLPatternFactory {
         log(patternComplianceVA.getStringRepresentation());
 
         InstructionDSLPattern patternViolationVA = pattFct.instructionPattern(pattFct.sstore(l1, dcVar, X),
-                pattFct.implies(pattFct.mayDepOn(X, DSLArg.class), //todo here it should be an and not in implies
+                pattFct.implies(pattFct.detBy(X, DSLArg.class), //todo here it should be an and not in implies
                         pattFct.not(pattFct.some(pattFct.dslgoto(l2, Y, dcLabel),
                                 pattFct.and(pattFct.mustFollow(l2, l1),
                                         pattFct.mayDepOn(Y, DSLArg.class))))));
