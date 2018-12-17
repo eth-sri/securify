@@ -304,7 +304,7 @@ public class DSLPatternsCompiler extends DSLPatternFactory {
         log(patternComplianceVA.getStringRepresentation());
 
         InstructionDSLPattern patternViolationVA = pattFct.instructionPattern(pattFct.sstore(l1, dcVar, X),
-                pattFct.implies(pattFct.detBy(X, DSLArg.class), //todo here it should be an and not in implies
+                pattFct.and(pattFct.detBy(X, DSLArg.class),
                         pattFct.not(pattFct.some(pattFct.dslgoto(l2, Y, dcLabel),
                                 pattFct.and(pattFct.mustFollow(l2, l1),
                                         pattFct.mayDepOn(Y, DSLArg.class))))));

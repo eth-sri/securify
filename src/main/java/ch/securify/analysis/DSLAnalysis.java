@@ -576,6 +576,9 @@ public class DSLAnalysis {
             appendRule("follows", getCode(from), getCode(to));
         }
 
+        //todo: this doesn't work, I have to divide the follows for explicit and the follow for implicit because
+        //the jump is an input and can mess up things if collapsed with follows for the implicit rules
+
         if (to instanceof JumpDest) {
             //appendRule("join", getCode(from), getCode(to));
             List<Instruction> incomingBranches = new ArrayList<Instruction>(((JumpDest) to).getIncomingBranches());

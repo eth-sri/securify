@@ -44,7 +44,7 @@ public class MayDepOnLabelTag extends AbstractPredicate {
     public String getDatalogStringRep(DSLAnalysis analyzer) {
         StringBuilder sb = new StringBuilder();
 
-        sb.append("mayDepOn(");
+        sb.append("instrMayDepOn(");
         sb.append(l.getName());
         sb.append(" , ");
         sb.append(analyzer.getCode(tag));

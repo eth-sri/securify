@@ -61,6 +61,7 @@
 .decl endIf		(l1: Label, l2: Label) input
 .decl unk	(f:VarFact) input
 .decl assignVarMayImplicit		(l:Label, v1: Var, v2: Var) input
+.decl assignVarMayImplicitCollapsed (l:Label, v1: Var, v2: Var) output
 //collapses assignVar and assignVarMayImplicit
 
 
@@ -95,7 +96,7 @@
 //
 .decl mayFollow         		(l1: Label, l2: Label) output
 .decl mayDepOn		            (v:Var, f:VarFact) output
-.decl reachInstrMayImplicit     (l:Label, f:VarFact) output
+.decl instrMayDepOn     (l:Label, f:VarFact) output
 
 //Shows how the memory allocation may be at a certain point
 .decl mstoreMay		    (l:Label, v:Var, f:VarFact) output
@@ -103,7 +104,6 @@
 
 //Shows how the storage situation may be at a certain point
 .decl sstoreMay		(l:Label, v:Var, f:VarFact) output
-.decl isAfterMayImplicit		(l1: Label, l2: Label) output
 
 //
 // Rules from mustExplicit
@@ -154,14 +154,15 @@ mayFollow(LabFrom, LabTo) :- allFollows(Lab, LabTo), mayFollow(LabFrom, Lab).
 
 taint(LabStart, LabTo, Var) :- allFollows(LabFrom, LabTo), taint(LabStart, LabFrom, Var), ! endIf(LabStart, LabTo).
 
+assignVarMayImplicitCollapsed(Lab, Var1, Var2) :- assignVar(Lab, Var1, Var2).
+assignVarMayImplicitCollapsed(Lab, Var1, Var2) :- assignVarMayImplicit(Lab, Var1, Var2).
+
 mayDepOn(Var, Fact) :- assignType(_, Var, Fact).
-mayDepOn(Var1, Fact) :- assignVarMayImplicit(_, Var1, Var2), mayDepOn(Var2, Fact).
+mayDepOn(Var1, Fact) :- assignVarMayImplicitCollapsed(_, Var1, Var2), mayDepOn(Var2, Fact).
 
 mayDepOn(Var1, Fact) :- assignType(Lab, Var1, _), taint(_, Lab, Var2), mayDepOn(Var2, Fact).
-mayDepOn(Var1, Fact) :- assignVarMayImplicit(Lab, Var1, _), taint(_, Lab, Var2), mayDepOn(Var2, Fact).
+mayDepOn(Var1, Fact) :- assignVarMayImplicitCollapsed(Lab, Var1, _), taint(_, Lab, Var2), mayDepOn(Var2, Fact).
 
-reachInstrMayImplicit(Lab, Var) :- taint(_, Lab, Var).
-reachInstrMayImplicit(Lab, Fact) :- taint(_, Lab, Var), mayDepOn(Var, Fact).
 
 mstoreMay(Lab, Offset, Type) :- mstore(Lab, Offset, Var), mayDepOn(Var, Type).
 mstoreMay(LabTo, Offset, Type) :- allFollows(LabFrom, LabTo), mstoreMay(LabFrom, Offset, Type), ! reassignMemory(LabTo, Offset).
@@ -169,8 +170,6 @@ memoryTagsMayImplicit(Lab, Type) :- mstoreMay(Lab, _, Type).
 
 sstoreMay(Lab, Index, Type) :- sstore(Lab, Index, Var), mayDepOn(Var, Type).
 sstoreMay(LabTo, Index, Type) :- allFollows(LabFrom, LabTo), sstoreMay(LabFrom, Index, Type), ! reassignStorage(LabTo, Index).
-
-assignVarMayImplicit(Lab, Var1, Var2) :- assignVar(Lab, Var1, Var2).
 
 mayAssignType(Lab, Var, Type) :- assignType(Lab, Var, Type).
 mayAssignType(Lab, Var, Type) :- mload(Lab, Offset, Var), mstoreMay(Lab, Offset, Type), ! unk(Offset).
