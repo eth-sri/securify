@@ -33,9 +33,16 @@ public class GreaterThanComparison extends AbstractDSLPattern implements Datalog
     @Override
     public String getDatalogStringRep(DSLAnalysis analyzer) {
         StringBuilder sb = new StringBuilder();
+        sb.append("hasValue(");
         sb.append(v1.getName());
+        sb.append(" , ");
+        sb.append("grtThanVal");
+        sb.append(")");
+
+        sb.append(", ");
+        sb.append("grtThanVal");
         sb.append(" > ");
-        sb.append(analyzer.getCode(n));
+        sb.append(n);
         return sb.toString();
     }
 

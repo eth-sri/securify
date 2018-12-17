@@ -37,9 +37,11 @@ public class EqWithNumber extends AbstractDSLPattern implements DatalogElem {
     @Override
     public String getDatalogStringRep(DSLAnalysis analyzer) {
         StringBuilder sb = new StringBuilder();
+        sb.append("hasValue(");
         sb.append(v1.getName());
-        sb.append(" = ");
-        sb.append(analyzer.getCode(n));
+        sb.append(" , ");
+        sb.append(n);
+        sb.append(")");
         return sb.toString();
     }
 

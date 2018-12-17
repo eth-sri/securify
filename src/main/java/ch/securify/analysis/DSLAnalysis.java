@@ -6,6 +6,7 @@ import ch.securify.dslpatterns.DSLPatternResult;
 import ch.securify.dslpatterns.DSLPatternsCompiler;
 import ch.securify.dslpatterns.tags.DSLArg;
 import ch.securify.utils.BigIntUtil;
+import ch.securify.utils.CommandRunner;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import org.apache.commons.csv.CSVFormat;
@@ -85,6 +86,7 @@ public class DSLAnalysis {
         ruleToSB.put("sstore", new StringBuffer());
         ruleToSB.put("goto", new StringBuffer());
         ruleToSB.put("isConst", new StringBuffer());
+        ruleToSB.put("hasValue", new StringBuffer());
         ruleToSB.put("isArg", new StringBuffer());
         ruleToSB.put("isStorageVar", new StringBuffer());
         ruleToSB.put("sha3", new StringBuffer());
@@ -101,8 +103,8 @@ public class DSLAnalysis {
         Random rnd = new Random();
         WORKSPACE = (new File(System.getProperty("java.io.tmpdir"), "souffle-" + UUID.randomUUID())).getAbsolutePath();
         WORKSPACE_OUT = WORKSPACE + "_OUT";
-        runCommand("mkdir " + WORKSPACE);
-        runCommand("mkdir " + WORKSPACE_OUT);
+        CommandRunner.runCommand("mkdir " + WORKSPACE);
+        CommandRunner.runCommand("mkdir " + WORKSPACE_OUT);
     }
 
     public void analyse(List<Instruction> decompiledInstructions) throws IOException, InterruptedException {
@@ -122,7 +124,7 @@ public class DSLAnalysis {
         /* run compiled souffle */
         String cmd = TIMEOUT_COMMAND + " " + Config.PATTERN_TIMEOUT + "s " + DSLPatternsCompiler.FINAL_EXECUTABLE + " -F " + WORKSPACE + " -D " + WORKSPACE_OUT;
         log(cmd);
-        runCommand(cmd);
+        CommandRunner.runCommand(cmd);
 
         long elapsedTime = System.currentTimeMillis() - start;
         String elapsedTimeStr = String.format("%d min, %d sec",
@@ -178,82 +180,8 @@ public class DSLAnalysis {
     }
 
     public void dispose() throws IOException, InterruptedException {
-        runCommand("rm -r " + WORKSPACE);
-        runCommand("rm -r " + WORKSPACE_OUT);
-    }
-
-    protected void readFixedpoint(String ruleName) throws IOException {
-
-        Reader in = new FileReader(WORKSPACE_OUT + "/" + ruleName + ".csv");
-        /* Tab-delimited format */
-        Iterable<CSVRecord> records = CSVFormat.TDF.parse(in);
-        Set<Long> entries = new HashSet<Long>(100000000);
-
-        long count = 0;
-        for (CSVRecord record : records) {
-            count += 1;
-            entries.add(Encode(record));
-        }
-        in.close();
-        fixedpoint.put(ruleName, entries);
-    }
-
-    protected int runQuery(String ruleName, Integer... args) {
-        try {
-            if (!fixedpoint.containsKey(ruleName)) {
-                readFixedpoint(ruleName);
-            }
-            if (fixedpoint.get(ruleName).contains(Encode(args))) {
-                return Status.SATISFIABLE;
-            } else {
-                return Status.UNSATISFIABLE;
-            }
-        } catch (FileNotFoundException e) {
-            log("Souffle TIMEOUT, returns UNKNOWN");
-            return Status.UNKNOWN;
-        } catch (IOException e) {
-            log("Souffle TIMEOUT, returns UNKNOWN");
-            return Status.UNKNOWN;
-        }
-    }
-
-    protected String runCommand(String command) throws IOException, InterruptedException {
-        Process proc;
-        String result = "";
-        log("CMD: " + command);
-
-        // Souffle works with this PATH
-        String[] envp = {"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/dani/bin"};
-        proc = Runtime.getRuntime().exec(command, envp);
-
-        // Read the output
-        BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-
-        // Output of the command
-        {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                result = result + line + "\n";
-                log(line);
-            }
-        }
-
-        // Display the errors
-        {
-            String line;
-            reader = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
-
-            while ((line = reader.readLine()) != null) {
-                result = result + line + "\n";
-                log(line);
-            }
-        }
-
-        proc.waitFor();
-        if (proc.exitValue() != 0) {
-            throw new IOException();
-        }
-        return result;
+        CommandRunner.runCommand("rm -r " + WORKSPACE);
+        CommandRunner.runCommand("rm -r " + WORKSPACE_OUT);
     }
 
     public Variable getStorageVarForIndex(int index) {
@@ -506,6 +434,7 @@ public class DSLAnalysis {
 
         constants.forEach(var -> {
         appendRule("isConst", getCode(var));
+        appendRule("hasValue", getCode(var), var.getConstantValue());
         log("isConst(" + var + ")");});
 
         args.forEach(var ->
