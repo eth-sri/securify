@@ -82,12 +82,15 @@ public class DSLPatternsCompiler extends DSLPatternFactory {
             //.decl jump		(l1: Label, l2: Label, l3: Label) output
             sb.append(".decl ");
             sb.append(name);
-            sb.append("Warnings(L: Label) output");
+            sb.append("Warnings(L: Label)\n");
+            sb.append(".output ");
+            sb.append(name);
+            sb.append("Warnings");
 
             return sb.toString();
         }
 
-        String getWarningRule() {
+        String getWarningRule(DSLAnalysis analyzer) {
             StringBuilder sb = new StringBuilder();
 
             AbstractDSLInstruction quantifiedInst = DSLCompliancePattern.getQuantifiedInstr();
@@ -101,7 +104,7 @@ public class DSLPatternsCompiler extends DSLPatternFactory {
             sb.append("Warnings(");
             sb.append(label);
             sb.append(") :- ");
-            sb.append(quantifiedInst.getStringRepresentation());
+            sb.append(quantifiedInst.getDatalogStringRepDC(analyzer));
             sb.append(" , !");
             sb.append(name);
             sb.append("Compliance(");
@@ -191,16 +194,6 @@ public class DSLPatternsCompiler extends DSLPatternFactory {
         Variable amount = new Variable();
 
         DSLToDatalogTranslator transl = new DSLToDatalogTranslator();
-        DSLAnalysis analyzer;
-        try {
-            analyzer = new DSLAnalysis();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return new ArrayList<>();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            return new ArrayList<>();
-        }
 
         /*log(" *** LQ - Ether liquidity");
         AbstractDSLPattern patternComplianceOneLQ = pattFct.all(instrFct.stop(l1),
@@ -296,11 +289,11 @@ public class DSLPatternsCompiler extends DSLPatternFactory {
         patterns.add(new CompletePattern("TOD", patternComplianceTOD, patternViolationTOD));
 
         log(" *** VA - validated arguments");
-        InstructionDSLPattern patternComplianceVA = pattFct.instructionPattern(pattFct.sstore(l1, dcVar, X),
-                pattFct.implies(pattFct.mayDepOn(X, DSLArg.class),
-                        pattFct.some(pattFct.dslgoto(l2, Y, dcLabel),
-                                pattFct.and(pattFct.mustFollow(l2, l1),
-                                        pattFct.detBy(Y, DSLArg.class)))));
+        InstructionDSLPattern patternComplianceVA = instructionPattern(sstore(l1, dcVar, X),
+                implies(mayDepOn(X, DSLArg.class),
+                        some(dslgoto(l2, Y, dcLabel),
+                                and(pattFct.mustFollow(l2, l1),
+                                        detBy(Y, DSLArg.class)))));
         log(patternComplianceVA.getStringRepresentation());
 
         InstructionDSLPattern patternViolationVA = pattFct.instructionPattern(pattFct.sstore(l1, dcVar, X),
@@ -363,7 +356,7 @@ public class DSLPatternsCompiler extends DSLPatternFactory {
             }
             bwr.write(patt.getWaringRuleDeclaration());
             bwr.newLine();
-            bwr.write(patt.getWarningRule());
+            bwr.write(patt.getWarningRule(analyzer));
             bwr.newLine();
             bwr.newLine();
         }

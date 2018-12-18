@@ -1,5 +1,6 @@
 package ch.securify.dslpatterns.instructions;
 
+import ch.securify.analysis.DSLAnalysis;
 import ch.securify.decompiler.Variable;
 import ch.securify.dslpatterns.util.DSLLabel;
 import ch.securify.dslpatterns.util.VariableDC;
@@ -62,6 +63,15 @@ public class DSLCall extends AbstractDSLInstruction {
         sb.append(" , ");
         sb.append(amount.getName());
         sb.append(")");
+        return sb.toString();
+    }
+
+    @Override
+    public String getDatalogStringRepDC(DSLAnalysis analyzer) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("call(");
+        sb.append(label.getName());
+        sb.append(" , _ , _ , _ )");
         return sb.toString();
     }
 

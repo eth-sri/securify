@@ -1,5 +1,6 @@
 package ch.securify.dslpatterns.instructions;
 
+import ch.securify.analysis.DSLAnalysis;
 import ch.securify.dslpatterns.util.DSLLabel;
 
 /**
@@ -19,6 +20,11 @@ public class DSLStop extends AbstractDSLInstruction {
         sb.append(")");
 
         return sb.toString();
+    }
+
+    @Override
+    public String getDatalogStringRepDC(DSLAnalysis analyzer) {
+        return getDatalogStringRep(analyzer);
     }
 
     @Override

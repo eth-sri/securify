@@ -77,7 +77,7 @@ public class DSLPatternFactory {
         return new InstructionDSLPattern(quantifiedInstr, quantifiedPattern);
     }
 
-    public GreaterThanComparison greaterThan(Variable amount, int i) {
+    public static GreaterThanComparison greaterThan(Variable amount, int i) {
         return new GreaterThanComparison(amount, i);
     }
 
@@ -92,15 +92,15 @@ public class DSLPatternFactory {
         return new MustFollow(l1, l2);
     }
 
-    public DetByVarTag detBy(Variable var, Class tag) {
+    public static DetByVarTag detBy(Variable var, Class tag) {
         return new DetByVarTag(var, tag);
     }
 
-    public DetByVarVar detBy(Variable var1, Variable var2) {
+    public static DetByVarVar detBy(Variable var1, Variable var2) {
         return new DetByVarVar(var1, var2);
     }
 
-    public MayDepOnLabelTag mayDepOn(DSLLabel l, Class tag) {
+    public static MayDepOnLabelTag mayDepOn(DSLLabel l, Class tag) {
         return new MayDepOnLabelTag(l, tag);
     }
 
@@ -108,7 +108,7 @@ public class DSLPatternFactory {
         return new MayDepOnVarVar(var1, var2);
     }
 
-    public MayDepOnVarTag mayDepOn(Variable v, Class tag) {
+    public static MayDepOnVarTag mayDepOn(Variable v, Class tag) {
         return new MayDepOnVarTag(v, tag);
     }
 
@@ -116,11 +116,11 @@ public class DSLPatternFactory {
         return new MayFollow(l1, l2);
     }
 
-    public IsConst isConst(Variable x) {
+    public static IsConst isConst(Variable x) {
         return new IsConst(x);
     }
 
-    public IsArg isArg(Variable x) {
+    public static IsArg isArg(Variable x) {
         return new IsArg(x);
     }
 

@@ -113,7 +113,7 @@
 .decl sstoreMust			(l:Label, v:Var, f:VarFact)
 .output mstoreMust
 
-.decl mustDepOn				(l: Label, v:Var, f:VarFact) //it's the old reach
+.decl mustDepOn				(l: Label, v:Var, f:VarFact) //it's the old reach in must explicit
 .output mustDepOn
 .decl mustPrecede		(l1: Label, l2: Label)
 .output mustPrecede
@@ -123,7 +123,7 @@
 //
 .decl mayFollow         		(l1: Label, l2: Label)
 .output mayFollow
-.decl mayDepOn		            (v:Var, f:VarFact)
+.decl mayDepOn		            (v:Var, f:VarFact) //it's the old reach in may implicit
 .output mayDepOn
 .decl instrMayDepOn     (l:Label, f:VarFact)
 .output instrMayDepOn
@@ -191,6 +191,9 @@ mayDepOn(Var1, Fact) :- assignVarMayImplicitCollapsed(_, Var1, Var2), mayDepOn(V
 
 mayDepOn(Var1, Fact) :- assignType(Lab, Var1, _), taint(_, Lab, Var2), mayDepOn(Var2, Fact).
 mayDepOn(Var1, Fact) :- assignVarMayImplicitCollapsed(Lab, Var1, _), taint(_, Lab, Var2), mayDepOn(Var2, Fact).
+
+instrMayDepOn(Lab, Var) :- taint(_, Lab, Var).
+instrMayDepOn(Lab, Fact) :- taint(_, Lab, Var), mayDepOn(Var, Fact).
 
 
 mstoreMay(Lab, Offset, Type) :- mstore(Lab, Offset, Var), mayDepOn(Var, Type).

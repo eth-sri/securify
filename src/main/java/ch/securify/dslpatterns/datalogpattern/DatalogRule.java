@@ -74,7 +74,9 @@ public class DatalogRule {
             }
         }
 
-        sb.append(") output");
+        sb.append(")\n");
+        sb.append(".output ");
+        sb.append(head.getName());
 
 
         return sb.toString();

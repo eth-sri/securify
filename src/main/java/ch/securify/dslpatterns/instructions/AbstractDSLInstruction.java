@@ -61,5 +61,9 @@ public abstract class AbstractDSLInstruction implements DatalogElem {
         return getStringRepresentation();
     }
 
+    //Returns the string representation of the instruction, but with only the label name, all other fields are set
+    //to don't care ("_")
+    public abstract String getDatalogStringRepDC(DSLAnalysis analyzer);
+
     public abstract AbstractDSLInstruction getCopy();
 }
