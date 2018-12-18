@@ -13,6 +13,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 
 import java.io.*;
+import java.lang.Byte;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.*;
@@ -411,8 +412,19 @@ public class DSLAnalysis {
 
         constants.forEach(var -> {
         appendRule("isConst", getCode(var));
-        appendRule("hasValue", getCode(var), var.getConstantValue());
-        log("isConst(" + var + ")");});
+        if(var.getConstantValue() != Variable.VALUE_ANY && var.getConstantValue() != Variable.VALUE_UNDEFINED) {
+            try {
+                appendRule("hasValue", getCode(var), BigIntUtil.fromInt256(var.getConstantValue()).intValueExact());
+            } catch (ArithmeticException e) {
+                log("Value didn't fit into 32 bits souffle number size, skipped");
+            }
+        }
+
+
+        log("isConst(" + var + ")");
+        log("constValue: " + BigIntUtil.fromInt256(var.getConstantValue()));
+        });
+
 
         args.forEach(var ->
                 appendRule("isArg", getCode(var)));
