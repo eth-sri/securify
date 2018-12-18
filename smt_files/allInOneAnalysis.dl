@@ -25,45 +25,68 @@
 // Inputs
 //
 
-.decl isConst (v: Var) input
+.decl isConst (v: Var)
+.input isConst
 .decl hasValue(v: Var, value: number)
-.decl isArg (v: Var) input
-.decl assignType       (l:Label, v:Var, f:Fact) input //in order to manage to have same input this is split in two and then reassigned
-.decl assignVar		(l:Label, v1: Var, v2: Var) input
+.input hasValue
+.decl isArg (v: Var)
+.input isArg
+.decl assignType       (l:Label, v:Var, f:Fact) //in order to manage to have same input this is split in two and then reassigned
+.input assignType
+.decl assignVar		(l:Label, v1: Var, v2: Var)
+.input assignVar
 
 //together with the jump shows the flow of the program (see DSLAnalysis, method deriveFollowsPredicates)
-.decl followsMustExplicit		(l1: Label, l2: Label) input
+.decl followsMustExplicit		(l1: Label, l2: Label)
+.input followsMustExplicit
 
-.decl followsMayImplicit		(l1: Label, l2: Label) input
+.decl followsMayImplicit		(l1: Label, l2: Label)
+.input followsMayImplicit
 
 //basically captures an if
-.decl jump		(l1: Label, l2: Label, l3: Label) input
+.decl jump		(l1: Label, l2: Label, l3: Label)
+.input jump
 
 //if the label appears here it means it's a destination of a jump (instr instanceof JumpDest)
-.decl jumpDest       (l1: Label) input
+.decl jumpDest       (l1: Label)
+.input jumpDest
 
 //if the label appears here it means it's a destination of a jump, but it has only one incoming branch
 //most commonly if it's the instruction right next to an if
 //(((JumpDest) instr).getIncomingBranches().size() == 1 && instr.getPrev() == null)
-.decl oneBranchJumpDest       (l1: Label) input
+.decl oneBranchJumpDest       (l1: Label)
+.input oneBranchJumpDest
 
 //Label at which the if is placed, condition on which the if is evaluated, label of the jump / goto if condition doesn't hole (else branch)
-.decl goto		(l1: Label, cond: Var, l2: Label) input
+.decl goto		(l1: Label, cond: Var, l2: Label)
+.input goto
 
-.decl join		(l1: Label, l2: Label, l3: Label) input
-.decl mload		(l: Label, v:Var, f:VarFact) input
-.decl mstore		(l: Label, v:Var, f:VarFact) input
-.decl sload		(l: Label, v:Var, f:VarFact) input
-.decl sstore		(l: Label, v:Var, f:VarFact) input
-.decl sha3		(l: Label, v:Var, f:VarFact) input
-.decl call      (l: Label, outVar:Var, gas:Var, amount:Var) input
+.decl join		(l1: Label, l2: Label, l3: Label)
+.input join
+.decl mload		(l: Label, v:Var, f:VarFact)
+.input mload
+.decl mstore		(l: Label, v:Var, f:VarFact)
+.input mstore
+.decl sload		(l: Label, v:Var, f:VarFact)
+.input sload
+.decl sstore		(l: Label, v:Var, f:VarFact)
+.input sstore
+.decl sha3		(l: Label, v:Var, f:VarFact)
+.input sha3
+.decl call      (l: Label, outVar:Var, gas:Var, amount:Var)
+.input call
 
 //from mayImplicit
-.decl taint		(l1:Label, l2:Label, v:Var) input
-.decl endIf		(l1: Label, l2: Label) input
-.decl unk	(f:VarFact) input
-.decl assignVarMayImplicit		(l:Label, v1: Var, v2: Var) input
-.decl assignVarMayImplicitCollapsed (l:Label, v1: Var, v2: Var) output
+.decl taint		(l1:Label, l2:Label, v:Var)
+.input taint
+.decl endIf		(l1: Label, l2: Label)
+.input endIf
+.decl unk	(f:VarFact)
+.input unk
+.decl assignVarMayImplicit		(l:Label, v1: Var, v2: Var)
+.input assignVarMayImplicit
+.decl assignVarMayImplicitCollapsed (l:Label, v1: Var, v2: Var)
+.output assignVarMayImplicitCollapsed
 //collapses assignVar and assignVarMayImplicit
 
 
@@ -75,35 +98,45 @@
 .decl reassignMemory	(l:Label, v:Var)
 .decl reassignStorage	(l:Label, v:Var)
 
-.decl mustAssignType        (l:Label, v:Var, f:Fact) input
-.decl mayAssignType      (l:Label, v:Var, f:Fact) input
+.decl mustAssignType        (l:Label, v:Var, f:Fact)
+.decl mayAssignType      (l:Label, v:Var, f:Fact)
 
 
 //
 // Output from mustExplicit
 //
 //Shows how the memory allocation must be at a certain point
-.decl mstoreMust			(l:Label, v:Var, f:VarFact) output
+.decl mstoreMust			(l:Label, v:Var, f:VarFact)
+.output mstoreMust
 
 //Shows how the storage situation must be at a certain point
-.decl sstoreMust			(l:Label, v:Var, f:VarFact) output
+.decl sstoreMust			(l:Label, v:Var, f:VarFact)
+.output mstoreMust
 
-.decl mustDepOn				(l: Label, v:Var, f:VarFact) output //it's the old reach
-.decl mustPrecede		(l1: Label, l2: Label) output
+.decl mustDepOn				(l: Label, v:Var, f:VarFact) //it's the old reach
+.output mustDepOn
+.decl mustPrecede		(l1: Label, l2: Label)
+.output mustPrecede
 
 //
 // Outputs from mayImplicit
 //
-.decl mayFollow         		(l1: Label, l2: Label) output
-.decl mayDepOn		            (v:Var, f:VarFact) output
-.decl instrMayDepOn     (l:Label, f:VarFact) output
+.decl mayFollow         		(l1: Label, l2: Label)
+.output mayFollow
+.decl mayDepOn		            (v:Var, f:VarFact)
+.output mayDepOn
+.decl instrMayDepOn     (l:Label, f:VarFact)
+.output instrMayDepOn
 
 //Shows how the memory allocation may be at a certain point
-.decl mstoreMay		    (l:Label, v:Var, f:VarFact) output
-.decl memoryTagsMayImplicit		(l:Label, f:VarFact) output
+.decl mstoreMay		    (l:Label, v:Var, f:VarFact)
+.output mstoreMay
+.decl memoryTagsMayImplicit		(l:Label, f:VarFact)
+.output memoryTagsMayImplicit
 
 //Shows how the storage situation may be at a certain point
-.decl sstoreMay		(l:Label, v:Var, f:VarFact) output
+.decl sstoreMay		(l:Label, v:Var, f:VarFact)
+.output sstoreMay
 
 //
 // Rules from mustExplicit
