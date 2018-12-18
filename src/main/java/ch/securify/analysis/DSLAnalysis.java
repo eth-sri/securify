@@ -74,7 +74,8 @@ public class DSLAnalysis {
         ruleToSB.put("assignVar", new StringBuffer());
         ruleToSB.put("assignType", new StringBuffer());
         ruleToSB.put("taint", new StringBuffer());
-        ruleToSB.put("follows", new StringBuffer());
+        ruleToSB.put("followsMayImplicit", new StringBuffer());
+        ruleToSB.put("followsMustExplicit", new StringBuffer());
         ruleToSB.put("jump", new StringBuffer());
         ruleToSB.put("jumpDest", new StringBuffer());
         ruleToSB.put("oneBranchJumpDest", new StringBuffer());
@@ -143,28 +144,6 @@ public class DSLAnalysis {
         return bb.getInt();
     }
 
-    protected static long Encode(CSVRecord record) {
-        assert(record.size() <= 3);
-        long entry = 0;
-        for (int i = 0; i < record.size(); i++) {
-            //entry.add(Integer.parseInt(record.get(i)));
-            entry *= 80000;
-            entry += (long)Integer.parseInt(record.get(i));
-        }
-        assert(entry >= 0);
-        return entry;
-    }
-
-    protected static long Encode(Integer... args) {
-        assert(args.length <= 3);
-        long entry = 0;
-        for (int i = 0; i < args.length; i++) {
-            entry *= 80000;
-            entry += (long)args[i];
-        }
-        assert(entry >= 0);
-        return entry;
-    }
 
     protected void createProgramRulesFile() {
         for (String rule : ruleToSB.keySet()) {
@@ -312,7 +291,7 @@ public class DSLAnalysis {
         }
     }
 
-    protected void deriveAssignTypePredicates() {
+    protected void deriveAssignTypePredicates() { //OK
         log(">> Derive AssignType predicates <<");
         for (Instruction instr : instructions) {
             if (instr instanceof Push
@@ -356,7 +335,7 @@ public class DSLAnalysis {
                     // tag the arguments to depend on user input (CallDataLoad)
                     createAssignTypeRule(instr, arg, CallDataLoad.class);
                 }
-            } else if (instr instanceof Call) {
+            } else if (instr instanceof Call || instr instanceof StaticCall) {
                 log("Type of " + instr.getOutput()[0] + " is Call");
                 createAssignTopRule(instr, instr.getOutput()[0]);
                 // assign the return value as an abstract type (to check later
@@ -368,11 +347,13 @@ public class DSLAnalysis {
                 // TODO: double check whether to propagate the type of the
                 // argument to the output of blockhash
                 createAssignVarRule(instr, instr.getOutput()[0], instr.getInput()[0]);
+            } else if (instr instanceof ReturnDataCopy) {
+                // TODO: New memory-based rule here
             }
         }
     }
 
-    protected void deriveInstructionsPredicates() {
+    protected void deriveInstructionsPredicates() { //OK
         log(">> Derive MStore, MLoad, SStore, SLoad, call predicates <<");
         for (Instruction instr : instructions) {
             if (instr instanceof MStore || instr instanceof MStore8) {
@@ -406,7 +387,7 @@ public class DSLAnalysis {
         }
     }
 
-    protected void deriveIsConstIsArgPredicates() {
+    protected void deriveIsConstIsArgPredicates() { //OK
         Set<Variable> constants = new HashSet<>();
         Set<Variable> args = new HashSet<>();
         for (Instruction instr : instructions) {
@@ -426,10 +407,6 @@ public class DSLAnalysis {
             if(instr instanceof _VirtualMethodHead) {
                 Collections.addAll(args, instr.getOutput());
             }
-
-            if(instr instanceof Call) {
-
-            }
         }
 
         constants.forEach(var -> {
@@ -441,7 +418,7 @@ public class DSLAnalysis {
                 appendRule("isArg", getCode(var)));
     }
 
-    protected void deriveAssignVarPredicates() {
+    protected void deriveAssignVarPredicates() { //OK
         log(">> Derive assign predicates <<");
         for (Instruction instr : instructions) {
             log(instr.getStringRepresentation());
@@ -530,10 +507,12 @@ public class DSLAnalysis {
         }
     }
 
-    protected void deriveFollowsPredicates() {
+    protected void deriveFollowsPredicates() { //OK
         log(">> Derive follows predicates <<");
         for (Instruction instr : instructions) {
 
+            //this if is the only difference in this method between mayImplicit dataflow and mustExplicit, so
+            //we just leave it here, since the jumpDest and oneBranchJumpDest are only used in mustExplicit
             if (instr instanceof JumpDest) {
                 if (((JumpDest) instr).getIncomingBranches().size() == 1 && instr.getPrev() == null) {
                     log("One-Branch Tag fact: " + instr);
@@ -559,25 +538,26 @@ public class DSLAnalysis {
         }
     }
 
-    private void createFollowsRule(Instruction from, Instruction to) {
+    private void createFollowsRule(Instruction from, Instruction to) { //OK
+        //mayImplicit part
+        appendRule("followsMayImplicit", getCode(from), getCode(to));
+
+        //mustExplicit part, jump and joi are only in mustExplicit
         if (from instanceof JumpI) {
             Instruction mergeInstruction = ((JumpI)from).getMergeInstruction();
             if (mergeInstruction == null) {
                 mergeInstruction = new JumpDest("BLACKHOLE");
             }
             if (!(to instanceof JumpDest)) {
-                appendRule("follows", getCode(from), getCode(to));
+                appendRule("followsMustExplicit", getCode(from), getCode(to));
             }
             appendRule("jump", getCode(from), getCode(to), getCode(mergeInstruction));
         } else if (from instanceof Jump) {
             // need to use a jump, not follows because follows ignores the TO if it is of type Tag, see Datalog rules
             appendRule("jump", getCode(from), getCode(to), getCode(to));
         } else {
-            appendRule("follows", getCode(from), getCode(to));
+            appendRule("followsMustExplicit", getCode(from), getCode(to));
         }
-
-        //todo: this doesn't work, I have to divide the follows for explicit and the follow for implicit because
-        //the jump is an input and can mess up things if collapsed with follows for the implicit rules
 
         if (to instanceof JumpDest) {
             //appendRule("join", getCode(from), getCode(to));
@@ -606,7 +586,7 @@ public class DSLAnalysis {
         }
     }
 
-    protected void deriveIfPredicates() {
+    protected void deriveIfPredicates() { //ok, we create the taint rules in addition, but they are needed only in the mayFollow
         log(">> Derive TaintElse and TaintThen predicates <<");
         for (Instruction instr : instructions) {
             if (instr instanceof JumpI) {
@@ -631,7 +611,8 @@ public class DSLAnalysis {
                     createEndIfRule(instr, mergeInstr);
                 }
 
-                createGotoRule(instr, condition, elseInstr);
+                createGotoRule(instr, condition, elseInstr); //todo: check if this is ok, especially with
+                //validated arguments pattern
             }
         }
     }
@@ -640,11 +621,11 @@ public class DSLAnalysis {
         appendRule("goto", getCode(instr), getCode(condition), getCode(elseBranch));
     }
 
-    private void createTaintRule(Instruction labStart, Instruction lab, Variable var) {
+    private void createTaintRule(Instruction labStart, Instruction lab, Variable var) { //ok
         appendRule("taint", getCode(labStart), getCode(lab), getCode(var));
     }
 
-    protected void createCallRule(Instruction instr) {
+    protected void createCallRule(Instruction instr) { //ok, I wrote it
         Variable returnVar = ((Call) instr).getReturnVar();
         Variable amount = ((Call) instr).getAmount();
 
@@ -658,7 +639,7 @@ public class DSLAnalysis {
         //todo: what is the third parameter in the paper? it's always _ in patterns
     }
 
-    protected void createSLoadRule(Instruction instr, Variable index, Variable var) {
+    protected void createSLoadRule(Instruction instr, Variable index, Variable var) { //OK
         int indexCode;
         if (index.hasConstantValue()) {
             indexCode = getCode(getInt(index.getConstantValue()));
@@ -670,7 +651,7 @@ public class DSLAnalysis {
         appendRule("sload", getCode(instr), indexCode, getCode(var));
     }
 
-    protected void createMLoadRule(Instruction instr, Variable offset, Variable var) {
+    protected void createMLoadRule(Instruction instr, Variable offset, Variable var) { //OK
         int offsetCode;
         if (offset.hasConstantValue()) {
             offsetCode = getCode(getMemoryVarForIndex(getInt(offset.getConstantValue())));

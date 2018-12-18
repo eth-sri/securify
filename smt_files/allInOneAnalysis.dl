@@ -32,7 +32,9 @@
 .decl assignVar		(l:Label, v1: Var, v2: Var) input
 
 //together with the jump shows the flow of the program (see DSLAnalysis, method deriveFollowsPredicates)
-.decl follows		(l1: Label, l2: Label) input
+.decl followsMustExplicit		(l1: Label, l2: Label) input
+
+.decl followsMayImplicit		(l1: Label, l2: Label) input
 
 //basically captures an if
 .decl jump		(l1: Label, l2: Label, l3: Label) input
@@ -68,8 +70,6 @@
 //
 // Derived
 //
-//joins the follows and the jump predicate in one
-.decl allFollows        (l1: Label, l2: Label)
 
 .decl mustPrecedeStep	(l1: Label, l2: Label)
 .decl reassignMemory	(l:Label, v:Var)
@@ -88,7 +88,7 @@
 //Shows how the storage situation must be at a certain point
 .decl sstoreMust			(l:Label, v:Var, f:VarFact) output
 
-.decl mustDepOn				(l: Label, v:Var, f:VarFact) output
+.decl mustDepOn				(l: Label, v:Var, f:VarFact) output //it's the old reach
 .decl mustPrecede		(l1: Label, l2: Label) output
 
 //
@@ -108,7 +108,7 @@
 //
 // Rules from mustExplicit
 //
-mustPrecedeStep(From, To) :- follows(From, To), !jumpDest(To).
+mustPrecedeStep(From, To) :- followsMustExplicit(From, To), !jumpDest(To).
 mustPrecedeStep(From, Mid) :- jump(From, Mid, _), oneBranchJumpDest(Mid). //captures the label after the if
 mustPrecedeStep(From, To) :- jump(From, _, To). //captures the label that follows if the if condition is not true
 
@@ -145,14 +145,10 @@ mustAssignType(Lab, Var, Type) :- mstoreMust(Lab, Offset, Type), sha3(Lab, Var, 
 //
 // Rules from mayImplicit
 //
-allFollows(LabFrom, LabTo) :- follows(LabFrom, LabTo).
-allFollows(LabFrom, LabTo) :- jump(LabFrom, LabTo, _).
-allFollows(LabFrom, LabTo) :- jump(LabFrom, _, LabTo).
+mayFollow(LabFrom, LabTo) :- followsMayImplicit(LabFrom, LabTo).
+mayFollow(LabFrom, LabTo) :- followsMayImplicit(Lab, LabTo), mayFollow(LabFrom, Lab).
 
-mayFollow(LabFrom, LabTo) :- allFollows(LabFrom, LabTo).
-mayFollow(LabFrom, LabTo) :- allFollows(Lab, LabTo), mayFollow(LabFrom, Lab).
-
-taint(LabStart, LabTo, Var) :- allFollows(LabFrom, LabTo), taint(LabStart, LabFrom, Var), ! endIf(LabStart, LabTo).
+taint(LabStart, LabTo, Var) :- followsMayImplicit(LabFrom, LabTo), taint(LabStart, LabFrom, Var), ! endIf(LabStart, LabTo).
 
 assignVarMayImplicitCollapsed(Lab, Var1, Var2) :- assignVar(Lab, Var1, Var2).
 assignVarMayImplicitCollapsed(Lab, Var1, Var2) :- assignVarMayImplicit(Lab, Var1, Var2).
@@ -165,11 +161,11 @@ mayDepOn(Var1, Fact) :- assignVarMayImplicitCollapsed(Lab, Var1, _), taint(_, La
 
 
 mstoreMay(Lab, Offset, Type) :- mstore(Lab, Offset, Var), mayDepOn(Var, Type).
-mstoreMay(LabTo, Offset, Type) :- allFollows(LabFrom, LabTo), mstoreMay(LabFrom, Offset, Type), ! reassignMemory(LabTo, Offset).
+mstoreMay(LabTo, Offset, Type) :- followsMayImplicit(LabFrom, LabTo), mstoreMay(LabFrom, Offset, Type), ! reassignMemory(LabTo, Offset).
 memoryTagsMayImplicit(Lab, Type) :- mstoreMay(Lab, _, Type).
 
 sstoreMay(Lab, Index, Type) :- sstore(Lab, Index, Var), mayDepOn(Var, Type).
-sstoreMay(LabTo, Index, Type) :- allFollows(LabFrom, LabTo), sstoreMay(LabFrom, Index, Type), ! reassignStorage(LabTo, Index).
+sstoreMay(LabTo, Index, Type) :- followsMayImplicit(LabFrom, LabTo), sstoreMay(LabFrom, Index, Type), ! reassignStorage(LabTo, Index).
 
 mayAssignType(Lab, Var, Type) :- assignType(Lab, Var, Type).
 mayAssignType(Lab, Var, Type) :- mload(Lab, Offset, Var), mstoreMay(Lab, Offset, Type), ! unk(Offset).
