@@ -49,7 +49,7 @@ public class DSLSstore extends AbstractDSLInstruction {
     @Override
     public String getStringRepresentation() {
         StringBuilder sb = new StringBuilder();
-        sb.append("sstore(");
+        sb.append("sstoreInstr(");
         sb.append(label.getName());
         sb.append(" , ");
         sb.append(offset.getName());

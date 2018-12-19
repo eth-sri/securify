@@ -99,6 +99,11 @@ public class DSLAnalysis {
         ruleToSB.put("mstore", new StringBuffer());
         ruleToSB.put("sload", new StringBuffer());
         ruleToSB.put("sstore", new StringBuffer());
+        //this input doesn't put unk where there is no constant value, but leaves the real variable
+        ruleToSB.put("mloadInstr", new StringBuffer());
+        ruleToSB.put("mstoreInstr", new StringBuffer());
+        ruleToSB.put("sloadInstr", new StringBuffer());
+        ruleToSB.put("sstoreInstr", new StringBuffer());
         ruleToSB.put("goto", new StringBuffer());
         ruleToSB.put("isConst", new StringBuffer());
         ruleToSB.put("hasValue", new StringBuffer());
@@ -210,7 +215,7 @@ public class DSLAnalysis {
         } else {
             offsetCode = unk;
         }
-
+        appendRule("mstoreInstr", getCode(instr), getCode(offset), getCode(var));
         appendRule("mstore", getCode(instr), offsetCode, getCode(var));
     }
 
@@ -222,6 +227,7 @@ public class DSLAnalysis {
             indexCode = unk;
             log("***** added sstore rule, the index variable is: " + index + " which has code " + getCode(index));
         }
+        appendRule("sstoreInstr", getCode(instr), getCode(index), getCode(var));
         appendRule("sstore", getCode(instr), indexCode, getCode(var));
     }
 
@@ -695,6 +701,7 @@ public class DSLAnalysis {
             // if you have "var = sload(index)", to propagate labels from index to var we add "var = index"
             createAssignVarMayImplicitRule(instr, var, index);
         }
+        appendRule("sloadInstr", getCode(instr), getCode(index), getCode(var));
         appendRule("sload", getCode(instr), indexCode, getCode(var));
     }
 
@@ -706,6 +713,7 @@ public class DSLAnalysis {
             offsetCode = unk;
             createAssignVarMayImplicitRule(instr, var, offset);
         }
+        appendRule("mloadInstr", getCode(instr), getCode(offset), getCode(var));
         appendRule("mload", getCode(instr), offsetCode, getCode(var));
     }
 

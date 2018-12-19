@@ -76,6 +76,16 @@
 .decl call      (l: Label, outVar:Var, gas:Var, amount:Var)
 .input call
 
+//this input doesn't put unk where there is no constant value, but leaves the real variable
+.decl mloadInstr		(l: Label, v:Var, f:VarFact)
+.input mloadInstr
+.decl mstoreInstr		(l: Label, v:Var, f:VarFact)
+.input mstoreInstr
+.decl sloadInstr		(l: Label, v:Var, f:VarFact)
+.input sloadInstr
+.decl sstoreInstr		(l: Label, v:Var, f:VarFact)
+.input sstoreInstr
+
 //from mayImplicit
 .decl taint		(l1:Label, l2:Label, v:Var)
 .input taint

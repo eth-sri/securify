@@ -49,7 +49,7 @@ public class DSLSload extends AbstractDSLInstruction {
     @Override
     public String getStringRepresentation() {
         StringBuilder sb = new StringBuilder();
-        sb.append("sload(");
+        sb.append("sloadInstr(");
         sb.append(label.getName());
         sb.append(" , ");
         sb.append(offset.getName());
