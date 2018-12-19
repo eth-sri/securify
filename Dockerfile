@@ -1,6 +1,6 @@
 FROM ubuntu:18.04
 
-LABEL maintainer="contact@securify.ch"
+LABEL maintainer="contact@chainsecurity.com"
 
 # install basic packages
 RUN apt-get update && apt-get install -y\
@@ -20,9 +20,8 @@ RUN apt-get update &&\
         wget\
         gdebi
 
-RUN mkdir /souffle
-RUN wget -P /souffle/ https://github.com/souffle-lang/souffle/releases/download/1.4.0/souffle_1.4.0-1_amd64.deb &&\
-        gdebi --n /souffle/souffle_1.4.0-1_amd64.deb
+RUN wget https://github.com/souffle-lang/souffle/releases/download/1.5.1/souffle_1.5.1-1_amd64.deb -O /tmp/souffle.deb &&\
+        gdebi --n /tmp/souffle.deb
 
 # install java and pip
 RUN apt-get update && apt-get -y install\
@@ -32,8 +31,7 @@ RUN apt-get update && apt-get -y install\
 COPY requirements.txt /tmp/
 RUN pip3 install --user -r /tmp/requirements.txt
 
-RUN mkdir /isolc
-COPY scripts/isolc/* /isolc/
+COPY scripts/isolc/ /isolc/
 RUN cd / && python3 -m isolc.install_solc
 
 # install truffle for project compilation
@@ -59,5 +57,5 @@ RUN ./gradlew jar
 # Solidity example
 COPY src/test/resources/solidity/transaction-reordering.sol /project/example.sol
 
-# run_securify.py allows arguments to be passed (e.g. "--truffle").
+# this Python script allows arguments to be passed (e.g. "--truffle").
 ENTRYPOINT ["python3", "docker_run_securify.py", "-p", "/project"]
