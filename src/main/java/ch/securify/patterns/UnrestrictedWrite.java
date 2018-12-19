@@ -40,8 +40,10 @@ public class UnrestrictedWrite extends AbstractInstructionPattern {
     protected boolean isViolation(Instruction instr, List<Instruction> methodInstructions, List<Instruction> contractInstructions, AbstractDataflow dataflow) {
         assert(instr instanceof SStore);
 
-        if (dataflow.varMayDepOn(instr, instr.getInput()[0], Caller.class) == Status.SATISFIABLE)
+        if (dataflow.varMayDepOn(instr, instr.getInput()[0], Caller.class) == Status.SATISFIABLE) {
+            System.out.println("FALSE");
             return false;
+        }
 
         if (dataflow.instrMayDepOn(instr, Caller.class) == Status.SATISFIABLE)
             return false;

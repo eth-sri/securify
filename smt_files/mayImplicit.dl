@@ -82,6 +82,15 @@ isAfter(LabFrom, LabTo) :- follows(Lab, LabTo), isAfter(LabFrom, Lab).
 
 taint(LabStart, LabTo, Var) :- follows(LabFrom, LabTo), taint(LabStart, LabFrom, Var), ! endIf(LabStart, LabTo).
 
+.decl reachPartOne(v:Var, f:VarFact)
+.output reachPartOne
+reachPartOne(Var, Fact) :- assignType(_, Var, Fact).
+
+
+.decl reachPartTwo(v:Var, f:VarFact)
+.output reachPartTwo
+reachPartTwo(Var1, Fact) :- assignVar(_, Var1, Var2), reach(Var2, Fact).
+
 reach(Var, Fact) :- assignType(_, Var, Fact).
 reach(Var1, Fact) :- assignVar(_, Var1, Var2), reach(Var2, Fact).
 

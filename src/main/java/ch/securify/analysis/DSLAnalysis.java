@@ -40,6 +40,8 @@ public class DSLAnalysis {
     public int unk;
 
     protected final boolean DEBUG = true;
+    protected final boolean CREATE_THING_TO_INTEGER_FILE_MAP = true;
+    BufferedWriter thingToIntegerFileWriter;
 
     // input predicates
 
@@ -52,6 +54,13 @@ public class DSLAnalysis {
 
 
     protected void initDataflow() throws IOException, InterruptedException {
+        // create workspace
+        Random rnd = new Random();
+        WORKSPACE = (new File(System.getProperty("java.io.tmpdir"), "souffle-" + UUID.randomUUID())).getAbsolutePath();
+        WORKSPACE_OUT = WORKSPACE + "_OUT";
+        CommandRunner.runCommand("mkdir " + WORKSPACE);
+        CommandRunner.runCommand("mkdir " + WORKSPACE_OUT);
+
         varToCode = HashBiMap.create();
         instrToCode = HashBiMap.create();
         typeToCode = HashBiMap.create();
@@ -60,6 +69,10 @@ public class DSLAnalysis {
 
         //const 0 maps to 0
         constToCode.put(new Integer(0), new Integer(0));
+
+        if(CREATE_THING_TO_INTEGER_FILE_MAP)
+            thingToIntegerFileWriter = new BufferedWriter(new FileWriter(new File(WORKSPACE_OUT + "/thingToIntegerMap.txt")));
+
 
         //fill in already the hashmap of types so that they always the same
         getCode(CallDataLoad.class);
@@ -100,20 +113,15 @@ public class DSLAnalysis {
         appendRule("unk", unk);
 
         log("Souffle Analysis");
-
-        // create workspace
-        Random rnd = new Random();
-        WORKSPACE = (new File(System.getProperty("java.io.tmpdir"), "souffle-" + UUID.randomUUID())).getAbsolutePath();
-        WORKSPACE_OUT = WORKSPACE + "_OUT";
-        CommandRunner.runCommand("mkdir " + WORKSPACE);
-        CommandRunner.runCommand("mkdir " + WORKSPACE_OUT);
     }
 
     public void analyse(List<Instruction> decompiledInstructions) throws IOException, InterruptedException {
         instructions = decompiledInstructions;
 
         deriveAssignVarPredicates();
+        thingToIntegerFileWriter.write("--------------------------------------------\n");
         deriveAssignTypePredicates();
+        thingToIntegerFileWriter.write("--------------------------------------------\n");
         deriveInstructionsPredicates();
         deriveIsConstIsArgPredicates();
 
@@ -121,6 +129,9 @@ public class DSLAnalysis {
         deriveIfPredicates();
 
         createProgramRulesFile();
+
+        if(CREATE_THING_TO_INTEGER_FILE_MAP)
+            thingToIntegerFileWriter.flush();
 
         long start = System.currentTimeMillis();
         /* run compiled souffle */
@@ -160,6 +171,9 @@ public class DSLAnalysis {
     }
 
     public void dispose() throws IOException, InterruptedException {
+        if(CREATE_THING_TO_INTEGER_FILE_MAP)
+            thingToIntegerFileWriter.close();
+
         CommandRunner.runCommand("rm -r " + WORKSPACE);
         CommandRunner.runCommand("rm -r " + WORKSPACE_OUT);
     }
@@ -206,6 +220,7 @@ public class DSLAnalysis {
             indexCode = getCode(getStorageVarForIndex(getInt(index.getConstantValue())));
         } else {
             indexCode = unk;
+            log("***** added sstore rule, the index variable is: " + index + " which has code " + getCode(index));
         }
         appendRule("sstore", getCode(instr), indexCode, getCode(var));
     }
@@ -245,7 +260,7 @@ public class DSLAnalysis {
         sb.append("\n");
     }
 
-    public int getFreshCode() {
+    protected int getFreshCode() {
         if (bvCounter == Integer.MAX_VALUE) {
             throw new RuntimeException("Integer overflow.");
         }
@@ -254,27 +269,44 @@ public class DSLAnalysis {
         return freshCode;
     }
 
+    private void writeOnThingsToIntegerFile(Object toWrite) {
+        try {
+            thingToIntegerFileWriter.write(toWrite + " " + (bvCounter-1) + " type class: " + toWrite.getClass().getCanonicalName());
+            thingToIntegerFileWriter.newLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public int getCode(Variable var) {
-        if (!varToCode.containsKey(var))
+        if (!varToCode.containsKey(var)) {
             varToCode.put(var, getFreshCode());
+            writeOnThingsToIntegerFile(var);
+        }
         return varToCode.get(var);
     }
 
     public int getCode(Instruction instr) {
-        if (!instrToCode.containsKey(instr))
+        if (!instrToCode.containsKey(instr)) {
             instrToCode.put(instr, getFreshCode());
+            writeOnThingsToIntegerFile(instr);
+        }
         return instrToCode.get(instr);
     }
 
     public int getCode(Class instructionClass) {
-        if (!typeToCode.containsKey(instructionClass))
+        if (!typeToCode.containsKey(instructionClass)) {
             typeToCode.put(instructionClass, getFreshCode());
+            writeOnThingsToIntegerFile(instructionClass);
+        }
         return typeToCode.get(instructionClass);
     }
 
     public int getCode(Integer constVal) {
-        if (!constToCode.containsKey(constVal))
+        if (!constToCode.containsKey(constVal)) {
             constToCode.put(constVal, getFreshCode());
+            writeOnThingsToIntegerFile(constVal);
+        }
         return constToCode.get(constVal);
     }
 
@@ -292,7 +324,7 @@ public class DSLAnalysis {
         }
     }
 
-    protected void deriveAssignTypePredicates() { //OK
+    protected void deriveAssignTypePredicates() {
         log(">> Derive AssignType predicates <<");
         for (Instruction instr : instructions) {
             if (instr instanceof Push
@@ -327,7 +359,9 @@ public class DSLAnalysis {
                 }
                 createAssignTypeRule(instr, instr.getOutput()[0], instr.getClass());
             } else if (instr instanceof _VirtualMethodHead) {
+                log("**** inside _VirtualMethodHead");
                 for (Variable arg : instr.getOutput()) {
+                    log("**** inside loop");
                     log("Type of " + arg + " is unk");
                     createAssignTopRule(instr, arg);
                     // assign the arguments as an abstract type (to check later
@@ -430,7 +464,7 @@ public class DSLAnalysis {
                 appendRule("isArg", getCode(var)));
     }
 
-    protected void deriveAssignVarPredicates() { //OK
+    protected void deriveAssignVarPredicates() {
         log(">> Derive assign predicates <<");
         for (Instruction instr : instructions) {
             log(instr.getStringRepresentation());
@@ -463,7 +497,7 @@ public class DSLAnalysis {
                 }
             }
 
-            if (instr instanceof Call) {
+            if (instr instanceof Call || instr instanceof StaticCall) {
                 createAssignVarRule(instr, instr.getOutput()[0], instr.getInput()[2]);
             }
 
@@ -490,6 +524,7 @@ public class DSLAnalysis {
                     || instr instanceof SStore
                     || instr instanceof SLoad
                     || instr instanceof Call
+                    || instr instanceof StaticCall
                     || instr instanceof Sha3) {
                 continue;
             }

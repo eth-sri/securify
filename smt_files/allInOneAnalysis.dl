@@ -150,7 +150,7 @@ mustPrecede(From, To) :- mustPrecedeStep(From, To).
 mustPrecede(From, To) :- mustPrecede(From, Mid), mustPrecede(Mid, To).
 
 //must dep on
-mustDepOn(Lab, Var, Fact) :- assignType(Lab, Var, Fact).
+mustDepOn(Lab, Var, Fact) :- mustAssignType(Lab, Var, Fact).
 mustDepOn(Lab, Var1, Fact) :- assignVar(Lab, Var1, Var2), mustDepOn(Lab, Var2, Fact).
 mustDepOn(LabTo, Var, Fact) :- mustPrecede(LabFrom, LabTo), mustDepOn(LabFrom, Var, Fact).
 mustDepOn(LabTo, Var, Fact) :- join(LabFrom1, LabFrom2, LabTo), mustDepOn(LabFrom1, Var, Fact), mustDepOn(LabFrom2, Var, Fact).
@@ -186,10 +186,18 @@ taint(LabStart, LabTo, Var) :- followsMayImplicit(LabFrom, LabTo), taint(LabStar
 assignVarMayImplicitCollapsed(Lab, Var1, Var2) :- assignVar(Lab, Var1, Var2).
 assignVarMayImplicitCollapsed(Lab, Var1, Var2) :- assignVarMayImplicit(Lab, Var1, Var2).
 
-mayDepOn(Var, Fact) :- assignType(_, Var, Fact).
+.decl mayDepOnPartOne(v:Var, f:VarFact)
+.output mayDepOnPartOne
+mayDepOnPartOne(Var, Fact) :- mayAssignType(_, Var, Fact).
+
+.decl mayDepOnPartTwo(v:Var, f:VarFact)
+.output mayDepOnPartTwo
+mayDepOnPartTwo(Var1, Fact) :- assignVarMayImplicitCollapsed(_, Var1, Var2), mayDepOn(Var2, Fact).
+
+mayDepOn(Var, Fact) :- mayAssignType(_, Var, Fact).
 mayDepOn(Var1, Fact) :- assignVarMayImplicitCollapsed(_, Var1, Var2), mayDepOn(Var2, Fact).
 
-mayDepOn(Var1, Fact) :- assignType(Lab, Var1, _), taint(_, Lab, Var2), mayDepOn(Var2, Fact).
+mayDepOn(Var1, Fact) :- mayAssignType(Lab, Var1, _), taint(_, Lab, Var2), mayDepOn(Var2, Fact).
 mayDepOn(Var1, Fact) :- assignVarMayImplicitCollapsed(Lab, Var1, _), taint(_, Lab, Var2), mayDepOn(Var2, Fact).
 
 instrMayDepOn(Lab, Var) :- taint(_, Lab, Var).

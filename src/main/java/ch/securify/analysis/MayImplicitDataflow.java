@@ -46,6 +46,7 @@ public class MayImplicitDataflow extends AbstractDataflow {
 
     @Override
     public int varMayDepOn(Instruction instr1, Variable lhs, Object type) {
+        log("run query reach(" +  getCode(lhs) + " , " +  getCode(type));
         return runQuery("reach", getCode(lhs), getCode(type));
     }
 

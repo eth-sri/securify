@@ -155,7 +155,7 @@ public class DSLPatternsCompiler extends DSLPatternFactory {
     }
 
     private static void collapseSouffleRulesAndQueries() throws IOException {
-        PrintWriter pw = new PrintWriter(TMP_DL_FILE);
+        PrintWriter pw = new PrintWriter( TMP_DL_FILE);
         BufferedReader br = new BufferedReader(new FileReader(SOUFFLE_RULES));
 
         String line = br.readLine();
@@ -278,7 +278,7 @@ public class DSLPatternsCompiler extends DSLPatternFactory {
 
         log(" *** TOD - transaction ordering dependency");
         InstructionDSLPattern patternComplianceTOD = pattFct.instructionPattern(pattFct.call(dcLabel, dcVar, dcVar, amount),
-                pattFct.and(pattFct.not(pattFct.mayDepOn(amount, SLoad.class)), pattFct.not(pattFct.mayDepOn(amount, Balance.class))));
+                    pattFct.and(pattFct.not(pattFct.mayDepOn(amount, SLoad.class)), pattFct.not(pattFct.mayDepOn(amount, Balance.class))));
         log(patternComplianceTOD.getStringRepresentation());
 
         InstructionDSLPattern patternViolationTOD = pattFct.instructionPattern(pattFct.call(dcLabel, dcVar, dcVar, amount),

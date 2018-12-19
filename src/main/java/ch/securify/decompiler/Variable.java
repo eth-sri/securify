@@ -40,6 +40,7 @@ public class Variable {
 	static { resetVarNameGenerator(); }
 
 	private static synchronized String generateVarName() {
+
 		StringBuilder sb = new StringBuilder();
 		int varId = nextVarId;
 		do {
@@ -47,8 +48,10 @@ public class Variable {
 			sb.append(letter);
 			varId /= 26;
 		} while (varId > 0);
+		String res = sb.reverse().toString();
+		System.out.println("Generated variable: " + res + " number " + nextVarId);
 		nextVarId++;
-		return sb.reverse().toString();
+		return res;
 	}
 
 	/**

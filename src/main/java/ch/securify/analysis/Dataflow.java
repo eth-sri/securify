@@ -30,8 +30,8 @@ public class Dataflow extends AbstractDataflow {
 
     public Dataflow(List<Instruction> instructions) {
         try {
-            mustExplicitDataflow = new MustExplicitDataflow(instructions);
             mayImplicitDataflow = new MayImplicitDataflow(instructions);
+            mustExplicitDataflow = new MustExplicitDataflow(instructions);
         } catch(IOException | InterruptedException e){
             e.printStackTrace();
             throw new RuntimeException();

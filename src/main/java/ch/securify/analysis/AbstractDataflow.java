@@ -62,11 +62,14 @@ public abstract class AbstractDataflow {
     protected BiMap<String, StringBuffer> ruleToSB;
     protected Map<String, Set<Long>> fixedpoint;
 
-    protected int bvCounter = 0; // reserve first 100 for types
+    protected int bvCounter = 1; // reserve first 100 for types
 
     public int unk;
 
     protected final boolean DEBUG = true;
+
+    protected final boolean CREATE_THING_TO_INTEGER_FILE_MAP = true;
+    BufferedWriter thingToIntegerFileWriter;
 
     // input predicates
     protected String DL_EXEC;
@@ -92,11 +95,31 @@ public abstract class AbstractDataflow {
         }
 
 
+        // create workspace
+        Random rnd = new Random();
+        WORKSPACE = (new File(System.getProperty("java.io.tmpdir"), "souffle-" + UUID.randomUUID())).getAbsolutePath();
+        WORKSPACE_OUT = WORKSPACE + "_OUT";
+        runCommand("mkdir " + WORKSPACE);
+        runCommand("mkdir " + WORKSPACE_OUT);
+
         varToCode = HashBiMap.create();
         instrToCode = HashBiMap.create();
         typeToCode = HashBiMap.create();
         constToCode = HashBiMap.create();
         fixedpoint = new HashMap<>();
+
+        //todo: remove, just for debugging purpuses here
+        //const 0 maps to 0
+        constToCode.put(new Integer(0), new Integer(0));
+
+        if(CREATE_THING_TO_INTEGER_FILE_MAP)
+            thingToIntegerFileWriter = new BufferedWriter(new FileWriter(new File(WORKSPACE_OUT + "/thingToIntegerMap.txt")));
+
+        //fill in already the hashmap of types so that they always the same
+        getCode(CallDataLoad.class);
+        getCode(SLoad.class);
+        getCode(Balance.class);
+        getCode(Caller.class);
 
         offsetToStorageVar = HashBiMap.create();
         offsetToMemoryVar = HashBiMap.create();
@@ -124,15 +147,10 @@ public abstract class AbstractDataflow {
 
         log("Souffle Analysis");
 
-        // create workspace
-        Random rnd = new Random();
-        WORKSPACE = (new File(System.getProperty("java.io.tmpdir"), "souffle-" + UUID.randomUUID())).getAbsolutePath();
-        WORKSPACE_OUT = WORKSPACE + "_OUT";
-        runCommand("mkdir " + WORKSPACE);
-        runCommand("mkdir " + WORKSPACE_OUT);
-
         deriveAssignVarPredicates();
         deriveAssignTypePredicates();
+        thingToIntegerFileWriter.write("--------------------------------------------\n");
+
         deriveHeapPredicates();
         deriveStorePredicates();
 
@@ -140,6 +158,10 @@ public abstract class AbstractDataflow {
         deriveIfPredicates();
 
         createProgramRulesFile();
+
+        if(CREATE_THING_TO_INTEGER_FILE_MAP)
+            thingToIntegerFileWriter.flush();
+
         log("Number of instructions: " + instrToCode.size());
         log("Threshold: " + Config.THRESHOLD_COMPILE);
         String cmd = TIMEOUT_COMMAND + " " + Config.PATTERN_TIMEOUT+ "s " + DL_EXEC + " -F " + WORKSPACE + " -D " + WORKSPACE_OUT;
@@ -200,6 +222,7 @@ public abstract class AbstractDataflow {
     }
 
     public void dispose() throws IOException, InterruptedException {
+        thingToIntegerFileWriter.close();
         runCommand("rm -r " + WORKSPACE);
         runCommand("rm -r " + WORKSPACE_OUT);
     }
@@ -330,10 +353,14 @@ public abstract class AbstractDataflow {
 
     protected void createAssignTypeRule(Instruction instr, Variable var, Class type) {
         appendRule("assignType", getCode(instr), getCode(var), getCode(type));
+        if(getCode(var) == 72)
+            log("FOUND");
     }
 
     protected void createAssignTopRule(Instruction instr, Variable var) {
         appendRule("assignType", getCode(instr), getCode(var), unk);
+        if(getCode(var) == 72)
+            log("FOUND");
     }
 
     protected void createEndIfRule(Instruction start, Instruction end) {
@@ -355,6 +382,15 @@ public abstract class AbstractDataflow {
         sb.append("\n");
     }
 
+    private void writeOnThingsToIntegerFile(Object toWrite) {
+        try {
+            thingToIntegerFileWriter.write(toWrite + " " + (bvCounter-1));
+            thingToIntegerFileWriter.newLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     protected int getFreshCode() {
         if (bvCounter == Integer.MAX_VALUE) {
             throw new RuntimeException("Integer overflow.");
@@ -364,27 +400,35 @@ public abstract class AbstractDataflow {
         return freshCode;
     }
 
-    protected int getCode(Variable var) {
-        if (!varToCode.containsKey(var))
+    public int getCode(Variable var) {
+        if (!varToCode.containsKey(var)) {
             varToCode.put(var, getFreshCode());
+            writeOnThingsToIntegerFile(var);
+        }
         return varToCode.get(var);
     }
 
-    protected int getCode(Instruction instr) {
-        if (!instrToCode.containsKey(instr))
+    public int getCode(Instruction instr) {
+        if (!instrToCode.containsKey(instr)) {
             instrToCode.put(instr, getFreshCode());
+            writeOnThingsToIntegerFile(instr);
+        }
         return instrToCode.get(instr);
     }
 
-    protected int getCode(Class instructionClass) {
-        if (!typeToCode.containsKey(instructionClass))
+    public int getCode(Class instructionClass) {
+        if (!typeToCode.containsKey(instructionClass)) {
             typeToCode.put(instructionClass, getFreshCode());
+            writeOnThingsToIntegerFile(instructionClass);
+        }
         return typeToCode.get(instructionClass);
     }
 
-    protected int getCode(Integer constVal) {
-        if (!constToCode.containsKey(constVal))
+    public int getCode(Integer constVal) {
+        if (!constToCode.containsKey(constVal)) {
             constToCode.put(constVal, getFreshCode());
+            writeOnThingsToIntegerFile(constVal);
+        }
         return constToCode.get(constVal);
     }
 
@@ -422,6 +466,10 @@ public abstract class AbstractDataflow {
                     || instr instanceof Difficulty
                     || instr instanceof SLoad
                     || instr instanceof Address) {
+                log("created assign type rule " + getCode(instr.getOutput()[0]) + " " + getCode(instr.getClass()));
+                if(getCode(instr.getOutput()[0]) == 72)
+                    log("FOUND");
+
                 createAssignTypeRule(instr, instr.getOutput()[0], instr.getClass());
             } else if (instr instanceof Div) {
                 if (instr.getInput()[1].hasConstantValue() &&
