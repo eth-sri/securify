@@ -29,6 +29,9 @@ import org.apache.commons.csv.CSVRecord;
 import java.io.*;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -85,7 +88,7 @@ public abstract class AbstractDataflow {
     }
 
     protected void initDataflow() throws IOException, InterruptedException {
-        if(! isSouffleInstalled()){
+        if (!isSouffleInstalled()) {
             System.err.println("Soufflé does not seem to be installed.");
             System.exit(7);
         }
@@ -123,12 +126,17 @@ public abstract class AbstractDataflow {
 
         log("Souffle Analysis");
 
-        // create workspace
-        Random rnd = new Random();
-        WORKSPACE = (new File(System.getProperty("java.io.tmpdir"), "souffle-" + UUID.randomUUID())).getAbsolutePath();
-        WORKSPACE_OUT = WORKSPACE + "_OUT";
-        runCommand(new String[]{"mkdir", WORKSPACE});
-        runCommand(new String[]{"mkdir", WORKSPACE_OUT});
+        File fWORKSPACE = (new File(System.getProperty("java.io.tmpdir"), "souffle-" + UUID.randomUUID()));
+        if (!fWORKSPACE.mkdir()) {
+            throw new IOException("Could not create temporary directory");
+        }
+        WORKSPACE = fWORKSPACE.getAbsolutePath();
+
+        File fWORKSPACE_OUT = new File(WORKSPACE + "_OUT");
+        if (!fWORKSPACE_OUT.mkdir()) {
+            throw new IOException("Could not create temporary directory");
+        }
+        WORKSPACE_OUT = fWORKSPACE_OUT.getAbsolutePath();
 
         deriveAssignVarPredicates();
         deriveAssignTypePredicates();
@@ -141,23 +149,22 @@ public abstract class AbstractDataflow {
         createProgramRulesFile();
         log("Number of instructions: " + instrToCode.size());
         log("Threshold: " + Config.THRESHOLD_COMPILE);
-        String[] cmd = {DL_EXEC, "-F", WORKSPACE, "-D", WORKSPACE_OUT};
+
         long start = System.currentTimeMillis();
-        log(String.join(" ", cmd));
-        runCommand(cmd, Config.PATTERN_TIMEOUT);
+        runCommand(new String[]{DL_EXEC, "-F", WORKSPACE, "-D", WORKSPACE_OUT}, Config.PATTERN_TIMEOUT);
+
         long elapsedTime = System.currentTimeMillis() - start;
         String elapsedTimeStr = String.format("%d min, %d sec",
                 TimeUnit.MILLISECONDS.toMinutes(elapsedTime),
                 TimeUnit.MILLISECONDS.toSeconds(elapsedTime) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(elapsedTime))
         );
+
         log(elapsedTimeStr);
     }
 
     public static int getInt(byte[] data) {
         byte[] bytes = new byte[4];
-        for (int i = 0; i < Math.min(data.length, 4); ++i) {
-            bytes[i + 4 - Math.min(data.length, 4)] = data[i];
-        }
+        System.arraycopy(data, 0, bytes, 4 - Math.min(data.length, 4), Math.min(data.length, 4));
         ByteBuffer bb = ByteBuffer.wrap(bytes);
         return bb.getInt();
     }
@@ -177,9 +184,9 @@ public abstract class AbstractDataflow {
     protected static long Encode(Integer... args) {
         assert(args.length <= 3);
         long entry = 0;
-        for (int i = 0; i < args.length; i++) {
+        for (Integer arg : args) {
             entry *= 80000;
-            entry += (long)args[i];
+            entry += (long)arg;
         }
         assert(entry >= 0);
         return entry;
@@ -198,24 +205,31 @@ public abstract class AbstractDataflow {
         }
     }
 
+    /**
+     * @param rootPath The directory to delete
+     * @throws IOException From the walk function
+     */
+    private void deleteDirectory(Path rootPath) throws IOException {
+        Files.walk(rootPath).sorted(Comparator.reverseOrder())
+                .map(Path::toFile)
+                .forEach(File::delete);
+    }
+
     public void dispose() throws IOException, InterruptedException {
-        runCommand(new String[]{"rm", "-r", WORKSPACE});
-        runCommand(new String[]{"rm", "-r", WORKSPACE_OUT});
+        deleteDirectory(Paths.get(WORKSPACE));
+        deleteDirectory(Paths.get(WORKSPACE_OUT));
     }
 
     protected void readFixedpoint(String ruleName) throws IOException {
-
         Reader in = new FileReader(WORKSPACE_OUT + "/" + ruleName + ".csv");
         /* Tab-delimited format */
         Iterable<CSVRecord> records = CSVFormat.TDF.parse(in);
-        Set<Long> entries = new HashSet<Long>(100000000);
 
-        long count = 0;
-        for (CSVRecord record : records) {
-            count += 1;
-            entries.add(Encode(record));
-        }
+        Set<Long> entries = new HashSet<>(100000000);
+
+        records.forEach(record -> entries.add(Encode(record)));
         in.close();
+
         fixedpoint.put(ruleName, entries);
     }
 
@@ -233,11 +247,6 @@ public abstract class AbstractDataflow {
             log("Souffle TIMEOUT, returns UNKNOWN");
             return Status.UNKNOWN;
         }
-    }
-
-    private void runCommand(String[] command) throws IOException, InterruptedException {
-        // one week used as infinity
-        runCommand(command, 604800);
     }
 
     private void runCommand(String[] command, int timeout) throws IOException, InterruptedException {
