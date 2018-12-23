@@ -77,12 +77,13 @@ public class MissingInputValidation extends AbstractInstructionPattern {
     @Override
     protected boolean isCompliant(Instruction instr, List<Instruction> methodInstructions, List<Instruction> contractInstructions, AbstractDataflow dataflow) {
         Variable[] args = instr.getOutput();
-
+        System.out.println(args.length);
         for (Variable arg : args) {
+            System.out.println("bp0");
             if (!arg.getValueTypes().contains(CallDataLoad.class)) {
                 continue;
             }
-
+            System.out.println("bp1");
             for (Instruction useInstr : methodInstructions) {
                 if (!(useInstr instanceof SStore
                         || useInstr instanceof SLoad
@@ -91,15 +92,21 @@ public class MissingInputValidation extends AbstractInstructionPattern {
                         || useInstr instanceof Sha3
                         || useInstr instanceof Call))
                     continue;
-
+                System.out.println("bp2");
                 for (Variable var : useInstr.getInput()) {
+                    System.out.println("bp3");
                     if (dataflow.varMayDepOn(useInstr, var, arg) == Status.SATISFIABLE) {
                         boolean varChecked = false;
+                        System.out.println("bp4");
                         for (Instruction checkInstr : methodInstructions) {
+                            System.out.println("bp5");
                             if (checkInstr instanceof JumpI) {
+                                System.out.println("bp6");
                                 if (dataflow.mustPrecede(checkInstr, useInstr) == Status.SATISFIABLE) {
+                                    System.out.println("bp7");
                                     Variable cond = ((JumpI) checkInstr).getCondition();
                                     if (dataflow.varMustDepOn(checkInstr, cond, arg) == Status.SATISFIABLE) {
+                                        System.out.println("bp8");
                                         varChecked = true;
                                         break;
                                     }

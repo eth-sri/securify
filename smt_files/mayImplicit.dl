@@ -104,15 +104,53 @@ memory(Lab, Offset, Type) :- mstore(Lab, Offset, Var), reach(Var, Type).
 memory(LabTo, Offset, Type) :- follows(LabFrom, LabTo), memory(LabFrom, Offset, Type), ! reassignMemory(LabTo, Offset).
 memoryTags(Lab, Type) :- memory(Lab, _, Type).
 
+.decl memoryOne		(l:Label, v:Var, f:VarFact)
+.output memoryOne
+memoryOne(Lab, Offset, Type) :- mstore(Lab, Offset, Var), reach(Var, Type).
+
+.decl memoryTwo		(l:Label, v:Var, f:VarFact)
+.output memoryTwo
+memoryTwo(LabTo, Offset, Type) :- follows(LabFrom, LabTo), memory(LabFrom, Offset, Type), ! reassignMemory(LabTo, Offset).
+
 assignType(Lab, Var, Type) :- mload(Lab, Offset, Var), memory(Lab, Offset, Type), ! unk(Offset).
 assignType(Lab, Var, Type) :- mload(Lab, Offset, Var), memory(Lab, _, Type), unk(Offset).
 
+.decl assignTypeOne(l:Label, v:Var, f:Fact)
+.output assignTypeOne
+assignTypeOne(Lab, Var, Type) :- mload(Lab, Offset, Var), memory(Lab, Offset, Type), ! unk(Offset).
+
+.decl assignTypeTwo(l:Label, v:Var, f:Fact)
+.output assignTypeTwo
+assignTypeTwo(Lab, Var, Type) :- mload(Lab, Offset, Var), memory(Lab, _, Type), unk(Offset).
+
+
 storage(Lab, Index, Type) :- sstore(Lab, Index, Var), reach(Var, Type).
+
+.decl storageOne		(l:Label, v:Var, f:VarFact)
+.output storageOne
+storageOne(Lab, Index, Type) :- sstore(Lab, Index, Var), reach(Var, Type).
+
 storage(LabTo, Index, Type) :- follows(LabFrom, LabTo), storage(LabFrom, Index, Type), ! reassignStorage(LabTo, Index).
+
+.decl storageTwo		(l:Label, v:Var, f:VarFact)
+.output storageTwo
+storageTwo(LabTo, Index, Type) :- follows(LabFrom, LabTo), storage(LabFrom, Index, Type), ! reassignStorage(LabTo, Index).
 
 assignType(Lab, Var, Type) :- sload(Lab, Index, Var), storage(Lab, Index, Type), ! unk(Index).
 assignType(Lab, Var, Type) :- sload(Lab, Index, Var), storage(Lab, _, Type), unk(Index).
 assignType(Lab, Var, Type) :- memory(Lab, Offset, Type), sha3(Lab, Var, Offset).
+
+.decl assignTypeThree(l:Label, v:Var, f:Fact)
+.output assignTypeThree
+assignTypeThree(Lab, Var, Type) :- sload(Lab, Index, Var), storage(Lab, Index, Type), ! unk(Index).
+
+.decl assignTypeFour(l:Label, v:Var, f:Fact)
+.output assignTypeFour
+assignTypeFour(Lab, Var, Type) :- sload(Lab, Index, Var), storage(Lab, _, Type), unk(Index).
+
+.decl assignTypeFive(l:Label, v:Var, f:Fact)
+.output assignTypeFive
+assignTypeFive(Lab, Var, Type) :- memory(Lab, Offset, Type), sha3(Lab, Var, Offset).
 
 reassignStorage(Lab, Index) :- sstore(Lab, Index, _), !unk(Index).
 reassignMemory(Lab, Offset) :- mstore(Lab, Offset, _), !unk(Offset).

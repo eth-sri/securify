@@ -64,13 +64,13 @@
 .decl join		(l1: Label, l2: Label, l3: Label)
 .input join
 .decl mload		(l: Label, v:Var, f:VarFact)
-.input mload
+.output mload
 .decl mstore		(l: Label, v:Var, f:VarFact)
-.input mstore
+.output mstore
 .decl sload		(l: Label, v:Var, f:VarFact)
-.input sload
+.output sload
 .decl sstore		(l: Label, v:Var, f:VarFact)
-.input sstore
+.output sstore
 .decl sha3		(l: Label, v:Var, f:VarFact)
 .input sha3
 .decl call      (l: Label, outVar:Var, gas:Var, amount:Var)
@@ -110,6 +110,21 @@
 
 .decl mustAssignType        (l:Label, v:Var, f:Fact)
 .decl mayAssignType      (l:Label, v:Var, f:Fact)
+.output mayAssignType
+
+//derive instructions with unk inside:
+//sstore(Lab,Index,Var) :- sstoreInstr(Lab,IndexVar,Var), isConst(IndexVar), hasValue(IndexVar,Index).
+//sstore(Lab,Index,Var) :- sstoreInstr(Lab,Index,Var), isConst(Index).
+sstore(Lab,Index,Var) :- sstoreInstr(Lab,IndexVar,Var), !isConst(IndexVar), unk(Unk), Index=Unk.
+
+sload(Lab,Index,Var) :- sloadInstr(Lab,IndexVar,Var), isConst(IndexVar), hasValue(IndexVar,Index).
+sload(Lab,Index,Var) :- sloadInstr(Lab,IndexVar,Var), !isConst(IndexVar), unk(Unk), Index=Unk.
+
+mload(Lab,Index,Var) :- mloadInstr(Lab,IndexVar,Var), isConst(IndexVar), hasValue(IndexVar,Index).
+mload(Lab,Index,Var) :- mloadInstr(Lab,IndexVar,Var), !isConst(IndexVar), unk(Unk), Index=Unk.
+
+mstore(Lab,Index,Var) :- mstoreInstr(Lab,IndexVar,Var), isConst(IndexVar), hasValue(IndexVar,Index).
+mstore(Lab,Index,Var) :- mstoreInstr(Lab,IndexVar,Var), !isConst(IndexVar), unk(Unk), Index=Unk.
 
 
 //
@@ -217,6 +232,10 @@ instrMayDepOn(Lab, Fact) :- taint(_, Lab, Var), mayDepOn(Var, Fact).
 mstoreMay(Lab, Offset, Type) :- mstore(Lab, Offset, Var), mayDepOn(Var, Type).
 mstoreMay(LabTo, Offset, Type) :- followsMayImplicit(LabFrom, LabTo), mstoreMay(LabFrom, Offset, Type), ! reassignMemory(LabTo, Offset).
 memoryTagsMayImplicit(Lab, Type) :- mstoreMay(Lab, _, Type).
+
+.decl mstoreMayTwo		(l:Label, v:Var, f:VarFact)
+.output mstoreMayTwo
+mstoreMayTwo(LabTo, Offset, Type) :- followsMayImplicit(LabFrom, LabTo), mstoreMay(LabFrom, Offset, Type), ! reassignMemory(LabTo, Offset).
 
 sstoreMay(Lab, Index, Type) :- sstore(Lab, Index, Var), mayDepOn(Var, Type).
 sstoreMay(LabTo, Index, Type) :- followsMayImplicit(LabFrom, LabTo), sstoreMay(LabFrom, Index, Type), ! reassignStorage(LabTo, Index).

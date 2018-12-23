@@ -59,6 +59,13 @@ public class Call extends Instruction implements _TypeInstruction {
 		return getOutput()[0];
 	}
 
+	/**
+	 * @return the gas
+	 */
+	public Variable getGas() {
+		return getInput()[0];
+	}
+
 
 
 }
