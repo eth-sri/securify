@@ -22,9 +22,14 @@ import java.util.List;
 import java.util.Set;
 
 //static import lets us call static methods from DSLPatternFactory without using the class name identifier in front of them
-//and avoids the Constant Interface Antipattern 
+//and avoids the Constant Interface Antipattern
 import static ch.securify.dslpatterns.DSLPatternFactory.*;
 
+
+/**
+ * Class that contains the patterns written in DSL, translates them into datalog, joins them with the inference rules
+ * contained in the allInOneAnalysis.dl and compiles the resulting datalog file creating the datalog executable
+ */
 public class DSLPatternsCompiler {
 
     private static final String SOUFFLE_RULES = "smt_files/allInOneAnalysis.dl";
@@ -38,6 +43,9 @@ public class DSLPatternsCompiler {
     public static final String DATALOG_PATTERNS_FILE = "smt_files/CompiledPatterns.dl";
     public static final String PATTERN_NAMES_CSV = "smt_files/CompiledPatternsNames.csv";
 
+    /**
+     * Internal representation needed to collect patterns and translations
+     */
     private static class CompletePattern {
         private InstructionDSLPattern DSLCompliancePattern;
         private InstructionDSLPattern DSLViolationPattern;
@@ -83,7 +91,8 @@ public class DSLPatternsCompiler {
             StringBuilder sb = new StringBuilder();
 
             //example of declaration
-            //.decl jump		(l1: Label, l2: Label, l3: Label) output
+            //.decl jump		(l1: Label, l2: Label, l3: Label)
+            // .output jump
             sb.append(".decl ");
             sb.append(name);
             sb.append("Warnings(L: Label)\n");
@@ -134,6 +143,12 @@ public class DSLPatternsCompiler {
         }
     }
 
+    /**
+     * Translates patterns into datalog, joins them with the inference rules
+     *  contained in the allInOneAnalysis.dl and compiles the resulting datalog file creating the datalog executable
+     * @throws IOException
+     * @throws InterruptedException
+     */
     public static void generateDatalogExecutable() throws IOException, InterruptedException {
 
         if(!isSouffleInstalled()){
@@ -158,6 +173,10 @@ public class DSLPatternsCompiler {
         CommandRunner.runCommand(cmd);
     }
 
+    /**
+     * Joins the two files, AllInOneAnalysis.dl and the one containing the translated patterns
+     * @throws IOException
+     */
     private static void collapseSouffleRulesAndQueries() throws IOException {
         PrintWriter pw = new PrintWriter( TMP_DL_FILE);
         BufferedReader br = new BufferedReader(new FileReader(SOUFFLE_RULES));
@@ -181,11 +200,13 @@ public class DSLPatternsCompiler {
         pw.close();
     }
 
+    /**
+     * Method that contains the patters in dsl language
+     * @return a list of patterns in dsl
+     */
     private static List<CompletePattern> createPatterns() {
 
-        List<CompletePattern> patterns = new ArrayList<>(12);
-
-        DSLPatternFactory pattFct = new DSLPatternFactory();
+        List<CompletePattern> patterns = new ArrayList<>(6);
 
         DSLLabel l1 = new DSLLabel();
         DSLLabel l2 = new DSLLabel();
@@ -329,6 +350,10 @@ public class DSLPatternsCompiler {
             System.out.println(str);
     }
 
+    /**
+     * Translates the patterns from dsl to datalog representation
+     * @param patterns the patterns to be translated, the translated patterns will also be saved inside here
+     */
     private static void translatePatterns(List<CompletePattern> patterns) {
         patterns.forEach(completePattern -> {
             try {
@@ -344,6 +369,11 @@ public class DSLPatternsCompiler {
         });
     }
 
+    /**
+     * Creates the tmp datalog file containing the translated patterns
+     * @param patterns
+     * @throws IOException
+     */
     private static void writePatternsToFile(List<CompletePattern> patterns) throws IOException {
         DSLAnalysis analyzer;
 
@@ -380,6 +410,12 @@ public class DSLPatternsCompiler {
 
     }
 
+    /**
+     * Creates a CSV file with the pattern names, necessary when reading the pattern results, in order to read the
+     * names of the output datalog rules
+     * @param patterns
+     * @throws IOException
+     */
     private static void writePatternsNameToCSV(List<CompletePattern> patterns) throws IOException {
         BufferedWriter bwr;
         bwr = new BufferedWriter(new FileWriter(new File(PATTERN_NAMES_CSV)));
