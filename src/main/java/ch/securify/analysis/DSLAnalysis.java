@@ -13,7 +13,6 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 
 import java.io.*;
-import java.lang.Byte;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.*;
@@ -181,25 +180,6 @@ public class DSLAnalysis {
 
         CommandRunner.runCommand("rm -r " + WORKSPACE);
         CommandRunner.runCommand("rm -r " + WORKSPACE_OUT);
-    }
-
-    public Variable getStorageVarForIndex(int index) {
-        if (!offsetToStorageVar.containsKey(index)) {
-            Variable newVar = new Variable();
-            offsetToStorageVar.put(index, newVar);
-            appendRule("isStorageVar", getCode(newVar));
-            return newVar;
-        }
-        return offsetToStorageVar.get(index);
-    }
-
-    protected Variable getMemoryVarForIndex(int index) {
-        if (!offsetToMemoryVar.containsKey(index)) {
-            Variable newVar = new Variable();
-            offsetToMemoryVar.put(index, newVar);
-            return newVar;
-        }
-        return offsetToMemoryVar.get(index);
     }
 
     protected void log(String msg) {
@@ -500,7 +480,7 @@ public class DSLAnalysis {
                     //assert(startOffset % 32 == 0);
                     for (int offset = startOffset; offset < startOffset + length; offset += 4) {
                         log("sha3: " + instr + " " + instr.getOutput()[0]);
-                        log("Offset " + offset + ", memory var " + getMemoryVarForIndex(offset) + ", code " + getCode(getMemoryVarForIndex(offset)));
+                        //log("Offset " + offset + ", memory var " + getMemoryVarForIndex(offset) + ", code " + getCode(getMemoryVarForIndex(offset)));
                         //appendRule("sha3", getCode(instr), getCode(instr.getOutput()[0]), getCode(getMemoryVarForIndex(offset)));
                         appendRule("sha3", getCode(instr), getCode(instr.getOutput()[0]), offset);
                         //since we changed the way to handle sstore and other instructions, we should change also here, removing the new intoduced variables and replacing them with the index
