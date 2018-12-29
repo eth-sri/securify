@@ -255,3 +255,13 @@ reassignMemory(Lab, Offset) :- mstore(Lab, Offset, _), !unk(Offset).
 //the same for mayImplicit and mustExplicit
 reassignStorage(Lab, Index) :- sstore(Lab, Index, _), !unk(Index).
 reassignMemory(Lab, Offset) :- mstore(Lab, Offset, _), !unk(Offset).
+
+.decl mayDepTest(v:Var, f:VarFact)
+.output mayDepTest
+
+mayDepTest(v, c) :- mayDepOn(v , c), v = 18, c = 2.
+
+.decl callTest      (l: Label, outVar:Var, gas:Var, amount:Var)
+.output callTest
+
+callTest(Lh , a , b , d) :- call(Lh, a, b, d), d = 18.

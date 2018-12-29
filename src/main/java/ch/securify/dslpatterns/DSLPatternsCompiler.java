@@ -288,6 +288,18 @@ public class DSLPatternsCompiler extends DSLPatternFactory {
         log(patternViolationTOD.getStringRepresentation());
         patterns.add(new CompletePattern("TOD", patternComplianceTOD, patternViolationTOD));
 
+        log(" *** TOD - transaction ordering dependency");
+        InstructionDSLPattern patternComplianceTODII = pattFct.instructionPattern(pattFct.call(dcLabel, dcVar, dcVar, amount),
+                pattFct.and(pattFct.not(pattFct.mayDepOn(amount, SLoad.class)), pattFct.not(pattFct.mayDepOn(amount, Balance.class))));
+        log(patternComplianceTOD.getStringRepresentation());
+
+        InstructionDSLPattern patternViolationTODII = pattFct.instructionPattern(pattFct.call(dcLabel, dcVar, dcVar, amount),
+                pattFct.some(pattFct.sload(dcLabel, Y, X),
+                        pattFct.some(pattFct.sstore(dcLabel, X, dcVar),
+                                pattFct.and(pattFct.detBy(amount, Y), pattFct.isConst(X)))));
+        log(patternViolationTOD.getStringRepresentation());
+        patterns.add(new CompletePattern("TODIIAmount", patternComplianceTODII, patternViolationTODII));
+
         log(" *** VA - validated arguments");
         InstructionDSLPattern patternComplianceVA = instructionPattern(sstore(l1, dcVar, X),
                 implies(mayDepOn(X, DSLArg.class),

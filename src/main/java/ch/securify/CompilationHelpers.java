@@ -156,8 +156,8 @@ public class CompilationHelpers {
 
             SmallPatternResult pResults = new SmallPatternResult(
                     getMatchedLines(contract, violations, map, allResults.securifyErrors),
-                    getMatchedLines(contract, safe, map, allResults.securifyErrors),
                     getMatchedLines(contract, warnings, map, allResults.securifyErrors),
+                    getMatchedLines(contract, safe, map, allResults.securifyErrors),
                     getMatchedLines(contract, conflicts, map, allResults.securifyErrors));
 
             allResults.results.put(e.getKey(), pResults);
