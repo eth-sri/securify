@@ -111,6 +111,8 @@ def test_securify_analysis(c_file, json_output, memory=8, overwrite=False):
         output = Path(tmpdir) / 'sec_output.json'
 
         cmd = ['java',
+               # enable assertions
+               '-ea',
                f'-Xmx{memory}G',
                '-jar', 'build/libs/securify-0.1.jar',
                '-fs', c_file,
