@@ -80,6 +80,12 @@ public class AbstractDecompiler {
 		} while (removedSomething);
 	}
 
+	/**
+	 * Associate a unique tag to every jump destination (JUMPDEST opcode)
+	 * @param log
+	 * @param jumpDestinations
+	 * @return
+	 */
 	protected static BiMap<Integer, String> findTags(final PrintStream log, List<Integer> jumpDestinations) {
 		// print tags (jumpdests)
 		log.println();

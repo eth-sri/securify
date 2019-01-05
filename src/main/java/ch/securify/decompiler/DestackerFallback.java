@@ -178,18 +178,20 @@ public class DestackerFallback {
 						Push push = new Push(Ints.toByteArray(jumpdest));
 						push.setInput(NO_VARIABLES);
 						Variable pushVar = new Variable();
-						push.setOutput(new Variable[]{ pushVar });
+						push.setOutput(pushVar);
 						// create jump condition
 						Eq eq = new Eq();
-						eq.setInput(new Variable[]{ jumpDestVariable, pushVar });
+						eq.setInput(jumpDestVariable, pushVar);
 						Variable cond = new Variable();
-						eq.setOutput(new Variable[]{ cond });
+						eq.setOutput(cond);
 						// create jump instruction
 						JumpI jumpI = new JumpI(labelResolver.resolve(new RawInstruction(0, null, jumpdest, -1)));
-						jumpI.setInput(new Variable[]{ null, cond });
+						jumpI.setInput(null, cond);
+						// XXX: do we need to set data and instrNumber to proper values?
+						jumpI.setRawInstruction(new RawInstruction(OpCodes.JUMPI, null, pc, -1));
 						jumpI.setOutput(NO_VARIABLES);
 						dynamicJumpReplacementTargets.put(jumpI, jumpdest);
-						// save new instrucitons
+						// save new instructions
 						replacementInstrs.add(push);
 						replacementInstrs.add(eq);
 						replacementInstrs.add(jumpI);
@@ -400,6 +402,7 @@ public class DestackerFallback {
     // Always true otherwise
 	private boolean findJumpCondition(Instruction jumpI, int jumpdest) {
 		if(jumpI instanceof JumpI) {
+		        assert jumpI.getRawInstruction() != null;
 			jumps.get(jumpI.getRawInstruction().offset).iterator().next();
 			return jumpdest == jumps.get(jumpI.getRawInstruction().offset).iterator().next();
 		}
