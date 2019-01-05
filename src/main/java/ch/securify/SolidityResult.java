@@ -20,7 +20,6 @@ class SolidityResult {
      */
     static void setPatternDescriptions(List<AbstractPattern> patterns) {
         // only allow initialization once
-        assert patternDescriptions == null;
         patternDescriptions = new LinkedList<>();
         patterns.forEach(pattern -> patternDescriptions.add(pattern.getDescription()));
     }
