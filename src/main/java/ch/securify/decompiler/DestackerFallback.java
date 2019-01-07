@@ -286,7 +286,8 @@ public class DestackerFallback {
 			if (stack.size() != stack.stream().distinct().count()) {
 				log.println("undup canonical stack @" + HexPrinter.toHex(jumpdest));
 				// map duplicate variables to new ones
-				if (jumpsrc != null && variableReassignments.containsKey(jumpsrc) ||
+				boolean jumpCondition = findJumpCondition(jumpsrc, jumpdest);
+				if (jumpsrc != null && variableReassignments.containsKey(new Pair<>(jumpsrc, jumpCondition)) ||
 						jumpsrc == null && variableReassignmentsInline.containsKey(inlineDest)) {
 					throw new IllegalStateException("reassignment does already exist");
 				}
