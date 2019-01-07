@@ -277,9 +277,9 @@ public abstract class AbstractDataflow {
             }
         }
 
-        proc.waitFor(timeout, TimeUnit.SECONDS);
-
-        if (proc.exitValue() != 0) {
+        if (!proc.waitFor(timeout, TimeUnit.SECONDS) || proc.exitValue() != 0) {
+            proc.destroyForcibly();
+            proc.waitFor();
             throw new IOException(String.join(" ", command));
         }
     }
