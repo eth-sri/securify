@@ -28,7 +28,7 @@ import java.util.Set;
 
 public class JumpI extends BranchInstruction {
 
-	private String targetLabel;
+	public String targetLabel;
 
 	public JumpI(String targetLabel) {
 		setTargetLabel(targetLabel);

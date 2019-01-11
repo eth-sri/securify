@@ -37,6 +37,7 @@ import ch.securify.decompiler.instructions.Stop;
 import ch.securify.decompiler.instructions.SelfDestruct;
 import ch.securify.decompiler.instructions._VirtualAssignment;
 import ch.securify.utils.StackUtil;
+import com.google.common.collect.BiMap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.primitives.Ints;
@@ -90,6 +91,8 @@ public class DestackerFallback {
 
 	private final boolean DEBUG = false;
 
+	private BiMap<Integer, String> tags;
+
 
 	/**
 	 * Decompile the bytecode.
@@ -98,7 +101,9 @@ public class DestackerFallback {
 	 * @param jumps maps jump instructions to their jump destinations.
 	 */
 	public void decompile(RawInstruction[] rawInstructions, InstructionFactory instructionFactory, Multimap<Integer, Integer> jumps,
-			Multimap<Integer, Integer> controlFlowGraph, final PrintStream log) {
+			Multimap<Integer, Integer> controlFlowGraph, final PrintStream log, BiMap<Integer, String> tags) {
+
+
 	    if (DEBUG)
 		    this.log = log;
 	    else
@@ -108,6 +113,7 @@ public class DestackerFallback {
 		this.jumps = jumps;
 		this.controlFlowGraph = controlFlowGraph;
 		this.instructionFactory = instructionFactory;
+		this.tags = tags;
 
 		this.instructions = new Instruction[rawInstructions.length];
 		this.argumentsForMethod = new HashMap<>();
@@ -400,8 +406,9 @@ public class DestackerFallback {
     // Always true otherwise
 	private boolean findJumpCondition(Instruction jumpI, int jumpdest) {
 		if(jumpI instanceof JumpI) {
-			jumps.get(jumpI.getRawInstruction().offset).iterator().next();
-			return jumpdest == jumps.get(jumpI.getRawInstruction().offset).iterator().next();
+			String targetLabel = ((JumpI) jumpI).targetLabel;
+			String tag = tags.get(jumpdest);
+			return tag.equals(targetLabel);
 		}
 		// includes Jump case
 		return true;

@@ -70,7 +70,7 @@ public class DecompilerFallback extends AbstractDecompiler {
                     .setJumpResolver(instruction -> tags.get(Iterables.getFirst(mapJumpsToDests.get(instruction.offset), -42)))
                     .setLabelResolver(instruction -> tags.get(instruction.offset));
 
-            destacker.decompile(rawInstructions, instructionFactory, mapJumpsToDests, controlFlowGraph, log);
+            destacker.decompile(rawInstructions, instructionFactory, mapJumpsToDests, controlFlowGraph, log, tags);
 
             List<Instruction> decompiledInstructions = new LinkedList<>();
 
