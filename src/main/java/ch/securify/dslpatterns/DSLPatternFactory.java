@@ -120,8 +120,12 @@ public class DSLPatternFactory {
         return new IsConst(x);
     }
 
-    public static IsArg isArg(Variable x) {
-        return new IsArg(x);
+    public static IsArg isArg(Variable x, DSLLabel label) {
+        return new IsArg(x, label);
+    }
+
+    public static HasValue hasValue(Variable var, Variable constant) {
+        return new HasValue(var, constant);
     }
 
 
@@ -133,6 +137,14 @@ public class DSLPatternFactory {
 
     public static DSLStop stop(DSLLabel label) {
         return new DSLStop(label);
+    }
+
+    public static DSLVirtualMethodHead virtualMethodHead(DSLLabel label) {
+        return new DSLVirtualMethodHead(label);
+    }
+
+    public static NoArgsVirtualMethodHead noArgsVirtualMethodHead(DSLLabel label) {
+        return new NoArgsVirtualMethodHead(label);
     }
 
     public static DSLCall call(DSLLabel label, Variable out, Variable gas, Variable amount) {

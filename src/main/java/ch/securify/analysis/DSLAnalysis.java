@@ -4,7 +4,6 @@ import ch.securify.decompiler.Variable;
 import ch.securify.decompiler.instructions.*;
 import ch.securify.dslpatterns.DSLPatternResult;
 import ch.securify.dslpatterns.DSLPatternsCompiler;
-import ch.securify.dslpatterns.tags.DSLArg;
 import ch.securify.utils.BigIntUtil;
 import ch.securify.utils.CommandRunner;
 import com.google.common.collect.BiMap;
@@ -103,6 +102,8 @@ public class DSLAnalysis {
         ruleToSB.put("mstoreInstr", new StringBuffer());
         ruleToSB.put("sloadInstr", new StringBuffer());
         ruleToSB.put("sstoreInstr", new StringBuffer());
+        ruleToSB.put("virtualMethodHead", new StringBuffer());
+        ruleToSB.put("noArgsVirtualMethodHead", new StringBuffer());
         ruleToSB.put("goto", new StringBuffer());
         ruleToSB.put("isConst", new StringBuffer());
         ruleToSB.put("hasValue", new StringBuffer());
@@ -127,7 +128,7 @@ public class DSLAnalysis {
         deriveAssignTypePredicates();
         thingToIntegerFileWriter.write("--------------------------------------------\n");
         deriveInstructionsPredicates();
-        deriveIsConstIsArgPredicates();
+        deriveIsConstPredicates();
 
         deriveFollowsPredicates();
         deriveIfPredicates();
@@ -389,12 +390,25 @@ public class DSLAnalysis {
                 log("call instruction" + instr.getStringRepresentation());
                 createCallRule(instr);
             }
+            else if (instr instanceof _VirtualMethodHead) {
+                log("_VirtualMethodHead instruction" + instr.getStringRepresentation());
+                int instrCode = getCode(instr);
+                appendRule("virtualMethodHead", instrCode);
+                Variable[] args = instr.getOutput();
+                if(args.length == 0) {
+                    appendRule("noArgsVirtualMethodHead", instrCode);
+                }
+                else {
+                    for(Variable var : args) {
+                        appendRule("isArg", getCode(var), instrCode);
+                    }
+                }
+            }
         }
     }
 
-    protected void deriveIsConstIsArgPredicates() { //OK
+    protected void deriveIsConstPredicates() { //OK
         Set<Variable> constants = new HashSet<>();
-        Set<Variable> args = new HashSet<>();
         for (Instruction instr : instructions) {
             for(Variable var : instr.getInput()) {
                 if(var != null && var.hasConstantValue()) {
@@ -406,11 +420,6 @@ public class DSLAnalysis {
             for(Variable var : instr.getOutput()) {
                 if(var.hasConstantValue())
                     constants.add(var);
-            }
-
-            //if variable is argument we add it to the set of argument variables
-            if(instr instanceof _VirtualMethodHead) {
-                Collections.addAll(args, instr.getOutput());
             }
         }
 
@@ -428,10 +437,6 @@ public class DSLAnalysis {
         log("isConst(" + var + ")");
         log("constValue: " + BigIntUtil.fromInt256(var.getConstantValue()));
         });
-
-
-        args.forEach(var ->
-                appendRule("isArg", getCode(var)));
     }
 
     protected void deriveAssignVarPredicates() {

@@ -2,9 +2,9 @@ package ch.securify.dslpatterns;
 
 
 import ch.securify.decompiler.Variable;
-import ch.securify.decompiler.instructions.Instruction;
 import ch.securify.dslpatterns.datalogpattern.*;
 import ch.securify.dslpatterns.instructions.AbstractDSLInstruction;
+import ch.securify.dslpatterns.instructions.DSLVirtualMethodHead;
 import ch.securify.dslpatterns.predicates.*;
 import ch.securify.dslpatterns.tags.DSLArg;
 import ch.securify.dslpatterns.util.DSLLabel;
@@ -57,6 +57,8 @@ public class DSLToDatalogTranslator {
 
     private static VariableArg varArg = new VariableArg();
 
+    private static DatalogHead head;
+
     /**
      * Translates a pattern into a query, should be called only with a Some or an All
      * @param completePattern the pattern to be translated
@@ -80,9 +82,9 @@ public class DSLToDatalogTranslator {
         }
 
         //we create a new datalog rule with name the desired one and with label the label of the instruction which is quantified
-        DatalogHead head = new DatalogHead(ruleName, instr.getLabel());
-        encounteredLabels.addAll(instr.getAllLabels());
-        encounteredVars.addAll(instr.getAllVars());
+        head = new DatalogHead(ruleName, instr.getLabel());
+        encounteredLabels.addAll(instr.getLabels());
+        encounteredVars.addAll(instr.getVariables());
 
         //first of all we insert the quantified instruction in the datalog rule
         newBodies.add(new DatalogBody(instr));
@@ -105,7 +107,7 @@ public class DSLToDatalogTranslator {
             encounteredLabels.addAll(patt.getLabels());
             encounteredVars.addAll(patt.getVariables());
 
-            newBodies.add(handleArgTag((DatalogElem) patt, false));
+            newBodies = collapseBodies(newBodies, handleArgTag((DatalogElem) patt, false));
         }
         else if(patt instanceof Not)
             newBodies = collapseBodies(newBodies, translateNot((Not)patt));
@@ -171,12 +173,14 @@ public class DSLToDatalogTranslator {
         return newBodies;
     }
 
-    private static DatalogBody handleArgTag(DatalogElem patt, boolean toBeNegated) {
+    private static List<DatalogBody> handleArgTag(DatalogElem patt, boolean toBeNegated) {
+        List<DatalogBody> result = new ArrayList<>();
         DatalogBody newBody = new DatalogBody();
 
             if (patt instanceof AbstractPredicate) {
                 Set<Class> tagsList = ((AbstractPredicate) patt).getTags();
                 if (tagsList.contains(DSLArg.class)) {
+
                     AbstractPredicate newPredicate;
                     //exchange the tag predicate with the variable one
                     if(patt instanceof DetByVarTag)
@@ -191,7 +195,27 @@ public class DSLToDatalogTranslator {
                     else
                         newBody.addElement(newPredicate);
 
-                    newBody.addElement(new IsArg(varArg));
+                    DSLLabel connectingLabel = new DSLLabel();
+                    connectingLabel.setName("connLabl");
+
+                    DSLLabel virtualMethodHeadLabel = new DSLLabel();
+                    virtualMethodHeadLabel.setName("virtMethdHeadLabl");
+
+                    newBody.addElement(new IsArg(varArg, connectingLabel));
+                    newBody.addElement(new MayFollow(connectingLabel, virtualMethodHeadLabel));
+                    newBody.addElement(new DSLVirtualMethodHead(virtualMethodHeadLabel));
+
+
+                    //if there are no arguments then it must also be true
+                    DatalogBody noArgsBody = new DatalogBody();
+
+                    if(toBeNegated)
+                        noArgsBody.addElement(new NoArgsVirtualMethodHead(virtualMethodHeadLabel));
+                    else
+                        noArgsBody.addElement(new DatalogNot(new NoArgsVirtualMethodHead(virtualMethodHeadLabel)));
+                    noArgsBody.addElement(new MayFollow(head.getLabel(), virtualMethodHeadLabel));
+
+                    result.add(noArgsBody);
                 }
                 else {
                     if(toBeNegated)
@@ -207,7 +231,8 @@ public class DSLToDatalogTranslator {
                     newBody.addElement(patt);
             }
 
-            return newBody;
+            result.add(newBody);
+            return result;
     }
 
     private static List<DatalogBody> translateNot(Not not) {
@@ -219,8 +244,7 @@ public class DSLToDatalogTranslator {
             encounteredLabels.addAll(negatedPattern.getLabels());
             encounteredVars.addAll(negatedPattern.getVariables());
 
-            newBodies.add(handleArgTag((DatalogElem) negatedPattern, true));
-        }
+            newBodies = collapseBodies(newBodies, handleArgTag((DatalogElem) negatedPattern, true));        }
         else if(negatedPattern instanceof And) { //push negation inside
             List<AbstractDSLPattern> negatedPatterns = new ArrayList<>();
             ((And) negatedPattern).getPatterns().forEach((patt) -> negatedPatterns.add(new Not(patt)));
@@ -260,8 +284,8 @@ public class DSLToDatalogTranslator {
         Set<Variable> varsInAll = new HashSet<>();
 
         //get all the labels and vars that are part of the quantified instruction
-        labelsInAll.addAll(all.getQuantifiedInstr().getAllLabels());
-        varsInAll.addAll(all.getQuantifiedInstr().getAllVars());
+        labelsInAll.addAll(all.getQuantifiedInstr().getLabels());
+        varsInAll.addAll(all.getQuantifiedInstr().getVariables());
 
         //get all the labels and the vars which are part of the body of the all
         labelsInAll.addAll(all.getQuantifiedPattern().getLabels());

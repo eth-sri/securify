@@ -4,9 +4,7 @@ import ch.securify.decompiler.Variable;
 import ch.securify.dslpatterns.instructions.AbstractDSLInstruction;
 import ch.securify.dslpatterns.util.DSLLabel;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -40,7 +38,7 @@ public abstract class AbstractQuantifiedDSLPattern extends AbstractDSLPattern {
     @Override
     public Set<Variable> getVariables() {
         Set<Variable> vars = new HashSet<>();
-        vars.addAll(quantifiedInstr.getAllVars());
+        vars.addAll(quantifiedInstr.getVariables());
         vars.addAll(quantifiedPattern.getVariables());
         return vars;
     }
@@ -48,7 +46,7 @@ public abstract class AbstractQuantifiedDSLPattern extends AbstractDSLPattern {
     @Override
     public Set<DSLLabel> getLabels() {
         Set<DSLLabel> labels = new HashSet<>();
-        labels.addAll(quantifiedInstr.getAllLabels());
+        labels.addAll(quantifiedInstr.getLabels());
         labels.addAll(quantifiedPattern.getLabels());
         return labels;
     }

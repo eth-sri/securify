@@ -38,6 +38,14 @@ public class DSLLabel {
     }
 
     /**
+     * Sets the name of the Label with the one provided. Be careful of using same name of other labels
+     * @param name
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
      * Checks if the label is null or an instance of {@link DSLLabelDC}
      * @param l the label
      * @return true if it's a valid label

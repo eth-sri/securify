@@ -319,9 +319,9 @@ public class DSLPatternsCompiler {
         log(patternComplianceTOD.getStringRepresentation());
 
         InstructionDSLPattern patternViolationTODII = instructionPattern(call(dcLabel, dcVar, dcVar, amount),
-                some(sload(dcLabel, Y, X),
-                        some(sstore(dcLabel, X, dcVar),
-                                and(detBy(amount, Y), isConst(X)))));
+                or(
+                        and(detBy(amount, SLoad.class), sstore(dcLabel, X, dcVar), isConst(X), hasValue(X, Y), detBy(amount, Y)),
+                        detBy(amount, Balance.class)));
         log(patternViolationTOD.getStringRepresentation());
         patterns.add(new CompletePattern("TODIIAmount", patternComplianceTODII, patternViolationTODII));
 

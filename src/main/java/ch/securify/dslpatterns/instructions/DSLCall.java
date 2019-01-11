@@ -6,6 +6,7 @@ import ch.securify.dslpatterns.util.DSLLabel;
 import ch.securify.dslpatterns.util.VariableDC;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Placeholder for the call instruction inside the dsl language
@@ -38,8 +39,8 @@ public class DSLCall extends AbstractDSLInstruction {
      * @return a list of all the variables contained in the instruction
      */
     @Override
-    public List<Variable> getAllVars() {
-        List<Variable> varsList = super.getAllVars();
+    public Set<Variable> getVariables() {
+        Set<Variable> varsList = super.getVariables();
 
         if(VariableDC.isValidVariable(out))
             varsList.add(out);

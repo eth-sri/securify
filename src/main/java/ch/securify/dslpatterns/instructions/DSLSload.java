@@ -6,6 +6,7 @@ import ch.securify.dslpatterns.util.DSLLabel;
 import ch.securify.dslpatterns.util.VariableDC;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * The dsl placeholder for the instruction sload
@@ -35,8 +36,8 @@ public class DSLSload extends AbstractDSLInstruction {
      * @return a list of all the variables contained in the instruction
      */
     @Override
-    public List<Variable> getAllVars() {
-        List<Variable> varsList = super.getAllVars();
+    public Set<Variable> getVariables() {
+        Set<Variable> varsList = super.getVariables();
 
         if(VariableDC.isValidVariable(offset))
             varsList.add(offset);

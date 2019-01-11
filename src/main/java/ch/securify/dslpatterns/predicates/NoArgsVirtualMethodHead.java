@@ -7,25 +7,18 @@ import ch.securify.dslpatterns.util.DSLLabel;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * IsArg predicated, checks if a variable is the argument of a function,
- * is used to express the "arg" tag present in the paper
- */
-public class IsArg extends AbstractPredicate {
-    Variable x;
-    DSLLabel label;
+public class NoArgsVirtualMethodHead extends AbstractPredicate {
 
-    public IsArg(Variable x, DSLLabel label) {
-        this.x = x;
+    private DSLLabel label;
+
+    public NoArgsVirtualMethodHead(DSLLabel label) {
         this.label = label;
     }
 
     @Override
     public String getStringRepresentation() {
         StringBuilder sb = new StringBuilder();
-        sb.append("isArg(");
-        sb.append(x.getName());
-        sb.append(" , ");
+        sb.append("noArgsVirtualMethodHead(");
         sb.append(label.getName());
         sb.append(")");
 
@@ -36,13 +29,6 @@ public class IsArg extends AbstractPredicate {
     public Set<DSLLabel> getLabels() {
         Set<DSLLabel> labels = new HashSet<>(1);
         labels.add(label);
-        return  labels;
-    }
-
-    @Override
-    public Set<Variable> getVariables() {
-        Set<Variable> vars = new HashSet<>(1);
-        vars.add(x);
-        return  vars;
+        return labels;
     }
 }

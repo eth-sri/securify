@@ -6,6 +6,7 @@ import ch.securify.dslpatterns.util.DSLLabel;
 import ch.securify.dslpatterns.util.VariableDC;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * A goto DSL goto instruction
@@ -32,8 +33,8 @@ public class DSLGoto extends AbstractDSLInstruction{
     }
 
     @Override
-    public List<DSLLabel> getAllLabels() {
-        List<DSLLabel> labelsList = super.getAllLabels();
+    public Set<DSLLabel> getLabels() {
+        Set<DSLLabel> labelsList = super.getLabels();
         if(DSLLabel.isValidLabel(secondBranchLabel))
             labelsList.add(secondBranchLabel);
         return labelsList;
@@ -43,8 +44,8 @@ public class DSLGoto extends AbstractDSLInstruction{
      * @return a list of all the variables contained in the instruction
      */
     @Override
-    public List<Variable> getAllVars() {
-        List<Variable> varsList = super.getAllVars();
+    public Set<Variable> getVariables() {
+        Set<Variable> varsList = super.getVariables();
 
         if(VariableDC.isValidVariable(var))
             varsList.add(var);

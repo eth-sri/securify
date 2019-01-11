@@ -29,7 +29,9 @@
 .input isConst
 .decl hasValue(v: Var, value: number)
 .input hasValue
-.decl isArg (v: Var)
+
+//this variable is an argument for the virtualMethodHead that starts at this label
+.decl isArg (v: Var, l: Label)
 .input isArg
 .decl assignType       (l:Label, v:Var, f:Fact) //in order to manage to have same input this is split in two and then reassigned
 .input assignType
@@ -60,6 +62,14 @@
 //Label at which the if is placed, condition on which the if is evaluated, label of the jump / goto if condition doesn't hole (else branch)
 .decl goto		(l1: Label, cond: Var, l2: Label)
 .input goto
+
+//at this label a function declaration starts
+.decl virtualMethodHead (l: Label)
+.input virtualMethodHead
+
+//the method at this label has no arguments
+.decl noArgsVirtualMethodHead (l: Label)
+.input noArgsVirtualMethodHead
 
 .decl join		(l1: Label, l2: Label, l3: Label)
 .input join

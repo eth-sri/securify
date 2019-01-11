@@ -6,6 +6,7 @@ import ch.securify.dslpatterns.util.DSLLabel;
 import ch.securify.dslpatterns.util.VariableDC;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * The dsl placeholder for the instruction sstore
@@ -35,8 +36,8 @@ public class DSLSstore extends AbstractDSLInstruction {
      * @return a list of all the variables contained in the instruction
      */
     @Override
-    public List<Variable> getAllVars() {
-        List<Variable> varsList = super.getAllVars();
+    public Set<Variable> getVariables() {
+        Set<Variable> varsList = super.getVariables();
 
         if(VariableDC.isValidVariable(offset))
             varsList.add(offset);
@@ -63,7 +64,7 @@ public class DSLSstore extends AbstractDSLInstruction {
     @Override
     public String getDatalogStringRepDC(DSLAnalysis analyzer) {
         StringBuilder sb = new StringBuilder();
-        sb.append("sstore(");
+        sb.append("sstoreInstr(");
         sb.append(label.getName());
         sb.append(" , _ , _ )");
         return sb.toString();
