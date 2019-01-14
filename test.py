@@ -127,7 +127,10 @@ def test_securify_analysis(c_file, json_output, memory=8, overwrite=False):
 
         if overwrite:
             print('Overwriting.')
-            shutil.copy(output, json_output)
+            with open(json_output, 'w') as fso, open(output) as fsi:
+                content = json.load(fsi)
+                json.dump(content, fso, sort_keys=True, indent=2)
+
             return
 
         with open(output) as fsc:
