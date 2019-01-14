@@ -467,8 +467,6 @@ public abstract class AbstractDataflow {
                     || instr instanceof SLoad
                     || instr instanceof Address) {
                 log("created assign type rule " + getCode(instr.getOutput()[0]) + " " + getCode(instr.getClass()));
-                if(getCode(instr.getOutput()[0]) == 72)
-                    log("FOUND");
 
                 createAssignTypeRule(instr, instr.getOutput()[0], instr.getClass());
             } else if (instr instanceof Div) {

@@ -41,7 +41,6 @@ public class UnrestrictedWrite extends AbstractInstructionPattern {
         assert(instr instanceof SStore);
 
         if (dataflow.varMayDepOn(instr, instr.getInput()[0], Caller.class) == Status.SATISFIABLE) {
-            System.out.println("FALSE");
             return false;
         }
 

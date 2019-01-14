@@ -274,6 +274,16 @@ public class DSLPatternsCompiler {
         log(patternViolationRW.getStringRepresentation());
         patterns.add(new CompletePattern("unRestrictedWrite", patternComplianceRW, patternViolationRW));
 
+        log(" *** RWUP - restricted write updated");
+        InstructionDSLPattern patternComplianceRWUP = instructionPattern(sstore(l1, X, dcVar),
+                or(detBy(X, Caller.class), and(dslgoto(l2, Y, dcLabel), mustFollow(l2,l1), detBy(Y, Caller.class))));
+        log(patternComplianceRW.getStringRepresentation());
+
+        InstructionDSLPattern patternViolationRWUP = instructionPattern(sstore(l1, X, dcVar),
+                and(not(mayDepOn(X, Caller.class)), not(mayDepOn(l1, Caller.class))));
+        log(patternViolationRW.getStringRepresentation());
+        patterns.add(new CompletePattern("unRestrictedWriteUP", patternComplianceRWUP, patternViolationRWUP));
+
         log(" *** RT - restricted transfer");
         InstructionDSLPattern patternComplianceRT = instructionPattern(call(dcLabel, dcVar, dcVar, amount),
                 eq(amount, 0));
@@ -319,9 +329,8 @@ public class DSLPatternsCompiler {
         log(patternComplianceTOD.getStringRepresentation());
 
         InstructionDSLPattern patternViolationTODII = instructionPattern(call(dcLabel, dcVar, dcVar, amount),
-                or(
-                        and(detBy(amount, SLoad.class), sstore(dcLabel, X, dcVar), isConst(X), hasValue(X, Y), detBy(amount, Y)),
-                        detBy(amount, Balance.class)));
+                        and(or(detBy(amount, SLoad.class),  detBy(amount, Balance.class)),
+                                sstore(dcLabel, X, dcVar), isConst(X), hasValue(X, Y), detBy(amount, Y)));
         log(patternViolationTOD.getStringRepresentation());
         patterns.add(new CompletePattern("TODIIAmount", patternComplianceTODII, patternViolationTODII));
 

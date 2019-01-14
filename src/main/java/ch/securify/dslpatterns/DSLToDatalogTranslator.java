@@ -195,27 +195,28 @@ public class DSLToDatalogTranslator {
                     else
                         newBody.addElement(newPredicate);
 
-                    DSLLabel connectingLabel = new DSLLabel();
-                    connectingLabel.setName("connLabl");
+                    //DSLLabel connectingLabel = new DSLLabel();
+                    //connectingLabel.setName("connLabl");
 
                     DSLLabel virtualMethodHeadLabel = new DSLLabel();
                     virtualMethodHeadLabel.setName("virtMethdHeadLabl");
 
-                    newBody.addElement(new IsArg(varArg, connectingLabel));
-                    newBody.addElement(new MayFollow(connectingLabel, virtualMethodHeadLabel));
+                    newBody.addElement(new IsArg(varArg, virtualMethodHeadLabel));
+                    newBody.addElement(new MayFollow(virtualMethodHeadLabel, head.getLabel()));
                     newBody.addElement(new DSLVirtualMethodHead(virtualMethodHeadLabel));
 
 
-                    //if there are no arguments then it must also be true
-                    DatalogBody noArgsBody = new DatalogBody();
+                    if(toBeNegated) {
+                        //if there are no arguments then it must also be true
+                        DatalogBody noArgsBody = new DatalogBody();
 
-                    if(toBeNegated)
+                        noArgsBody.addElement(new DSLVirtualMethodHead(virtualMethodHeadLabel));
+
                         noArgsBody.addElement(new NoArgsVirtualMethodHead(virtualMethodHeadLabel));
-                    else
-                        noArgsBody.addElement(new DatalogNot(new NoArgsVirtualMethodHead(virtualMethodHeadLabel)));
-                    noArgsBody.addElement(new MayFollow(head.getLabel(), virtualMethodHeadLabel));
+                        noArgsBody.addElement(new MayFollow(virtualMethodHeadLabel, head.getLabel()));
 
-                    result.add(noArgsBody);
+                        result.add(noArgsBody);
+                    }
                 }
                 else {
                     if(toBeNegated)
