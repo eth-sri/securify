@@ -3,19 +3,28 @@
     "results": {
       "DAO": {
         "violations": [],
-        "warnings": [],
+        "warnings": [
+          841
+        ],
         "safe": [],
         "conflicts": []
       },
       "DAOConstantGas": {
         "violations": [],
-        "warnings": [],
+        "warnings": [
+          228,
+          744,
+          832,
+          846
+        ],
         "safe": [],
         "conflicts": []
       },
       "LockedEther": {
         "violations": [],
-        "warnings": [],
+        "warnings": [
+          364
+        ],
         "safe": [],
         "conflicts": []
       },
@@ -27,42 +36,125 @@
       },
       "TODAmount": {
         "violations": [],
-        "warnings": [],
-        "safe": [],
+        "warnings": [
+          228,
+          744,
+          832,
+          846
+        ],
+        "safe": [
+          841
+        ],
         "conflicts": []
       },
       "TODReceiver": {
         "violations": [],
-        "warnings": [],
-        "safe": [],
+        "warnings": [
+          228,
+          832,
+          846
+        ],
+        "safe": [
+          744,
+          841
+        ],
         "conflicts": []
       },
       "UnhandledException": {
         "violations": [],
-        "warnings": [],
+        "warnings": [
+          218,
+          228,
+          251,
+          260,
+          308,
+          490,
+          492,
+          573,
+          577,
+          642,
+          744,
+          746,
+          779,
+          781,
+          832,
+          841,
+          846,
+          848,
+          875
+        ],
         "safe": [],
         "conflicts": []
       },
       "UnrestrictedEtherFlow": {
         "violations": [],
-        "warnings": [],
+        "warnings": [
+          218,
+          251,
+          260,
+          308,
+          490,
+          492,
+          573,
+          577,
+          642,
+          746,
+          779,
+          781,
+          841,
+          848,
+          875
+        ],
         "safe": [],
-        "conflicts": []
+        "conflicts": [
+          228,
+          744,
+          832,
+          846
+        ]
       },
       "UnrestrictedWrite": {
-        "violations": [],
+        "violations": [
+          2,
+          168,
+          193,
+          364,
+          458,
+          540,
+          699,
+          707
+        ],
         "warnings": [],
         "safe": [],
-        "conflicts": []
+        "conflicts": [
+          2,
+          125,
+          136,
+          147,
+          148,
+          158,
+          159,
+          164,
+          183,
+          184,
+          189,
+          250,
+          251,
+          450,
+          451,
+          454,
+          503,
+          508,
+          513,
+          525,
+          526,
+          536,
+          547
+        ]
       }
     },
     "securifyErrors": {
-      "errors": [
-        {
-          "error": "pattern_error",
-          "stackTrace": "java.lang.RuntimeException\n\tat ch.securify.analysis.Dataflow.\u003cinit\u003e(Dataflow.java:37)\n\tat ch.securify.analysis.DataflowFactory.getDataflow(DataflowFactory.java:55)\n\tat ch.securify.Main.checkPatterns(Main.java:357)\n\tat ch.securify.Main.processHexFile(Main.java:182)\n\tat ch.securify.Main.processCompilationOutput(Main.java:124)\n\tat ch.securify.Main.processSolidityFile(Main.java:94)\n\tat ch.securify.Main.main(Main.java:231)\n"
-        }
-      ]
+      "errors": []
     }
   },
   "src/test/resources/solidity/end_to_end_testing_quick/kybernetwork_flattened.sol:PermissionGroups": {
