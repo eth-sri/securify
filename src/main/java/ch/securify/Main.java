@@ -212,6 +212,11 @@ public class Main {
             return;
         }
 
+        if (args.descriptions && !args.jsonOutput) {
+            throw new ParameterException("--descriptions requires --json");
+        }
+
+
         if (args.verbose) {
             log = System.out;
         }
