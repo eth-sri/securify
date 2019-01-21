@@ -18,10 +18,10 @@
 
 package ch.securify.decompiler.printer;
 
+import ch.securify.utils.Hex;
+
 import java.util.Collection;
 import java.util.stream.Collectors;
-
-import javax.xml.bind.DatatypeConverter;
 
 public class HexPrinter {
 
@@ -52,7 +52,7 @@ public class HexPrinter {
 	 * @return hex string
 	 */
 	public static String toHex(byte[] value) {
-		return DatatypeConverter.printHexBinary(value);
+		return Hex.encode(value);
 	}
 
 
