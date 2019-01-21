@@ -20,8 +20,7 @@ package ch.securify.decompiler.instructions;
 
 import ch.securify.decompiler.Variable;
 import ch.securify.utils.BigIntUtil;
-
-import javax.xml.bind.DatatypeConverter;
+import ch.securify.utils.Hex;
 
 public class Push extends Instruction implements _TypeInstruction {
 
@@ -33,7 +32,7 @@ public class Push extends Instruction implements _TypeInstruction {
 
 	@Override
 	public String getStringRepresentation() {
-		return getOutput()[0] + " = 0x" + DatatypeConverter.printHexBinary(data);
+		return getOutput()[0] + " = 0x" + Hex.encode(data);
 	}
 
 	public byte[] getData() {

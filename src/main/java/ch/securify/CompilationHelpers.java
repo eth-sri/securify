@@ -1,13 +1,12 @@
 package ch.securify;
 
 import ch.securify.analysis.SecurifyErrors;
+import ch.securify.utils.Hex;
 import com.google.common.base.CharMatcher;
 import com.google.gson.*;
 
-import javax.xml.bind.DatatypeConverter;
 import java.io.File;
 import java.io.IOException;
-import java.lang.RuntimeException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -62,7 +61,7 @@ public class CompilationHelpers {
     public static byte[] extractBinaryFromHexFile(String filehex) throws IOException {
         File contractBinHexFile = new File(filehex);
         String hexCode = Files.readAllLines(contractBinHexFile.toPath()).get(0);
-        return DatatypeConverter.parseHexBinary(sanitizeLibraries(hexCode));
+        return Hex.decode(sanitizeLibraries(hexCode));
     }
 
     static int bytecodeOffsetToSourceOffset(int bytecodeOffset, List<String[]> map) throws MappingNotFoundException {
