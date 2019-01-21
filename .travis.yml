@@ -1,0 +1,26 @@
+dist: xenial
+
+language: java
+
+services:
+  - docker
+
+jdk:
+  - openjdk8
+
+before_install:
+  - sudo apt-get -y install gdebi
+  - wget https://github.com/souffle-lang/souffle/releases/download/1.5.1/souffle_1.5.1-1_amd64.deb
+  - sudo gdebi --n souffle_1.5.1-1_amd64.deb
+
+
+# Default
+# install:
+#   - ./gradlew assemble
+
+script:
+  - docker build . -t securify
+  - docker run securify
+  # does not work completely because of memory errors
+  # - docker run -m=8g --entrypoint "./gradlew" securify test
+  # - ./gradlew test
