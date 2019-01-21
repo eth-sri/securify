@@ -20,7 +20,7 @@ RUN apt-get update &&\
         wget\
         gdebi
 
-RUN wget https://github.com/souffle-lang/souffle/releases/download/1.4.0/souffle_1.4.0-1_amd64.deb -O /tmp/souffle.deb &&\
+RUN wget https://github.com/souffle-lang/souffle/releases/download/1.5.1/souffle_1.5.1-1_amd64.deb -O /tmp/souffle.deb &&\
         gdebi --n /tmp/souffle.deb
 
 # install java and pip
