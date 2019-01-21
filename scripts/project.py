@@ -30,16 +30,10 @@ from . import utils
 
 def report(securify_target_output):
     """Report findings.
-
-    This function returns 0 if no violations are found, and 1 otherwise.
     """
     with open(securify_target_output) as file:
         json_report = json.load(file)
 
-    for contract in json_report.values():
-        for pattern in contract["results"].values():
-            if pattern["violations"]:
-                return 1
     return 0
 
 
