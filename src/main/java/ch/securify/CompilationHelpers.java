@@ -74,7 +74,11 @@ public class CompilationHelpers {
         reverse(map);
         for (String[] offset : map) {
             if (!offset[0].equals("")) {
-                return Integer.parseInt(offset[0]);
+                int res = Integer.parseInt(offset[0]);
+                if (res < 0) {
+                   throw new MappingNotFoundException();
+                }
+                return res;
             }
         }
         throw new MappingNotFoundException();
