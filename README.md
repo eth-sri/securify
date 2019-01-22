@@ -54,23 +54,23 @@ To build:
 
 To run Securify on a Solidity file:
 ```sh
-java -jar build/libs/securify-0.1.jar -fs src/test/resources/solidity/transaction-reordering.sol
+java -jar build/libs/securify.jar -fs src/test/resources/solidity/transaction-reordering.sol
 ```
 
 To run Securify on the decompilation output provided by the [pysolc.py
 script](scripts/pysolc.py) (which requires py-solc):
 ```sh
-java -jar build/libs/securify-0.1.jar -co out.json
+java -jar build/libs/securify.jar -co out.json
 ```
 
 To run Securify on some EVM binary (produced e.g. by `solc`):
 ```sh
-java -jar build/libs/securify-0.1.jar -fh src/test/resources/solidity/transaction-reordering.bin.hex
+java -jar build/libs/securify.jar -fh src/test/resources/solidity/transaction-reordering.bin.hex
 ```
 
 To see the full list of options:
 ```sh
-java -jar build/libs/securify-0.1.jar -h
+java -jar build/libs/securify.jar -h
 ```
 
 To run the tests (which use JUnit4):
