@@ -135,11 +135,14 @@ public class Main {
                 System.err.println("Error, skipping: " + elt.getKey());
             }
 
-            byte[] fileContent = Files.readAllBytes(new File(elt.getKey().split(":")[0]).toPath());
+            {
+                String fnContract = elt.getKey();
+                byte[] fileContent = Files.readAllBytes(new File(fnContract.substring(0, fnContract.lastIndexOf(':'))).toPath());
 
-            SolidityResult allPatternResults = CompilationHelpers.getMappingsFromStatusFile(livestatusfile, map, fileContent);
+                SolidityResult allPatternResults = CompilationHelpers.getMappingsFromStatusFile(livestatusfile, map, fileContent);
 
-            allContractResults.put(elt.getKey(), allPatternResults);
+                allContractResults.put(elt.getKey(), allPatternResults);
+            }
         }
 
         return allContractResults;
