@@ -46,16 +46,16 @@ class MappingNotFoundException extends RuntimeException {
 public class CompilationHelpers {
     public static String sanitizeLibraries(String hexCode) {
         final String dummyAddress = "1000000000000000000000000000000000000010";
-        String sanitized = "";
+        StringBuilder sanitized = new StringBuilder();
         for (int i = 0; i < hexCode.length(); i++) {
             if (hexCode.charAt(i) == '_') {
-                sanitized += dummyAddress;
+                sanitized.append(dummyAddress);
                 i += dummyAddress.length() - 1;
             } else {
-                sanitized += hexCode.charAt(i);
+                sanitized.append(hexCode.charAt(i));
             }
         }
-        return sanitized;
+        return sanitized.toString();
     }
 
     public static byte[] extractBinaryFromHexFile(String filehex) throws IOException {

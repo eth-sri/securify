@@ -84,7 +84,7 @@ public class Decompiler extends AbstractDecompiler {
 		/* Map bytecode offsets of JUMP/JUMPI instructions to known bytecode offsets of JUMPDEST instructions.
 		 * These are the edges of the control flow graph the correspond to explicit jumps.
 		 * assumption: there are no dynamic jumps that may have multiple jump targets. */
-		Multimap<Integer, Integer> mapJumpsToDests = HashMultimap.create();;
+		Multimap<Integer, Integer> mapJumpsToDests = HashMultimap.create();
 
 		Multimap<Integer, Integer> controlFlowGraph = dectectControlFlow(log, rawInstructions, jumpDestinations, tags,
 				controlFlowDetector, mapJumpsToDests);
@@ -141,10 +141,8 @@ public class Decompiler extends AbstractDecompiler {
 								// .. to find the method return destinations ..
 								int returnDest = ArrayUtil.nextNonNullIndex(methodCall, rawInstructions);
 								method.returnDests.add(returnDest);
-								// .. to find the method return intructions ..
-								reversedBranches.get(returnDest)
-										// .. to save those.
-										.forEach(method.returns::add);
+								// find the method return instructions to save them
+								method.returns.addAll(reversedBranches.get(returnDest));
 							}));
 
 			methodInfos.forEach(methodInfo -> methods.put(methodInfo.getHead(), methodInfo));
@@ -273,11 +271,9 @@ public class Decompiler extends AbstractDecompiler {
 
 		// print method signatures
 		log.println("Method signatures:");
-		methodHeads.forEach(methodHead -> {
-			log.println(tags.get(methodHead)
-					+ " (" + String.join(",", Collections.nCopies(methodDetector.getArgumentCountForMethod(methodHead), "a")) + ")"
-					+ " -> (" + String.join(",", Collections.nCopies(methodDetector.getReturnVarCountForMethod(methodHead), "r")) + ")");
-		});
+		methodHeads.forEach(methodHead -> log.println(tags.get(methodHead)
+				+ " (" + String.join(",", Collections.nCopies(methodDetector.getArgumentCountForMethod(methodHead), "a")) + ")"
+				+ " -> (" + String.join(",", Collections.nCopies(methodDetector.getReturnVarCountForMethod(methodHead), "r")) + ")"));
 
 
 		// Decompile the whole thing
@@ -348,8 +344,8 @@ public class Decompiler extends AbstractDecompiler {
 
 			// remove unused jumpdests (labels)
 			decompiledInstructions.removeIf(instruction -> {
-				if (instruction instanceof JumpDest && ((JumpDest)instruction).getIncomingBranches()
-						.stream().filter(src -> !(src instanceof _VirtualMethodReturn)).count() == 0) {
+				if (instruction instanceof JumpDest && ((JumpDest) instruction).getIncomingBranches()
+						.stream().noneMatch(src -> !(src instanceof _VirtualMethodReturn))) {
 					instruction.getPrev().setNext(instruction.getNext());
 					instruction.getNext().setPrev(instruction.getPrev());
 					return true;

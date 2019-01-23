@@ -23,7 +23,7 @@ import ch.securify.decompiler.Variable;
 public class Dup extends Instruction implements _NoOp {
 
 	public Dup(Variable var) {
-		setOutput(new Variable[]{ var });
+		setOutput(var);
 	}
 
 	@Override

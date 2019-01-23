@@ -56,7 +56,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
 import static ch.securify.decompiler.instructions.Instruction.NO_VARIABLES;
-import static ch.securify.decompiler.printer.HexPrinter.toHex;
 import static ch.securify.utils.ArrayUtil.nextNonNullIndex;
 import static ch.securify.utils.ArrayUtil.nextNonNullItem;
 import static ch.securify.utils.ArrayUtil.prevNonNullIndex;
@@ -184,15 +183,15 @@ public class DestackerFallback {
 						Push push = new Push(Ints.toByteArray(jumpdest));
 						push.setInput(NO_VARIABLES);
 						Variable pushVar = new Variable();
-						push.setOutput(new Variable[]{ pushVar });
+						push.setOutput(pushVar);
 						// create jump condition
 						Eq eq = new Eq();
-						eq.setInput(new Variable[]{ jumpDestVariable, pushVar });
+						eq.setInput(jumpDestVariable, pushVar);
 						Variable cond = new Variable();
-						eq.setOutput(new Variable[]{ cond });
+						eq.setOutput(cond);
 						// create jump instruction
 						JumpI jumpI = new JumpI(labelResolver.resolve(new RawInstruction(0, null, jumpdest, -1)));
-						jumpI.setInput(new Variable[]{ null, cond });
+						jumpI.setInput(null, cond);
 						jumpI.setOutput(NO_VARIABLES);
 						dynamicJumpReplacementTargets.put(jumpI, jumpdest);
 						// save new instrucitons
@@ -452,7 +451,7 @@ public class DestackerFallback {
 						else {
 							Jump jumpInstruction = (Jump) instr;
 							// this assumes that we have no virtual jumpdests that have not been handled sparately
-							if (jumps.get(offset).stream().filter(target -> target >= 0).count() > 0) {
+							if (jumps.get(offset).stream().anyMatch(target -> target >= 0)) {
 								jumps.get(offset).stream().filter(target -> target >= 0)
 										.forEach(targetBco -> {
 											JumpDest jumpDest = (JumpDest) instructions[targetBco];

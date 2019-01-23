@@ -159,7 +159,7 @@ public class MustExplicitDataflow extends AbstractDataflow {
 
         if (to instanceof JumpDest) {
             //appendRule("join", getCode(from), getCode(to));
-            List<Instruction> incomingBranches = new ArrayList<Instruction>(((JumpDest) to).getIncomingBranches());
+            List<Instruction> incomingBranches = new ArrayList<>(((JumpDest) to).getIncomingBranches());
             if (to.getPrev() != null) {
                 incomingBranches.add(to.getPrev());
             }

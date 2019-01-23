@@ -56,26 +56,23 @@ public class AbstractDecompiler {
 			Set<Instruction> dependencies = new HashSet<>();
 			decompiledInstructions.forEach(instruction -> dependencies.addAll(instruction.getDependencies()));
 
-			removedSomething = decompiledInstructions.removeIf(new Predicate<Instruction>() {
-				public boolean test(Instruction instruction) {
-					if (dependencies.contains(instruction)) {
-						return false; // keep used instructions
-					}
-					if (instruction instanceof Push) {
-						return removeInstruction(instruction); // remove unused pushed variables
-					}
-					if (instruction instanceof _VirtualAssignment) {
-						return removeInstruction(instruction); // remove unused reassignments
-					}
-					if (instruction.getOutput().length >= 1 && instruction.getRawInstruction() != null) {
-						int opcode = instruction.getRawInstruction().opcode;
-						if ((OpCodes.ADD <= opcode && opcode <= OpCodes.BYTE)) {
-							return removeInstruction(instruction); // remove unused arithmetic instructions
-						}
-					}
-					return false; // keep the rest
+			removedSomething = decompiledInstructions.removeIf(instruction -> {
+				if (dependencies.contains(instruction)) {
+					return false; // keep used instructions
 				}
-
+				if (instruction instanceof Push) {
+					return removeInstruction(instruction); // remove unused pushed variables
+				}
+				if (instruction instanceof _VirtualAssignment) {
+					return removeInstruction(instruction); // remove unused reassignments
+				}
+				if (instruction.getOutput().length >= 1 && instruction.getRawInstruction() != null) {
+					int opcode = instruction.getRawInstruction().opcode;
+					if ((OpCodes.ADD <= opcode && opcode <= OpCodes.BYTE)) {
+						return removeInstruction(instruction); // remove unused arithmetic instructions
+					}
+				}
+				return false; // keep the rest
 			});
 		} while (removedSomething);
 	}

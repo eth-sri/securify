@@ -309,7 +309,7 @@ public class ConstantPropagation {
 						});
 
 						boolean outputIsConstant = true;
-						MessageDigest digest = null;
+						MessageDigest digest;
 						try {
 							digest = MessageDigest.getInstance("SHA-256");
 							for (Variable inputVariable : finalInstruction.getMemoryInputs()) {

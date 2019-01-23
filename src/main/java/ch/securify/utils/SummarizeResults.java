@@ -123,15 +123,15 @@ public class SummarizeResults {
 
                     /* Update total number of violations, compliances and warnings */
                     int old = totalNumViolations.getOrDefault(key, 0);
-                    int n = (new HashSet<Integer>(result.patternResults.get(key).violations)).size();
+                    int n = (new HashSet<>(result.patternResults.get(key).violations)).size();
                     totalNumViolations.put(key, old + n);
 
                     old = totalNumWarnings.getOrDefault(key, 0);
-                    n = (new HashSet<Integer>(result.patternResults.get(key).warnings)).size();
+                    n = (new HashSet<>(result.patternResults.get(key).warnings)).size();
                     totalNumWarnings.put(key, old + n);
 
                     old = totalNumCompliant.getOrDefault(key, 0);
-                    n = (new HashSet<Integer>(result.patternResults.get(key).safe)).size();
+                    n = (new HashSet<>(result.patternResults.get(key).safe)).size();
                     totalNumCompliant.put(key, old + n);
 
                     // The contract contains at least one violation

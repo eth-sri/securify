@@ -225,9 +225,11 @@ public abstract class AbstractDataflow {
      * @throws IOException From the walk function
      */
     private void deleteDirectory(Path rootPath) throws IOException {
-        Files.walk(rootPath).sorted(Comparator.reverseOrder())
+        if (Files.walk(rootPath).sorted(Comparator.reverseOrder())
                 .map(Path::toFile)
-                .forEach(File::delete);
+                .map(File::delete).anyMatch(e -> !e)) {
+            throw new IOException("Failure while deleting files");
+        }
     }
 
     public void dispose() throws IOException, InterruptedException {

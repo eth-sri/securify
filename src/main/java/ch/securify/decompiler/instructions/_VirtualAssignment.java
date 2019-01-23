@@ -24,8 +24,8 @@ import ch.securify.utils.BigIntUtil;
 public class _VirtualAssignment extends Instruction implements _VirtualInstruction {
 
 	public _VirtualAssignment(Variable assignee, Variable source) {
-		setInput(new Variable[]{ source });
-		setOutput(new Variable[]{ assignee });
+		setInput(source);
+		setOutput(assignee);
 	}
 
 	@Override

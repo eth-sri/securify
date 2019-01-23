@@ -449,7 +449,7 @@ public class Destacker {
 						instr.setPrev(prevNonNullItem(offset, instructions));
 						Jump jumpInstruction = (Jump) instr;
 
-						if (jumps.get(offset).stream().filter(target -> target >= 0).count() > 0) {
+						if (jumps.get(offset).stream().anyMatch(target -> target >= 0)) {
 							jumps.get(offset).stream().filter(target -> target >= 0)
 									.forEach(target -> jumpInstruction.addOutgoingBranch(instructions[target]));
 						}

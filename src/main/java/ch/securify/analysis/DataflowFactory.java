@@ -21,7 +21,6 @@ package ch.securify.analysis;
 import ch.securify.decompiler.instructions.Instruction;
 import com.google.common.base.Strings;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

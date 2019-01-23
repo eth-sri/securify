@@ -35,8 +35,6 @@ import java.util.Stack;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-import static ch.securify.decompiler.printer.HexPrinter.toHex;
-
 public class MethodDetector {
 
 	private PrintStream log;

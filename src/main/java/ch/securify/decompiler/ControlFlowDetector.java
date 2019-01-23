@@ -451,7 +451,7 @@ public class ControlFlowDetector {
 
 		@Override
 		public boolean equals(Object obj) {
-			if (obj == null || !(obj instanceof RichBranch))
+			if (!(obj instanceof RichBranch))
 				return false;
 			RichBranch other = (RichBranch) obj;
 			return jumpDest == other.jumpDest && stackState.equals(other.stackState);

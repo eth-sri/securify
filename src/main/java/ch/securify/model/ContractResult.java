@@ -20,8 +20,6 @@ package ch.securify.model;
 
 import ch.securify.analysis.SecurifyErrors;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
