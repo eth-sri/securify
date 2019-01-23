@@ -14,7 +14,7 @@ before_install:
   - sudo gdebi --n souffle_1.5.1-1_amd64.deb
 
 
-# Default
+# This is the default with language: java, no need to redefine it
 # install:
 #   - ./gradlew assemble
 
