@@ -21,6 +21,4 @@ before_install:
 script:
   - docker build . -t securify
   - docker run securify
-  # does not work completely because of memory errors
-  # - docker run -m=8g --entrypoint "./gradlew" securify test
-  # - ./gradlew test
+  - ./gradlew test
