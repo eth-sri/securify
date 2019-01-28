@@ -40,7 +40,7 @@ def raise_mismatch(expected, current, pat=None):
     msg = [f'Current: {current}', f'expected: {expected}']
 
     if pat is not None:
-        msg.append('pattern: {pat}')
+        msg.append(f'pattern: {pat}')
 
     raise MismatchError(', '.join(msg))
 
@@ -61,7 +61,10 @@ def check_all_patterns(curr_json, expc_json, contract):
     """Checks every pattern from the given json
     """
     res = 'results'
-    curr_res = curr_json[contract][res]
+    try:
+        curr_res = curr_json[contract][res]
+    except KeyError:
+        curr_res = ""
     exp_res = expc_json[contract][res]
 
     for pat in exp_res:
@@ -85,7 +88,11 @@ def check_securify_errors(curr_json, expc_json, contract):
     """Checks that the error output is the same.
     """
     err = 'securifyErrors'
-    curr_errors = curr_json[contract][err]
+    try:
+        curr_errors = curr_json[contract][err]
+    except KeyError:
+        curr_errors = ""
+
     expc_errors = expc_json[contract][err]
 
     # we don't care if the line of the error changed in the Java source
