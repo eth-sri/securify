@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.com/hiqua/securify.svg?branch=master)](https://travis-ci.com/hiqua/securify)
-
 # Securify
 
 ![securify](/img/foundation_securify.png)
