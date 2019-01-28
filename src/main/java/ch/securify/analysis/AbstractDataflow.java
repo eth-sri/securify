@@ -225,7 +225,7 @@ public abstract class AbstractDataflow {
         /* Tab-delimited format */
         Iterable<CSVRecord> records = CSVFormat.TDF.parse(in);
 
-        Set<Long> entries = new HashSet<>(100000000);
+        Set<Long> entries = new HashSet<>();
 
         records.forEach(record -> entries.add(Encode(record)));
         in.close();
