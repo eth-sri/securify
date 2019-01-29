@@ -20,7 +20,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.LinkedList;
 
-public class SecurifyErrors{
+public class SecurifyErrors {
 
     class Error{
         String error;
@@ -39,9 +39,14 @@ public class SecurifyErrors{
         }
     }
 
-    private LinkedList<Error> errors = new LinkedList<>();
+    public boolean isEmpty() {
+        return errors.isEmpty();
+    }
 
     public void add(String error, Exception e){
         errors.add(new Error(error, e));
     }
+
+    private LinkedList<Error> errors = new LinkedList<>();
+
 }
