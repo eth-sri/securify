@@ -35,6 +35,9 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import static com.google.common.io.Resources.copy;
+import static com.google.common.io.Resources.getResource;
+
 public abstract class AbstractDataflow {
 
     public static final int UNK_CONST_VAL = -1;
@@ -72,27 +75,39 @@ public abstract class AbstractDataflow {
     protected final boolean DEBUG = false;
 
     // input predicates
-    protected String DL_EXEC;
+    private static String DL_FOLDER;
     private String WORKSPACE, WORKSPACE_OUT;
-    private final String SOUFFLE_BIN = "souffle";
 
-    protected boolean isSouffleInstalled() {
-        try {
-            Process process = new ProcessBuilder(SOUFFLE_BIN).start();
-            process.waitFor();
-            return process.exitValue() == 0;
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-            return false;
+    public static void setDlFolder(String folder) {
+        DL_FOLDER = Objects.requireNonNull(folder);
+    }
+
+    /**
+     * Extract the Soufflé binaries and store them in a temporary folder to allow them to be executed
+     *
+     * @throws IOException
+     */
+    private static void extractSouffleBinaries() throws IOException {
+        String[] names = {MustExplicitDataflow.binaryName, MayImplicitDataflow.binaryName };
+        String souffleDir = Files.createTempDirectory("binaries_souffle").toFile().getAbsolutePath();
+        setDlFolder(souffleDir);
+        for(String resourceName : names) {
+            File binaryPath = Paths.get(souffleDir, resourceName).toFile();
+            OutputStream os = new FileOutputStream(binaryPath);
+            copy(getResource(resourceName), os);
+            os.close();
+            if (!binaryPath.setExecutable(true)) {
+                throw new IOException("Could not set the executable bit of a souffle binary in " + souffleDir);
+            }
         }
     }
 
-    protected void initDataflow() throws IOException, InterruptedException {
-        if (!isSouffleInstalled()) {
-            System.err.println("Soufflé does not seem to be installed.");
-            System.exit(7);
+    protected void initDataflow(String binaryName) throws IOException, InterruptedException {
+        if (DL_FOLDER == null) {
+            extractSouffleBinaries();
         }
 
+        String DL_EXEC = DL_FOLDER + "/" + binaryName;
 
         varToCode = HashBiMap.create();
         instrToCode = HashBiMap.create();

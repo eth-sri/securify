@@ -19,19 +19,20 @@
 package ch.securify.analysis;
 
 import ch.securify.decompiler.Variable;
-import ch.securify.decompiler.instructions.*;
+import ch.securify.decompiler.instructions.BranchInstruction;
+import ch.securify.decompiler.instructions.Instruction;
+import ch.securify.decompiler.instructions.JumpI;
+import ch.securify.decompiler.instructions._VirtualMethodHead;
 
 import java.io.IOException;
 import java.util.List;
 
 public class MayImplicitDataflow extends AbstractDataflow {
-
-    public MayImplicitDataflow(){}
+    static final public String binaryName = "mayImplicit";
 
     public MayImplicitDataflow(List<Instruction> decompiledInstructions) throws IOException, InterruptedException {
-        DL_EXEC = "build/mayImplicit";
         instructions = decompiledInstructions;
-        initDataflow();
+        initDataflow(binaryName);
     }
 
     @Override
