@@ -349,7 +349,7 @@ public class Main {
 //        allPatterns.add(new UseOfOrigin());
 //        allPatterns.add(new WriteOnly());
 
-        if (!Strings.isNullOrEmpty(args.patterns)) {
+        if (args != null && !Strings.isNullOrEmpty(args.patterns)) {
             List<String> wantedPatterns = new LinkedList<>();
             for (String patternName : args.patterns.split(",")) {
                 String tmp = patternName.trim().toLowerCase();
