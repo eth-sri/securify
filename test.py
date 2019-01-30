@@ -126,7 +126,7 @@ def test_securify_analysis(c_file, json_output, memory=8, overwrite=False):
                # enable assertions
                '-ea',
                f'-Xmx{memory}G',
-               '-jar', 'build/libs/securify-0.1.jar',
+               '-jar', 'build/libs/securify.jar',
                '-fs', c_file,
                '-o', output]
 

@@ -40,7 +40,7 @@ def report(securify_target_output):
 class Project(metaclass=abc.ABCMeta):
     """Abstract class implemented by projects using compilation and reporting.
     """
-    securify_jar = pathlib.Path("build/libs/securify-0.1.jar")
+    securify_jar = pathlib.Path("build/libs/securify.jar")
 
     def __init__(self, project_root, args, securify_flags):
         """Sets the project root.
