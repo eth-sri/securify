@@ -166,7 +166,7 @@ public abstract class AbstractDataflow {
         log("Threshold: " + Config.THRESHOLD_COMPILE);
 
         long start = System.currentTimeMillis();
-        runCommand(new String[]{DL_EXEC, "-j", Integer.toString(Runtime.getRuntime().availableProcessors()), "-F", WORKSPACE, "-D", WORKSPACE_OUT}, Config.PATTERN_TIMEOUT);
+        runCommand(new String[]{DL_EXEC, "-j", Integer.toString(Runtime.getRuntime().availableProcessors()), "-F", WORKSPACE, "-D", WORKSPACE_OUT});
 
         long elapsedTime = System.currentTimeMillis() - start;
         String elapsedTimeStr = String.format("%d min, %d sec",
@@ -266,37 +266,14 @@ public abstract class AbstractDataflow {
         }
     }
 
-    private void runCommand(String[] command, int timeout) throws IOException, InterruptedException {
-        log("CMD: " + String.join(" ", command));
-
+    public static void runCommand(String[] command) throws IOException, InterruptedException {
         // Souffle works with this PATH
         String[] envp = {"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"};
+
         Process proc = Runtime.getRuntime().exec(command, envp);
 
-        // Read the output
-        BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-
-        // Output of the command
-        {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                log(line);
-            }
-        }
-
-        // Display the errors
-        {
-            String line;
-            reader = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
-
-            while ((line = reader.readLine()) != null) {
-                log(line);
-            }
-        }
-
-        if (!proc.waitFor(timeout, TimeUnit.SECONDS) || proc.exitValue() != 0) {
+        if (!proc.waitFor(Config.PATTERN_TIMEOUT, TimeUnit.SECONDS) || proc.exitValue() != 0) {
             proc.destroyForcibly();
-            proc.waitFor();
             throw new IOException(String.join(" ", command));
         }
     }
