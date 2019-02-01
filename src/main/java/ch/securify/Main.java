@@ -173,8 +173,10 @@ public class Main {
         contractResult.decompiled = true;
 
         if (decompilationOutputFile != null) {
-            if (new File(decompilationOutputFile).getAbsoluteFile().getParentFile().mkdirs()) {
-                throw new IOException("Error while making directory");
+            File dir = new File(decompilationOutputFile).getAbsoluteFile().getParentFile();
+            dir.mkdirs();
+            if (!dir.exists()) {
+                throw new IOException("Error while making directory.");
             }
 
             Variable.setDebug(false);
@@ -236,8 +238,9 @@ public class Main {
         if (args.livestatusfile != null) {
             lStatusFile = new File(args.livestatusfile);
             if (lStatusFile.getParentFile() != null) {
-                if (!lStatusFile.getParentFile().mkdirs()) {
-                    throw new IOException("Error while making directory");
+                lStatusFile.getParentFile().mkdirs();
+                if (!lStatusFile.getParentFile().exists()) {
+                    throw new IOException("Error while making directory.");
                 }
             }
         } else {
