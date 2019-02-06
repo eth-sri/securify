@@ -43,7 +43,6 @@ contribute developing new patterns please get in touch through our
 * A `solc` binary is required to be able to use Solidity file as input.
   Securify assumes that the right version is installed for the given file.
   `solc` is available [here](https://github.com/ethereum/solidity/releases).
-* Linux users must have the [timeout](https://linux.die.net/man/1/timeout) command, OS X users must have the `gtimeout` command, which can be install with `brew install coreutils`.
 
 ### Use
 
