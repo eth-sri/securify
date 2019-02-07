@@ -92,7 +92,7 @@ public class Main {
 
     private static List<AbstractPattern> patterns;
     private static ContractResult contractResult;
-    private static PrintStream log = System.out; //new DevNullPrintStream();
+    private static PrintStream log = new DevNullPrintStream();
     private static PrintStream progressPrinter = System.out;
     private static Args args;
 
