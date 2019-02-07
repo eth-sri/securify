@@ -92,7 +92,7 @@ public class Main {
 
     private static List<AbstractPattern> patterns;
     private static ContractResult contractResult;
-    private static PrintStream log = new DevNullPrintStream();
+    private static PrintStream log = System.out; //new DevNullPrintStream();
     private static PrintStream progressPrinter = System.out;
     private static Args args;
 
@@ -349,6 +349,8 @@ public class Main {
         // allPatterns.add(new UnprivilegedSelfdestruct());
         allPatterns.add(new UnrestrictedEtherFlow());
         allPatterns.add(new UnrestrictedWrite());
+        allPatterns.add(new RepeatedCall());
+        allPatterns.add(new WriteToUncheckedOffset());
 //        allPatterns.add(new UnsafeCallTarget());
 //        allPatterns.add(new UnsafeDependenceOnBlock());
 //        allPatterns.add(new UnsafeDependenceOnGas());
