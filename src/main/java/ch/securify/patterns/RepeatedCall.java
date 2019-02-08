@@ -47,7 +47,7 @@ public class RepeatedCall extends AbstractInstructionPattern {
         	if(!call.getClass().equals(instr.getClass()))
         		continue;
         	
-            Variable targetCall = instr.getInput()[1];
+            Variable targetCall = call.getInput()[1];
             Variable targetInstr = instr.getInput()[1];
 
             if (targetCall.hasConstantValue() != targetInstr.hasConstantValue())
@@ -60,9 +60,8 @@ public class RepeatedCall extends AbstractInstructionPattern {
             	continue;
 
             
-            Variable callee = instr.getInput()[1];
             // Only consider calls to untrusted code
-            if(dataflow.varMustDepOn(instr, callee, CallDataLoad.class) != Status.SATISFIABLE && dataflow.varMustDepOn(instr, callee, CallDataCopy.class) != Status.SATISFIABLE) {
+            if(targetInstr.hasConstantValue()) {
             	continue;
             }            
             
@@ -88,7 +87,7 @@ public class RepeatedCall extends AbstractInstructionPattern {
                 if(callMemorySize.hasConstantValue() != instrMemorySize.hasConstantValue()) {
                 	continue;
                 }
-                if((callMemorySize.hasConstantValue()) && (!callMemorySize.getConstantValue().equals(instrMemorySize.getConstantValue()))) {
+                if((callMemorySize.hasConstantValue()) && (Arrays.equals(callMemorySize.getConstantValue(), instrMemorySize.getConstantValue()))) {
                 	continue;
                 }
             }
@@ -129,7 +128,13 @@ public class RepeatedCall extends AbstractInstructionPattern {
             if(!call.getClass().equals(instr.getClass()))
                 continue;
 
-            Variable targetCall = instr.getInput()[1];
+            Variable targetCall = call.getInput()[1];
+
+            // Trusted code is considered safe
+            if (targetCall.hasConstantValue()) {
+            	return true;
+            }
+            
             Variable targetInstr = instr.getInput()[1];
 
             if (targetCall.hasConstantValue() != targetInstr.hasConstantValue())
