@@ -349,6 +349,8 @@ public class Main {
         // allPatterns.add(new UnprivilegedSelfdestruct());
         allPatterns.add(new UnrestrictedEtherFlow());
         allPatterns.add(new UnrestrictedWrite());
+        allPatterns.add(new RepeatedCall());
+        allPatterns.add(new WriteToUncheckedOffset());
 //        allPatterns.add(new UnsafeCallTarget());
 //        allPatterns.add(new UnsafeDependenceOnBlock());
 //        allPatterns.add(new UnsafeDependenceOnGas());

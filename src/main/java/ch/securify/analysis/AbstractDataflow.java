@@ -166,7 +166,8 @@ public abstract class AbstractDataflow {
         log("Threshold: " + Config.THRESHOLD_COMPILE);
 
         long start = System.currentTimeMillis();
-        runCommand(new String[]{DL_EXEC, "-j", Integer.toString(Runtime.getRuntime().availableProcessors()), "-F", WORKSPACE, "-D", WORKSPACE_OUT});
+        //runCommand(new String[]{DL_EXEC, "-j", Integer.toString(Runtime.getRuntime().availableProcessors()), "-F", WORKSPACE, "-D", WORKSPACE_OUT});
+        runCommand(new String[]{DL_EXEC, "-F", WORKSPACE, "-D", WORKSPACE_OUT});
 
         long elapsedTime = System.currentTimeMillis() - start;
         String elapsedTimeStr = String.format("%d min, %d sec",
