@@ -48,7 +48,7 @@ public class WriteToUncheckedOffset extends AbstractInstructionPattern {
     @Override
     protected boolean isCompliant(Instruction instr, List<Instruction> methodInstructions, List<Instruction> contractInstructions, AbstractDataflow dataflow) {
         // TODO: Add a compliance pattern
-        return !isCompliant(instr, methodInstructions, contractInstructions, dataflow);
+        return !isViolation(instr, methodInstructions, contractInstructions, dataflow);
     }
 }
 
