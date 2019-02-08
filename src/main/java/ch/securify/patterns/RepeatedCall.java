@@ -32,7 +32,7 @@ public class RepeatedCall extends AbstractInstructionPattern {
         if (gasAmount.hasConstantValue() && AbstractDataflow.getInt(gasAmount.getConstantValue()) == 0)
             return false;
 
-		System.out.println("Checking instruction: " + instr);
+//		System.out.println("Checking instruction: " + instr);
         return true;
     }
 
@@ -59,6 +59,30 @@ public class RepeatedCall extends AbstractInstructionPattern {
             
             Iterator<Variable> callMemory = call.getMemoryInputs().iterator();
             Iterator<Variable> instrMemory = instr.getMemoryInputs().iterator();
+            
+            // Skip if one has no memory info
+            if(callMemory.hasNext() != instrMemory.hasNext()) {
+            	continue;
+            }
+            
+            // In case of no memory info at least check the length
+            if(!instrMemory.hasNext()) {
+            	int memoryOffset = -1;
+            	if(instr instanceof Call) 
+            		memoryOffset = 3;
+            	else if(instr instanceof StaticCall)
+            		memoryOffset = 2;
+            	else
+            		assert(false);
+            	Variable callMemorySize = call.getInput()[memoryOffset];
+                Variable instrMemorySize = instr.getInput()[memoryOffset];
+                if(callMemorySize.hasConstantValue() != instrMemorySize.hasConstantValue()) {
+                	continue;
+                }
+                if((callMemorySize.hasConstantValue()) && (!callMemorySize.getConstantValue().equals(instrMemorySize.getConstantValue()))) {
+                	continue;
+                }
+            }
 
             boolean matched = true;
             while (instrMemory.hasNext()){
@@ -75,6 +99,10 @@ public class RepeatedCall extends AbstractInstructionPattern {
                     	break;
                     }
                 }
+            }
+            // More Memory left for call
+            if(callMemory.hasNext()) {
+            	continue;
             }
             if(matched) {
             	return true;
