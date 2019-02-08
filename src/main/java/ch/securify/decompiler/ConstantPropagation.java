@@ -342,9 +342,17 @@ public class ConstantPropagation {
 					}
 				}
 				// handle memory read access by call
-				else if (instruction instanceof Call) {
-					Variable inputMemOffsetVar = instruction.getInput()[3];
-					Variable inputMemLengthVar = instruction.getInput()[4];
+				else if ((instruction instanceof Call) || (instruction instanceof StaticCall)) {
+					Variable inputMemLengthVar = null;
+					Variable inputMemOffsetVar = null;
+					if (instruction instanceof Call) {
+						inputMemOffsetVar = instruction.getInput()[3];
+						inputMemLengthVar = instruction.getInput()[4];
+					} else if(instruction instanceof StaticCall) {
+						inputMemOffsetVar = instruction.getInput()[2];
+						inputMemLengthVar = instruction.getInput()[3];						
+					}
+
 					if (inputMemLengthVar.hasConstantValue() && BigIntUtil.fromInt256(inputMemLengthVar.getConstantValue()).equals(BigInteger.ZERO)) {
 						// zero-length target memory
 					}
