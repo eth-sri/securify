@@ -28,72 +28,105 @@ public class RepeatedCall extends AbstractInstructionPattern {
         if (!(instr instanceof Call) && !(instr instanceof StaticCall))
             return false;
 
-        Variable value = instr.getInput()[2];
-        if (!(value.hasConstantValue() && AbstractDataflow.getInt(value.getConstantValue()) == 0))
+        Variable gasAmount = instr.getInput()[2];
+        if (gasAmount.hasConstantValue() && AbstractDataflow.getInt(gasAmount.getConstantValue()) == 0)
             return false;
 
-//        System.out.println("Checking: " + instr);
+		System.out.println("Checking instruction: " + instr);
         return true;
     }
 
     @Override
     protected boolean isViolation(Instruction instr, List<Instruction> methodInstructions, List<Instruction> contractInstructions, AbstractDataflow dataflow) {
         for (Instruction call : methodInstructions) {
-        	if(!(call instanceof StaticCall) && (instr instanceof StaticCall)){
-        		continue;
-        	}
-
-        	if(!(call instanceof Call) && (instr instanceof Call)){
-        		continue;
-        	}
-        	
             if (call == instr)
                 continue;
             
-            int s = dataflow.mustPrecede(instr, call);
-            if(s != Status.SATISFIABLE) {
-            	continue;
-            }
-            
+        	if(!call.getClass().equals(instr.getClass()))
+        		continue;
+        	
             Variable targetCall = instr.getInput()[1];
             Variable targetInstr = instr.getInput()[1];
 
-            if (targetCall.hasConstantValue() != targetInstr.hasConstantValue()) {
+            if (targetCall.hasConstantValue() != targetInstr.hasConstantValue())
             	continue;
-            }
             
             if (call.getMemoryInputs().size() != instr.getMemoryInputs().size())
                 continue;
 
+            if(dataflow.mustPrecede(call, instr) != Status.SATISFIABLE)
+            	continue;
+            
             Iterator<Variable> callMemory = call.getMemoryInputs().iterator();
             Iterator<Variable> instrMemory = instr.getMemoryInputs().iterator();
 
-            boolean mismatch = false;
+            boolean matched = true;
             while (instrMemory.hasNext()){
                 Variable callMemoryVar = callMemory.next();
                 Variable instrMemoryVar = instrMemory.next();
 
                 if (callMemoryVar.hasConstantValue() != instrMemoryVar.hasConstantValue()) {
-                	mismatch = true;
+                	matched = false;
                     break;
                 }
                 if (callMemoryVar.hasConstantValue() && instrMemoryVar.hasConstantValue()) {
                     if (!Arrays.equals(callMemoryVar.getConstantValue(), instrMemoryVar.getConstantValue())) {
-                    	mismatch = true;
+                    	matched = false;
                     	break;
                     }
                 }
             }
-            if(mismatch) {
-            	continue;
+            if(matched) {
+            	return true;
             }
-            return true;
         }
         return false;
     }
 
     @Override
     protected boolean isCompliant(Instruction instr, List<Instruction> methodInstructions, List<Instruction> contractInstructions, AbstractDataflow dataflow) {
-        return !isViolation(instr, methodInstructions, contractInstructions, dataflow);
+        for (Instruction call : methodInstructions) {
+            if (call == instr)
+                continue;
+
+            if(!call.getClass().equals(instr.getClass()))
+                continue;
+
+            Variable targetCall = instr.getInput()[1];
+            Variable targetInstr = instr.getInput()[1];
+
+            if (targetCall.hasConstantValue() != targetInstr.hasConstantValue())
+                continue;
+
+            if (call.getMemoryInputs().size() != instr.getMemoryInputs().size())
+                continue;
+
+            if(dataflow.mayFollow(call, instr) == Status.UNSATISFIABLE)
+                continue;
+
+            Iterator<Variable> callMemory = call.getMemoryInputs().iterator();
+            Iterator<Variable> instrMemory = instr.getMemoryInputs().iterator();
+
+            boolean matched = true;
+            while (instrMemory.hasNext()){
+                Variable callMemoryVar = callMemory.next();
+                Variable instrMemoryVar = instrMemory.next();
+
+                if (callMemoryVar.hasConstantValue() != instrMemoryVar.hasConstantValue()) {
+                    matched = false;
+                    break;
+                }
+                if (callMemoryVar.hasConstantValue() && instrMemoryVar.hasConstantValue()) {
+                    if (!Arrays.equals(callMemoryVar.getConstantValue(), instrMemoryVar.getConstantValue())) {
+                        matched = false;
+                        break;
+                    }
+                }
+            }
+            if(matched) {
+                return false;
+            }
+        }
+        return true;
     }
 }
