@@ -28,7 +28,7 @@ public class RepeatedCall extends AbstractInstructionPattern {
         if (!(instr instanceof Call) && !(instr instanceof StaticCall))
             return false;
 
-        Variable gasAmount = instr.getInput()[2];
+        Variable gasAmount = instr.getInput()[0];
         if (gasAmount.hasConstantValue() && AbstractDataflow.getInt(gasAmount.getConstantValue()) == 0)
             return false;
 
@@ -91,7 +91,6 @@ public class RepeatedCall extends AbstractInstructionPattern {
 
             if(!call.getClass().equals(instr.getClass()))
                 continue;
-			System.out.println("Same as: " + call);
 
             Variable targetCall = instr.getInput()[1];
             Variable targetInstr = instr.getInput()[1];
