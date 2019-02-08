@@ -453,6 +453,17 @@ public abstract class AbstractDataflow {
                 // assign the return value as an abstract type (to check later
                 // for unhandled exception)
                 appendRule("assignType", getCode(instr), getCode(instr.getOutput()[0]), getCode(instr.getOutput()[0]));
+
+                // taint output memory with the call instruction if output memory bounds are known
+                Variable memoryOffsetVar = instr.getInput()[5];
+                Variable memorySizeVar = instr.getInput()[6];
+                if (memoryOffsetVar.hasConstantValue() && memorySizeVar.hasConstantValue()) {
+                    int memoryOffset = getInt(memoryOffsetVar.getConstantValue());
+                    int memorySize = getInt(memorySizeVar.getConstantValue());
+                    for (int curOffset = memoryOffset; curOffset < memoryOffset + memorySize; curOffset += 4) {
+                        appendRule("mstore", getCode(instr), getCode(getMemoryVarForIndex(curOffset)), getCode(instr));
+                    }
+                }
             } else if (instr instanceof BlockHash) {
                 log("Type of " + instr.getOutput()[0] + " is BlockHash");
                 createAssignTypeRule(instr, instr.getOutput()[0], instr.getClass());

@@ -30,7 +30,6 @@ public class RepeatedCall extends AbstractInstructionPattern {
         if (!(value.hasConstantValue() && AbstractDataflow.getInt(value.getConstantValue()) == 0))
             return false;
 
-        System.out.println("Checking: " + instr);
         return true;
     }
 
