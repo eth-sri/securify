@@ -50,6 +50,9 @@ class SolidityCompilationException(SolcError):
                          solc_exception.message)
         self.files = files
 
+    def __str__(self):
+        return f'Error while compiling: {", ".join(self.files)}'
+
 
 def version_to_tuple(v):
     """Converts a version string into a tuple.
@@ -74,8 +77,6 @@ def parse_sol_version(source):
 
     for l in lines:
         if 'pragma' in l and not 'experimental' in l:
-            if '^' in l or '>' in l:
-                return DEFAULT_SOLC_VERSION
 
             match = COMP_VERSION1_REX.search(l)
             if match is None:
@@ -118,7 +119,7 @@ OUTPUT_VALUES = ('abi',
                  'bin-runtime',
                  'srcmap-runtime')
 
-SOLC_VERSIONS=[]
+SOLC_VERSIONS = []
 for i in range(11, 26):
     SOLC_VERSIONS.append(f'0.4.{i}')
 for i in range(4):
