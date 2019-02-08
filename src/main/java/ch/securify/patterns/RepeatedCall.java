@@ -91,6 +91,7 @@ public class RepeatedCall extends AbstractInstructionPattern {
 
             if(!call.getClass().equals(instr.getClass()))
                 continue;
+			System.out.println("Same as: " + call);
 
             Variable targetCall = instr.getInput()[1];
             Variable targetInstr = instr.getInput()[1];
