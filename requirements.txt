@@ -1,2 +1,2 @@
-py-solc
+py-solc-x
 psutil

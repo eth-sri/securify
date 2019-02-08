@@ -21,11 +21,12 @@ from pathlib import Path
 import sys
 import json
 
-from solc import install_solc
-from solc.main import _parse_compiler_output
-from solc.wrapper import solc_wrapper
-from solc.exceptions import SolcError
-import solc.install
+from solcx import install_solc
+from solcx import get_solc_folder
+from solcx.main import _parse_compiler_output
+from solcx.wrapper import solc_wrapper
+from solcx.exceptions import SolcError
+import solcx.install
 
 
 class NoSolidityProject(Exception):
@@ -63,15 +64,11 @@ comp_version1_rex = re.compile(r'0\.\d+\.\d+')
 def _version_to_tuple(v):
     return tuple(map(int, v.split('.')))
 
-
-def get_supported_solc_versions():
-    versions = [getattr(solc.install, item)
-                for item in dir(solc.install) if item.startswith('V')]
-    versions = [v[1:] for v in versions]
-    return filter(lambda x: _version_to_tuple(x) >= _version_to_tuple('0.4.11'), versions)
-
-
-SOLC_VERSIONS = list(get_supported_solc_versions())
+SOLC_VERSIONS = []
+for i in range(11, 26):
+	SOLC_VERSIONS.append(f'0.4.{i}')
+for i in range(4):
+	SOLC_VERSIONS.append(f'0.5.{i}')
 DEFAULT_SOLC_VERSION = SOLC_VERSIONS[-1]
 
 
@@ -115,7 +112,7 @@ def compile_solfiles(files, proj_dir, solc_version=None, output_values=OUTPUT_VA
         solc_version = min(map(parse_version, files),
                            key=_version_to_tuple)
 
-    binary = os.path.join(Path.home(), f'.py-solc/solc-v{solc_version}/bin/solc')
+    binary = os.path.join(get_solc_folder(), f'solc-v{solc_version}')
 
     combined_json = ','.join(output_values)
     compiler_kwargs = {'import_remappings': remappings,
@@ -148,12 +145,12 @@ def get_sol_files(src_dir_path):
 
 def install_all_versions():
     for v in SOLC_VERSIONS:
-        install_solc(f'v{v}', platform='linux')
+        install_solc(f'v{v}')
 
 
 def install_last_version():
     v = SOLC_VERSIONS[-1]
-    install_solc(f'v{v}', platform='linux')
+    install_solc(f'v{v}')
 
 
 if __name__ == '__main__':

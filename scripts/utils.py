@@ -23,8 +23,8 @@ import os
 import re
 import sys
 
-from solc.exceptions import SolcError
-import solc.install
+from solcx.exceptions import SolcError
+import solcx.install
 
 
 class NoSolidityProject(Exception):
@@ -50,6 +50,9 @@ class SolidityCompilationException(SolcError):
                          solc_exception.message)
         self.files = files
 
+    def __str__(self):
+        return f'Error while compiling: {", ".join(self.files)}'
+
 
 def version_to_tuple(v):
     """Converts a version string into a tuple.
@@ -74,8 +77,6 @@ def parse_sol_version(source):
 
     for l in lines:
         if 'pragma' in l and not 'experimental' in l:
-            if '^' in l or '>' in l:
-                return DEFAULT_SOLC_VERSION
 
             match = COMP_VERSION1_REX.search(l)
             if match is None:
@@ -118,11 +119,11 @@ OUTPUT_VALUES = ('abi',
                  'bin-runtime',
                  'srcmap-runtime')
 
-_VERSIONS = (getattr(solc.install, item)[1:]
-             for item in dir(solc.install) if item.startswith('V'))
+SOLC_VERSIONS = []
+for i in range(11, 26):
+    SOLC_VERSIONS.append(f'0.4.{i}')
+for i in range(4):
+    SOLC_VERSIONS.append(f'0.5.{i}')
 
-SOLC_VERSIONS = tuple(filter(
-    lambda x: version_to_tuple(x) >= version_to_tuple('0.4.11'),
-    _VERSIONS))
 
 DEFAULT_SOLC_VERSION = SOLC_VERSIONS[-1]
