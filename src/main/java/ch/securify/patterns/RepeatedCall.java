@@ -4,6 +4,8 @@ import ch.securify.analysis.AbstractDataflow;
 import ch.securify.analysis.Status;
 import ch.securify.decompiler.Variable;
 import ch.securify.decompiler.instructions.Call;
+import ch.securify.decompiler.instructions.CallDataCopy;
+import ch.securify.decompiler.instructions.CallDataLoad;
 import ch.securify.decompiler.instructions.Instruction;
 import ch.securify.decompiler.instructions.StaticCall;
 import ch.securify.decompiler.printer.HexPrinter;
@@ -31,7 +33,7 @@ public class RepeatedCall extends AbstractInstructionPattern {
         Variable gasAmount = instr.getInput()[0];
         if (gasAmount.hasConstantValue() && AbstractDataflow.getInt(gasAmount.getConstantValue()) == 0)
             return false;
-
+        
 //		System.out.println("Checking instruction: " + instr);
         return true;
     }
@@ -56,6 +58,13 @@ public class RepeatedCall extends AbstractInstructionPattern {
 
             if(dataflow.mustPrecede(call, instr) != Status.SATISFIABLE)
             	continue;
+
+            
+            Variable callee = instr.getInput()[1];
+            // Only consider calls to untrusted code
+            if(dataflow.varMustDepOn(instr, callee, CallDataLoad.class) != Status.SATISFIABLE && dataflow.varMustDepOn(instr, callee, CallDataCopy.class) != Status.SATISFIABLE) {
+            	continue;
+            }            
             
             Iterator<Variable> callMemory = call.getMemoryInputs().iterator();
             Iterator<Variable> instrMemory = instr.getMemoryInputs().iterator();
@@ -132,6 +141,12 @@ public class RepeatedCall extends AbstractInstructionPattern {
             if(dataflow.mayFollow(call, instr) == Status.UNSATISFIABLE)
                 continue;
 
+            Variable callee = instr.getInput()[1];
+            // If the code is from a safe source it should be fine
+            if(dataflow.varMayDepOn(instr, callee, CallDataLoad.class) == Status.UNSATISFIABLE && dataflow.varMayDepOn(instr, callee, CallDataCopy.class) == Status.UNSATISFIABLE) {
+            	continue;
+            }            
+            
             Iterator<Variable> callMemory = call.getMemoryInputs().iterator();
             Iterator<Variable> instrMemory = instr.getMemoryInputs().iterator();
 
