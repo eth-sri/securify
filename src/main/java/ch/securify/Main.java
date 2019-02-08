@@ -331,26 +331,26 @@ public class Main {
         patterns = new LinkedList<>();
 
         List<AbstractPattern> allPatterns = new LinkedList<>();
-        allPatterns.add(new DAO());
-        allPatterns.add(new DAOConstantGas());
+//        allPatterns.add(new DAO());
+//        allPatterns.add(new DAOConstantGas());
         // allPatterns.add(new DAOMethodCall());
         // allPatterns.add(new DelegateCallWithUserInput());
         // allPatterns.add(new DivisionBeforeCallvalue());
         // allPatterns.add(new DivisionBeforeMultiply());
         // TODO: buggy
-        allPatterns.add(new LockedEther());
+//        allPatterns.add(new LockedEther());
         // allPatterns.add(new DivisionBeforeCallvalue());
         // allPatterns.add(new DivisionBeforeMultiply());
-        allPatterns.add(new MissingInputValidation());
-        allPatterns.add(new TODAmount());
-        allPatterns.add(new TODReceiver());
+//        allPatterns.add(new MissingInputValidation());
+//        allPatterns.add(new TODAmount());
+//        allPatterns.add(new TODReceiver());
         // allPatterns.add(new TODTransfer());
-        allPatterns.add(new UnhandledException());
+//        allPatterns.add(new UnhandledException());
         // allPatterns.add(new UnprivilegedSelfdestruct());
-        allPatterns.add(new UnrestrictedEtherFlow());
-        allPatterns.add(new UnrestrictedWrite());
+//        allPatterns.add(new UnrestrictedEtherFlow());
+//        allPatterns.add(new UnrestrictedWrite());
         allPatterns.add(new RepeatedCall());
-        allPatterns.add(new WriteToUncheckedOffset());
+//        allPatterns.add(new WriteToUncheckedOffset());
 //        allPatterns.add(new UnsafeCallTarget());
 //        allPatterns.add(new UnsafeDependenceOnBlock());
 //        allPatterns.add(new UnsafeDependenceOnGas());
