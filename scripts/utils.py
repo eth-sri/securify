@@ -23,8 +23,8 @@ import os
 import re
 import sys
 
-from solc.exceptions import SolcError
-import solc.install
+from solcx.exceptions import SolcError
+import solcx.install
 
 
 class NoSolidityProject(Exception):
@@ -118,11 +118,11 @@ OUTPUT_VALUES = ('abi',
                  'bin-runtime',
                  'srcmap-runtime')
 
-_VERSIONS = (getattr(solc.install, item)[1:]
-             for item in dir(solc.install) if item.startswith('V'))
+SOLC_VERSIONS=[]
+for i in range(11, 26):
+    SOLC_VERSIONS.append(f'0.4.{i}')
+for i in range(4):
+    SOLC_VERSIONS.append(f'0.5.{i}')
 
-SOLC_VERSIONS = tuple(filter(
-    lambda x: version_to_tuple(x) >= version_to_tuple('0.4.11'),
-    _VERSIONS))
 
 DEFAULT_SOLC_VERSION = SOLC_VERSIONS[-1]

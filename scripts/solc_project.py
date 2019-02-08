@@ -22,17 +22,18 @@ import json
 import os
 from pathlib import Path
 
-from solc.exceptions import SolcError
-from solc.main import _parse_compiler_output
-from solc.wrapper import solc_wrapper
+from solcx import get_solc_folder
+from solcx.exceptions import SolcError
+from solcx.main import _parse_compiler_output
+from solcx.wrapper import solc_wrapper
 
 from . import project, utils
 
 
-def _get_binary(version):
+def _get_binary(solc_version):
     """Returns the binary for some version of solc.
     """
-    binary = os.path.join(Path.home(), f'.py-solc/solc-v{version}/bin/solc')
+    binary = os.path.join(get_solc_folder(), f'solc-v{solc_version}')
     assert os.path.exists(binary), 'solc binary not found'
     return binary
 
