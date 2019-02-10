@@ -172,7 +172,7 @@ def test(tests_dir, overwrite=False, recursive=False):
     for contract_file in find('*.sol'):
         print(f'Running on {contract_file}')
         json_output = contract_file.with_suffix('.json')
-        assert (json_output.exists() or overwrite), f'Missing f{json_output}'
+        assert (json_output.exists() or overwrite), f'Missing {json_output}'
         test_securify_analysis(contract_file, json_output, overwrite=overwrite)
     print(f'Done with files in folder: {tests_dir}.')
 
