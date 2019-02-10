@@ -64,6 +64,7 @@ comp_version1_rex = re.compile(r'0\.\d+\.\d+')
 def _version_to_tuple(v):
     return tuple(map(int, v.split('.')))
 
+
 SOLC_VERSIONS = []
 for i in range(11, 26):
 	SOLC_VERSIONS.append(f'0.4.{i}')
