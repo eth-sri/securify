@@ -66,9 +66,9 @@ def _version_to_tuple(v):
 
 SOLC_VERSIONS = []
 for i in range(11, 26):
-	SOLC_VERSIONS.append(f'0.4.{i}')
+    SOLC_VERSIONS.append(f'0.4.{i}')
 for i in range(4):
-	SOLC_VERSIONS.append(f'0.5.{i}')
+    SOLC_VERSIONS.append(f'0.5.{i}')
 DEFAULT_SOLC_VERSION = SOLC_VERSIONS[-1]
 
 
@@ -91,6 +91,7 @@ def find_node_modules_dir(contracts):
     for x in os.walk(contracts):
         if os.path.isdir(os.path.join(x[0], 'node_modules')):
             return os.path.join(x[0], 'node_modules')
+    print("[!] Warning! Couldn't find node_modules folder. Did you install dependencies?")
     return None
 
 
