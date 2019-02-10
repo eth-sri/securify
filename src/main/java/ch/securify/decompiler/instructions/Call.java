@@ -45,4 +45,13 @@ public class Call extends Instruction implements _TypeInstruction {
 		return false;
 	}
 
+	@Override
+	public int getInputMemoryOffset() {
+		return 3;
+	}
+	
+	@Override
+	public int getInputMemorySize() {
+		return 4;
+	}
 }

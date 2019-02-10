@@ -44,5 +44,14 @@ public class StaticCall extends Instruction implements _TypeInstruction {
 		}
 		return false;
 	}
-
+	
+	@Override
+	public int getInputMemoryOffset() {
+		return 2;
+	}
+	
+	@Override
+	public int getInputMemorySize() {
+		return 3;
+	}	
 }

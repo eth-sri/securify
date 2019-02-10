@@ -8,8 +8,6 @@ import ch.securify.decompiler.instructions.CallDataCopy;
 import ch.securify.decompiler.instructions.CallDataLoad;
 import ch.securify.decompiler.instructions.Instruction;
 import ch.securify.decompiler.instructions.StaticCall;
-import ch.securify.decompiler.printer.HexPrinter;
-
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -40,10 +38,15 @@ public class RepeatedCall extends AbstractInstructionPattern {
 
     @Override
     protected boolean isViolation(Instruction instr, List<Instruction> methodInstructions, List<Instruction> contractInstructions, AbstractDataflow dataflow) {
-        for (Instruction call : methodInstructions) {
-            if (call == instr)
-                continue;
-            
+        Variable callee = instr.getInput()[1];
+        // If the code is from a safe source it should be fine
+        if(dataflow.varMayDepOn(instr, callee, CallDataLoad.class) != Status.SATISFIABLE && dataflow.varMayDepOn(instr, callee, CallDataCopy.class) != Status.SATISFIABLE) {
+        	return false;
+        }
+    	
+    	Instruction prev = instr.getPrev();
+    	for (Instruction call : methodInstructions) {
+           
         	if(!call.getClass().equals(instr.getClass()))
         		continue;
         	
@@ -56,9 +59,15 @@ public class RepeatedCall extends AbstractInstructionPattern {
             if (call.getMemoryInputs().size() != instr.getMemoryInputs().size())
                 continue;
 
-            if(dataflow.mustPrecede(call, instr) != Status.SATISFIABLE)
-            	continue;
-
+            if(call == instr) {
+            	// Check if it can be reached through a loop
+                if(dataflow.mayFollow(call, prev) != Status.SATISFIABLE)
+                	continue;
+            } else {
+            	// Check if the two operations are subsequent
+                if(dataflow.mustPrecede(call, instr) != Status.SATISFIABLE)
+                	continue;  
+            }
             
             // Only consider calls to untrusted code
             if(targetInstr.hasConstantValue()) {
@@ -75,15 +84,8 @@ public class RepeatedCall extends AbstractInstructionPattern {
             
             // In case of no memory info at least check the length
             if(!instrMemory.hasNext()) {
-            	int memoryOffset = -1;
-            	if(instr instanceof Call) 
-            		memoryOffset = 3;
-            	else if(instr instanceof StaticCall)
-            		memoryOffset = 2;
-            	else
-            		assert(false);
-            	Variable callMemorySize = call.getInput()[memoryOffset];
-                Variable instrMemorySize = instr.getInput()[memoryOffset];
+            	Variable callMemorySize = call.getInput()[call.getInputMemorySize()];
+                Variable instrMemorySize = instr.getInput()[instr.getInputMemorySize()];
                 if(callMemorySize.hasConstantValue() != instrMemorySize.hasConstantValue()) {
                 	continue;
                 }
@@ -121,9 +123,25 @@ public class RepeatedCall extends AbstractInstructionPattern {
 
     @Override
     protected boolean isCompliant(Instruction instr, List<Instruction> methodInstructions, List<Instruction> contractInstructions, AbstractDataflow dataflow) {
-        for (Instruction call : methodInstructions) {
-            if (call == instr)
-                continue;
+        Variable callee = instr.getInput()[1];
+        // If the code is from a safe source it should be fine
+        if(dataflow.varMayDepOn(instr, callee, CallDataLoad.class) == Status.UNSATISFIABLE && dataflow.varMayDepOn(instr, callee, CallDataCopy.class) == Status.UNSATISFIABLE) {
+        	return true;
+        }
+    	
+    	Instruction prev = instr.getPrev();        
+    	for (Instruction call : methodInstructions) {
+            
+            if(call == instr) {
+            	// Check if it can be reached through a loop
+                if(dataflow.mayFollow(call, prev) == Status.UNSATISFIABLE)
+                	continue;
+            } else {
+            	// Check if the two operations are subsequent
+                if(dataflow.mayFollow(call, instr) == Status.UNSATISFIABLE)
+                	continue;  
+            }            
+            
 
             if(!call.getClass().equals(instr.getClass()))
                 continue;
@@ -132,7 +150,7 @@ public class RepeatedCall extends AbstractInstructionPattern {
 
             // Trusted code is considered safe
             if (targetCall.hasConstantValue()) {
-            	return true;
+            	continue;
             }
             
             Variable targetInstr = instr.getInput()[1];
@@ -142,19 +160,22 @@ public class RepeatedCall extends AbstractInstructionPattern {
 
             if (call.getMemoryInputs().size() != instr.getMemoryInputs().size())
                 continue;
-
-            if(dataflow.mayFollow(call, instr) == Status.UNSATISFIABLE)
-                continue;
-
-            Variable callee = instr.getInput()[1];
-            // If the code is from a safe source it should be fine
-            if(dataflow.varMayDepOn(instr, callee, CallDataLoad.class) == Status.UNSATISFIABLE && dataflow.varMayDepOn(instr, callee, CallDataCopy.class) == Status.UNSATISFIABLE) {
-            	continue;
-            }            
             
             Iterator<Variable> callMemory = call.getMemoryInputs().iterator();
             Iterator<Variable> instrMemory = instr.getMemoryInputs().iterator();
 
+            // In case of no memory info at least check the length
+            if(!instrMemory.hasNext()) {
+            	Variable callMemorySize = call.getInput()[call.getInputMemorySize()];
+                Variable instrMemorySize = instr.getInput()[instr.getInputMemorySize()];
+                if(callMemorySize.hasConstantValue() != instrMemorySize.hasConstantValue()) {
+                	continue;
+                }
+                if((callMemorySize.hasConstantValue()) && (Arrays.equals(callMemorySize.getConstantValue(), instrMemorySize.getConstantValue()))) {
+                	continue;
+                }
+            }
+            
             boolean matched = true;
             while (instrMemory.hasNext()){
                 Variable callMemoryVar = callMemory.next();

@@ -211,7 +211,14 @@ public abstract class Instruction implements Cloneable {
 	public Collection<Variable> getMemoryInputs() {
 		return memInput;
 	}
+	
+	public int getInputMemoryOffset() {
+		return -1;
+	}
 
+	public int getInputMemorySize() {
+		return -1;
+	}
 
 	/**
 	 * Compute the symbolic values of the result variables.
