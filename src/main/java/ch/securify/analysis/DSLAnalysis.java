@@ -175,12 +175,17 @@ public class DSLAnalysis {
         }
     }
 
+    private static int count = 0;
+
     public void dispose() throws IOException, InterruptedException {
         if(CREATE_THING_TO_INTEGER_FILE_MAP)
             thingToIntegerFileWriter.close();
 
         CommandRunner.runCommand("rm -r " + WORKSPACE);
-        CommandRunner.runCommand("rm -r " + WORKSPACE_OUT);
+       // CommandRunner.runCommand("rm -r " + WORKSPACE_OUT);
+        CommandRunner.runCommand("rm -rf outDSL" + count);
+        CommandRunner.runCommand("mv " + WORKSPACE_OUT + " outDSL" + count);
+
     }
 
     protected void log(String msg) {

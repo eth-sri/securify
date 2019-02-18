@@ -12,3 +12,6 @@ __pycache__/
 smt_files/CompiledPatterns.dl
 smt_files/CompiledPatternsNames.csv
 smt_files/finalTmpFile.dl
+
+outDSL*
+outNoDSL*

@@ -221,10 +221,15 @@ public abstract class AbstractDataflow {
         }
     }
 
+    private static int count = 0;
+
     public void dispose() throws IOException, InterruptedException {
         thingToIntegerFileWriter.close();
         runCommand("rm -r " + WORKSPACE);
-        runCommand("rm -r " + WORKSPACE_OUT);
+        //runCommand("rm -r " + WORKSPACE_OUT);
+        runCommand("rm -rf outNoDSL" + count);
+        runCommand("mv " + WORKSPACE_OUT + " outNoDSL" + count);
+        count++;
     }
 
     protected void readFixedpoint(String ruleName) throws IOException {

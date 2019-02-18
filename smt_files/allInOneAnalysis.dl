@@ -125,6 +125,9 @@
 //derive instructions with unk inside:
 //sstore(Lab,Index,Var) :- sstoreInstr(Lab,IndexVar,Var), isConst(IndexVar), hasValue(IndexVar,Index).
 //sstore(Lab,Index,Var) :- sstoreInstr(Lab,Index,Var), isConst(Index).
+//sstore(Lab,Index,Var) :- sstoreInstr(Lab,IndexVar,Var), !isConst(IndexVar), unk(Unk), Index=Unk.
+
+sstore(Lab,Index,Var) :- sstoreInstr(Lab,IndexVar,Var), isConst(IndexVar), hasValue(IndexVar,Index).
 sstore(Lab,Index,Var) :- sstoreInstr(Lab,IndexVar,Var), !isConst(IndexVar), unk(Unk), Index=Unk.
 
 sload(Lab,Index,Var) :- sloadInstr(Lab,IndexVar,Var), isConst(IndexVar), hasValue(IndexVar,Index).
@@ -146,7 +149,7 @@ mstore(Lab,Index,Var) :- mstoreInstr(Lab,IndexVar,Var), !isConst(IndexVar), unk(
 
 //Shows how the storage situation must be at a certain point
 .decl sstoreMust			(l:Label, v:Var, f:VarFact)
-.output mstoreMust
+.output sstoreMust
 
 .decl mustDepOn				(l: Label, v:Var, f:VarFact) //it's the old reach in must explicit
 .output mustDepOn

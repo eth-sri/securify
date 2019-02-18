@@ -229,14 +229,24 @@ public class Main {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            analyzer.dispose();
         } else {
+
             // split instructions into methods and check them independently
             for (List<Instruction> body : splitInstructionsIntoMethods(instructions)) {
+                try {
+                    analyzer = new DSLAnalysis();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return;
+                }
+
                 log.println("DSL: Analyzing method with " + body.size() + " instructions:");
                     analyzer.analyse(body);
                     List<DSLPatternResult> results = analyzer.getResults();
                     log.println("result size = " + results.size());
                     updateStatusWithDSLPattResults(results);
+                    analyzer.dispose();
             }
         }
 
