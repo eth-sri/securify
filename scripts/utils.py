@@ -23,6 +23,8 @@ import os
 import re
 import sys
 
+from scripts.isolc.pysolc import DEFAULT_SOLC_VERSION, SOLC_VERSIONS
+
 from solcx.exceptions import SolcError
 import solcx.install
 
@@ -118,12 +120,3 @@ OUTPUT_VALUES = ('abi',
                  'ast',
                  'bin-runtime',
                  'srcmap-runtime')
-
-SOLC_VERSIONS = []
-for i in range(11, 26):
-    SOLC_VERSIONS.append(f'0.4.{i}')
-for i in range(4):
-    SOLC_VERSIONS.append(f'0.5.{i}')
-
-
-DEFAULT_SOLC_VERSION = SOLC_VERSIONS[-1]

@@ -67,7 +67,7 @@ def _version_to_tuple(v):
 SOLC_VERSIONS = []
 for i in range(11, 26):
 	SOLC_VERSIONS.append(f'0.4.{i}')
-for i in range(4):
+for i in range(5):
 	SOLC_VERSIONS.append(f'0.5.{i}')
 DEFAULT_SOLC_VERSION = SOLC_VERSIONS[-1]
 
