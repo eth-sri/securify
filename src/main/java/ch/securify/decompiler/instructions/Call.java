@@ -18,31 +18,22 @@
 
 package ch.securify.decompiler.instructions;
 
-import ch.securify.decompiler.Variable;
-import ch.securify.utils.BigIntUtil;
+public class Call extends CallingInstruction implements _TypeInstruction {
 
-import java.math.BigInteger;
+    @Override
+    public String getStringRepresentation() {
+        return getOutput()[0] + " = call(gas: " + getInput()[0] + ", to_addr: " + getInput()[1] + ", " +
+                "value: " + getInput()[2] + ", in_offset: " + getInput()[3] + ", in_size: " + getInput()[4] + ", " +
+                "out_offset: " + getInput()[5] + ", out_size: " + getInput()[6] + ")";
+    }
 
-public class Call extends Instruction implements _TypeInstruction {
+    @Override
+    public int getInputMemoryOffset() {
+        return 3;
+    }
 
-	@Override
-	public String getStringRepresentation() {
-		return getOutput()[0] + " = call(gas: " + getInput()[0] + ", to_addr: " + getInput()[1] + ", " +
-				"value: " + getInput()[2] + ", in_offset: " + getInput()[3] + ", in_size: " + getInput()[4] + ", " +
-				"out_offset: " + getInput()[5] + ", out_size: " + getInput()[6] + ")";
-	}
-
-	public boolean isBuiltInContractCall() {
-		Variable toAddrVar = getInput()[1];
-		if (toAddrVar.hasConstantValue()) {
-			BigInteger toAddr = BigIntUtil.fromInt256(toAddrVar.getConstantValue());
-			if (toAddr.equals(BigInteger.valueOf(1)) || toAddr.equals(BigInteger.valueOf(2)) ||
-					toAddr.equals(BigInteger.valueOf(3)) || toAddr.equals(BigInteger.valueOf(4))) {
-				// is call to built-in contract
-				return true;
-			}
-		}
-		return false;
-	}
-
+    @Override
+    public int getInputMemorySize() {
+        return 4;
+    }
 }

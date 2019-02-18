@@ -21,7 +21,9 @@ package ch.securify.decompiler.instructions;
 import ch.securify.decompiler.Variable;
 import ch.securify.decompiler.evm.RawInstruction;
 import ch.securify.decompiler.printer.HexPrinter;
+import ch.securify.utils.BigIntUtil;
 
+import java.math.BigInteger;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
