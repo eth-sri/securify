@@ -142,8 +142,11 @@ def test_securify_analysis(c_file, json_output, memory=8, overwrite=False):
         with open(output) as fsc:
             curr_json = json.load(fsc)
 
-        with open(json_output) as fsj:
-            expc_json = json.load(fsj)
+        try:
+            with open(json_output) as fsj:
+                expc_json = json.load(fsj)
+        except FileNotFoundError:
+            expc_json = {}
 
     for contract in expc_json:
         try:
