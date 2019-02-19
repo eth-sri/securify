@@ -1,5 +1,5 @@
 {
-  "src/test/resources/solidity/end_to_end_testing_big/swc/tx_origin/mycontract_fixed.sol:MyContract": {
+  "src/test/resources/solidity/repeated-calls-tn.sol:B": {
     "results": {
       "DAO": {
         "conflicts": [],
@@ -9,65 +9,59 @@
       },
       "DAOConstantGas": {
         "conflicts": [],
-        "safe": [
-          18
-        ],
+        "safe": [],
         "violations": [],
         "warnings": []
       },
       "LockedEther": {
-        "conflicts": [],
-        "safe": [
-          8
+        "conflicts": [
+          4
         ],
+        "safe": [],
         "violations": [],
         "warnings": []
       },
       "MissingInputValidation": {
         "conflicts": [],
-        "safe": [],
-        "violations": [
-          16
+        "safe": [
+          6
         ],
+        "violations": [],
         "warnings": []
       },
       "RepeatedCall": {
         "conflicts": [],
         "safe": [
-          18
+          7
         ],
         "violations": [],
         "warnings": []
       },
       "TODAmount": {
         "conflicts": [],
-        "safe": [
-          18
-        ],
+        "safe": [],
         "violations": [],
         "warnings": []
       },
       "TODReceiver": {
         "conflicts": [],
-        "safe": [
-          18
-        ],
+        "safe": [],
         "violations": [],
         "warnings": []
       },
       "UnhandledException": {
         "conflicts": [],
         "safe": [
-          18
+          7
         ],
         "violations": [],
         "warnings": []
       },
       "UnrestrictedEtherFlow": {
-        "conflicts": [
-          18
+        "conflicts": [],
+        "safe": [
+          7
         ],
-        "safe": [],
         "violations": [],
         "warnings": []
       },

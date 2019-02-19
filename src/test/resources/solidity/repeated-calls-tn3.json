@@ -1,5 +1,5 @@
 {
-  "src/test/resources/solidity/end_to_end_testing_big/swc/assert_violations/constructor_create_modifiable.sol:B": {
+  "src/test/resources/solidity/repeated-calls-tn3.sol:A": {
     "results": {
       "DAO": {
         "conflicts": [],
@@ -14,21 +14,19 @@
         "warnings": []
       },
       "LockedEther": {
-        "conflicts": [
-          19
+        "conflicts": [],
+        "safe": [
+          0
         ],
-        "safe": [],
         "violations": [],
         "warnings": []
       },
       "MissingInputValidation": {
         "conflicts": [],
         "safe": [
-          26
+          2
         ],
-        "violations": [
-          30
-        ],
+        "violations": [],
         "warnings": []
       },
       "RepeatedCall": {
@@ -64,9 +62,7 @@
       "UnrestrictedWrite": {
         "conflicts": [],
         "safe": [],
-        "violations": [
-          31
-        ],
+        "violations": [],
         "warnings": []
       }
     },
@@ -75,7 +71,7 @@
     },
     "version": "v0-139-g21ceb5f-dirty"
   },
-  "src/test/resources/solidity/end_to_end_testing_big/swc/assert_violations/constructor_create_modifiable.sol:ContructorCreateModifiable": {
+  "src/test/resources/solidity/repeated-calls-tn3.sol:B": {
     "results": {
       "DAO": {
         "conflicts": [],
@@ -91,7 +87,7 @@
       },
       "LockedEther": {
         "conflicts": [
-          10
+          7
         ],
         "safe": [],
         "violations": [],
@@ -108,7 +104,8 @@
       "RepeatedCall": {
         "conflicts": [],
         "safe": [
-          14
+          14,
+          15
         ],
         "violations": [],
         "warnings": []
@@ -128,7 +125,8 @@
       "UnhandledException": {
         "conflicts": [],
         "safe": [
-          14
+          14,
+          15
         ],
         "violations": [],
         "warnings": []
@@ -136,7 +134,8 @@
       "UnrestrictedEtherFlow": {
         "conflicts": [],
         "safe": [
-          14
+          14,
+          15
         ],
         "violations": [],
         "warnings": []
@@ -144,7 +143,9 @@
       "UnrestrictedWrite": {
         "conflicts": [],
         "safe": [],
-        "violations": [],
+        "violations": [
+          15
+        ],
         "warnings": []
       }
     },

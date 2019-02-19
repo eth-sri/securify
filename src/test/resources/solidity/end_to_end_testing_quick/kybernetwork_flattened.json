@@ -2,129 +2,498 @@
   "src/test/resources/solidity/end_to_end_testing_quick/kybernetwork_flattened.sol:KyberNetwork": {
     "results": {
       "DAO": {
+        "conflicts": [],
+        "safe": [
+          841
+        ],
         "violations": [],
-        "warnings": [],
-        "safe": [],
-        "conflicts": []
+        "warnings": []
       },
       "DAOConstantGas": {
+        "conflicts": [],
+        "safe": [
+          228,
+          744,
+          832,
+          846
+        ],
         "violations": [],
-        "warnings": [],
-        "safe": [],
-        "conflicts": []
+        "warnings": []
       },
       "LockedEther": {
+        "conflicts": [],
+        "safe": [
+          364
+        ],
         "violations": [],
-        "warnings": [],
-        "safe": [],
-        "conflicts": []
+        "warnings": []
       },
       "MissingInputValidation": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
+      },
+      "RepeatedCall": {
+        "conflicts": [],
+        "safe": [
+          218,
+          228,
+          251,
+          308,
+          490,
+          492,
+          573,
+          577,
+          779,
+          781,
+          832,
+          846
+        ],
+        "violations": [
+          260,
+          642,
+          744,
+          746,
+          841,
+          848,
+          875
+        ],
+        "warnings": []
       },
       "TODAmount": {
+        "conflicts": [],
+        "safe": [
+          228,
+          744,
+          832,
+          846
+        ],
         "violations": [],
-        "warnings": [],
-        "safe": [],
-        "conflicts": []
+        "warnings": [
+          841
+        ]
       },
       "TODReceiver": {
+        "conflicts": [],
+        "safe": [
+          228,
+          832,
+          846
+        ],
         "violations": [],
-        "warnings": [],
-        "safe": [],
-        "conflicts": []
+        "warnings": [
+          744,
+          841
+        ]
       },
       "UnhandledException": {
+        "conflicts": [],
+        "safe": [
+          218,
+          228,
+          251,
+          260,
+          308,
+          490,
+          492,
+          573,
+          577,
+          642,
+          744,
+          746,
+          779,
+          781,
+          832,
+          841,
+          846,
+          848,
+          875
+        ],
         "violations": [],
-        "warnings": [],
-        "safe": [],
-        "conflicts": []
+        "warnings": []
       },
       "UnrestrictedEtherFlow": {
+        "conflicts": [
+          228,
+          744,
+          832,
+          846
+        ],
+        "safe": [
+          218,
+          251,
+          260,
+          308,
+          490,
+          492,
+          573,
+          577,
+          642,
+          746,
+          779,
+          781,
+          841,
+          848,
+          875
+        ],
         "violations": [],
-        "warnings": [],
-        "safe": [],
-        "conflicts": []
+        "warnings": []
       },
       "UnrestrictedWrite": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [
+          2,
+          125,
+          136,
+          147,
+          148,
+          158,
+          159,
+          164,
+          183,
+          184,
+          189,
+          250,
+          251,
+          450,
+          451,
+          454,
+          503,
+          508,
+          513,
+          525,
+          526,
+          536,
+          547
+        ],
         "safe": [],
-        "conflicts": []
+        "violations": [
+          2,
+          168,
+          193,
+          364,
+          458,
+          540,
+          699,
+          707
+        ],
+        "warnings": []
       }
     },
     "securifyErrors": {
-      "errors": [
-        {
-          "error": "pattern_error",
-          "stackTrace": "java.lang.RuntimeException\n\tat ch.securify.analysis.Dataflow.\u003cinit\u003e(Dataflow.java:37)\n\tat ch.securify.analysis.DataflowFactory.getDataflow(DataflowFactory.java:55)\n\tat ch.securify.Main.checkPatterns(Main.java:357)\n\tat ch.securify.Main.processHexFile(Main.java:182)\n\tat ch.securify.Main.processCompilationOutput(Main.java:124)\n\tat ch.securify.Main.processSolidityFile(Main.java:94)\n\tat ch.securify.Main.main(Main.java:231)\n"
-        }
-      ]
-    }
+      "errors": []
+    },
+    "version": "v0-139-g21ceb5f-dirty"
   },
   "src/test/resources/solidity/end_to_end_testing_quick/kybernetwork_flattened.sol:PermissionGroups": {
     "results": {
       "DAO": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       },
       "DAOConstantGas": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       },
       "LockedEther": {
+        "conflicts": [],
+        "safe": [],
         "violations": [
           79
         ],
-        "warnings": [],
-        "safe": [],
-        "conflicts": []
+        "warnings": []
       },
       "MissingInputValidation": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
+      },
+      "RepeatedCall": {
+        "conflicts": [],
+        "safe": [],
+        "violations": [],
+        "warnings": []
       },
       "TODAmount": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       },
       "TODReceiver": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       },
       "UnhandledException": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       },
       "UnrestrictedEtherFlow": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       },
       "UnrestrictedWrite": {
+        "conflicts": [
+          2,
+          125,
+          136,
+          147,
+          148,
+          158,
+          159,
+          164,
+          183,
+          184,
+          189
+        ],
+        "safe": [],
         "violations": [
           79,
           168,
           193
         ],
-        "warnings": [],
+        "warnings": []
+      }
+    },
+    "securifyErrors": {
+      "errors": []
+    },
+    "version": "v0-139-g21ceb5f-dirty"
+  },
+  "src/test/resources/solidity/end_to_end_testing_quick/kybernetwork_flattened.sol:Utils": {
+    "results": {
+      "DAO": {
+        "conflicts": [],
         "safe": [],
+        "violations": [],
+        "warnings": []
+      },
+      "DAOConstantGas": {
+        "conflicts": [],
+        "safe": [],
+        "violations": [],
+        "warnings": []
+      },
+      "LockedEther": {
+        "conflicts": [],
+        "safe": [
+          239
+        ],
+        "violations": [],
+        "warnings": []
+      },
+      "MissingInputValidation": {
+        "conflicts": [],
+        "safe": [],
+        "violations": [],
+        "warnings": []
+      },
+      "RepeatedCall": {
+        "conflicts": [],
+        "safe": [],
+        "violations": [],
+        "warnings": []
+      },
+      "TODAmount": {
+        "conflicts": [],
+        "safe": [],
+        "violations": [],
+        "warnings": []
+      },
+      "TODReceiver": {
+        "conflicts": [],
+        "safe": [],
+        "violations": [],
+        "warnings": []
+      },
+      "UnhandledException": {
+        "conflicts": [],
+        "safe": [],
+        "violations": [],
+        "warnings": []
+      },
+      "UnrestrictedEtherFlow": {
+        "conflicts": [],
+        "safe": [],
+        "violations": [],
+        "warnings": []
+      },
+      "UnrestrictedWrite": {
+        "conflicts": [],
+        "safe": [],
+        "violations": [],
+        "warnings": []
+      }
+    },
+    "securifyErrors": {
+      "errors": []
+    },
+    "version": "v0-139-g21ceb5f-dirty"
+  },
+  "src/test/resources/solidity/end_to_end_testing_quick/kybernetwork_flattened.sol:Utils2": {
+    "results": {
+      "DAO": {
+        "conflicts": [],
+        "safe": [],
+        "violations": [],
+        "warnings": []
+      },
+      "DAOConstantGas": {
+        "conflicts": [],
+        "safe": [],
+        "violations": [],
+        "warnings": []
+      },
+      "LockedEther": {
+        "conflicts": [],
+        "safe": [
+          299
+        ],
+        "violations": [],
+        "warnings": []
+      },
+      "MissingInputValidation": {
+        "conflicts": [],
+        "safe": [],
+        "violations": [
+          304
+        ],
+        "warnings": []
+      },
+      "RepeatedCall": {
+        "conflicts": [],
+        "safe": [
+          308
+        ],
+        "violations": [],
+        "warnings": []
+      },
+      "TODAmount": {
+        "conflicts": [],
+        "safe": [],
+        "violations": [],
+        "warnings": []
+      },
+      "TODReceiver": {
+        "conflicts": [],
+        "safe": [],
+        "violations": [],
+        "warnings": []
+      },
+      "UnhandledException": {
+        "conflicts": [],
+        "safe": [
+          308
+        ],
+        "violations": [],
+        "warnings": []
+      },
+      "UnrestrictedEtherFlow": {
+        "conflicts": [],
+        "safe": [
+          308
+        ],
+        "violations": [],
+        "warnings": []
+      },
+      "UnrestrictedWrite": {
+        "conflicts": [],
+        "safe": [],
+        "violations": [],
+        "warnings": []
+      }
+    },
+    "securifyErrors": {
+      "errors": []
+    },
+    "version": "v0-139-g21ceb5f-dirty"
+  },
+  "src/test/resources/solidity/end_to_end_testing_quick/kybernetwork_flattened.sol:Withdrawable": {
+    "results": {
+      "DAO": {
+        "conflicts": [],
+        "safe": [],
+        "violations": [],
+        "warnings": []
+      },
+      "DAOConstantGas": {
+        "conflicts": [],
+        "safe": [
+          228
+        ],
+        "violations": [],
+        "warnings": []
+      },
+      "LockedEther": {
+        "conflicts": [],
+        "safe": [
+          209
+        ],
+        "violations": [],
+        "warnings": []
+      },
+      "MissingInputValidation": {
+        "conflicts": [],
+        "safe": [],
+        "violations": [],
+        "warnings": []
+      },
+      "RepeatedCall": {
+        "conflicts": [],
+        "safe": [
+          218,
+          228
+        ],
+        "violations": [],
+        "warnings": []
+      },
+      "TODAmount": {
+        "conflicts": [],
+        "safe": [
+          228
+        ],
+        "violations": [],
+        "warnings": []
+      },
+      "TODReceiver": {
+        "conflicts": [],
+        "safe": [
+          228
+        ],
+        "violations": [],
+        "warnings": []
+      },
+      "UnhandledException": {
+        "conflicts": [],
+        "safe": [
+          218,
+          228
+        ],
+        "violations": [],
+        "warnings": []
+      },
+      "UnrestrictedEtherFlow": {
+        "conflicts": [
+          228
+        ],
+        "safe": [
+          218
+        ],
+        "violations": [],
+        "warnings": []
+      },
+      "UnrestrictedWrite": {
         "conflicts": [
           2,
           125,
@@ -137,235 +506,19 @@
           183,
           184,
           189
-        ]
-      }
-    },
-    "securifyErrors": {
-      "errors": []
-    }
-  },
-  "src/test/resources/solidity/end_to_end_testing_quick/kybernetwork_flattened.sol:Utils": {
-    "results": {
-      "DAO": {
-        "violations": [],
-        "warnings": [],
-        "safe": [],
-        "conflicts": []
-      },
-      "DAOConstantGas": {
-        "violations": [],
-        "warnings": [],
-        "safe": [],
-        "conflicts": []
-      },
-      "LockedEther": {
-        "violations": [],
-        "warnings": [
-          239
         ],
         "safe": [],
-        "conflicts": []
-      },
-      "MissingInputValidation": {
-        "violations": [],
-        "warnings": [],
-        "safe": [],
-        "conflicts": []
-      },
-      "TODAmount": {
-        "violations": [],
-        "warnings": [],
-        "safe": [],
-        "conflicts": []
-      },
-      "TODReceiver": {
-        "violations": [],
-        "warnings": [],
-        "safe": [],
-        "conflicts": []
-      },
-      "UnhandledException": {
-        "violations": [],
-        "warnings": [],
-        "safe": [],
-        "conflicts": []
-      },
-      "UnrestrictedEtherFlow": {
-        "violations": [],
-        "warnings": [],
-        "safe": [],
-        "conflicts": []
-      },
-      "UnrestrictedWrite": {
-        "violations": [],
-        "warnings": [],
-        "safe": [],
-        "conflicts": []
-      }
-    },
-    "securifyErrors": {
-      "errors": []
-    }
-  },
-  "src/test/resources/solidity/end_to_end_testing_quick/kybernetwork_flattened.sol:Utils2": {
-    "results": {
-      "DAO": {
-        "violations": [],
-        "warnings": [],
-        "safe": [],
-        "conflicts": []
-      },
-      "DAOConstantGas": {
-        "violations": [],
-        "warnings": [],
-        "safe": [],
-        "conflicts": []
-      },
-      "LockedEther": {
-        "violations": [],
-        "warnings": [
-          299
-        ],
-        "safe": [],
-        "conflicts": []
-      },
-      "MissingInputValidation": {
-        "violations": [
-          304
-        ],
-        "warnings": [],
-        "safe": [],
-        "conflicts": []
-      },
-      "TODAmount": {
-        "violations": [],
-        "warnings": [],
-        "safe": [],
-        "conflicts": []
-      },
-      "TODReceiver": {
-        "violations": [],
-        "warnings": [],
-        "safe": [],
-        "conflicts": []
-      },
-      "UnhandledException": {
-        "violations": [],
-        "warnings": [
-          308
-        ],
-        "safe": [],
-        "conflicts": []
-      },
-      "UnrestrictedEtherFlow": {
-        "violations": [],
-        "warnings": [
-          308
-        ],
-        "safe": [],
-        "conflicts": []
-      },
-      "UnrestrictedWrite": {
-        "violations": [],
-        "warnings": [],
-        "safe": [],
-        "conflicts": []
-      }
-    },
-    "securifyErrors": {
-      "errors": []
-    }
-  },
-  "src/test/resources/solidity/end_to_end_testing_quick/kybernetwork_flattened.sol:Withdrawable": {
-    "results": {
-      "DAO": {
-        "violations": [],
-        "warnings": [],
-        "safe": [],
-        "conflicts": []
-      },
-      "DAOConstantGas": {
-        "violations": [],
-        "warnings": [
-          228
-        ],
-        "safe": [],
-        "conflicts": []
-      },
-      "LockedEther": {
-        "violations": [],
-        "warnings": [
-          209
-        ],
-        "safe": [],
-        "conflicts": []
-      },
-      "MissingInputValidation": {
-        "violations": [],
-        "warnings": [],
-        "safe": [],
-        "conflicts": []
-      },
-      "TODAmount": {
-        "violations": [],
-        "warnings": [
-          228
-        ],
-        "safe": [],
-        "conflicts": []
-      },
-      "TODReceiver": {
-        "violations": [],
-        "warnings": [
-          228
-        ],
-        "safe": [],
-        "conflicts": []
-      },
-      "UnhandledException": {
-        "violations": [],
-        "warnings": [
-          218,
-          228
-        ],
-        "safe": [],
-        "conflicts": []
-      },
-      "UnrestrictedEtherFlow": {
-        "violations": [],
-        "warnings": [
-          218
-        ],
-        "safe": [],
-        "conflicts": [
-          228
-        ]
-      },
-      "UnrestrictedWrite": {
         "violations": [
           168,
           193,
           209
         ],
-        "warnings": [],
-        "safe": [],
-        "conflicts": [
-          2,
-          125,
-          136,
-          147,
-          148,
-          158,
-          159,
-          164,
-          183,
-          184,
-          189
-        ]
+        "warnings": []
       }
     },
     "securifyErrors": {
       "errors": []
-    }
+    },
+    "version": "v0-139-g21ceb5f-dirty"
   }
 }

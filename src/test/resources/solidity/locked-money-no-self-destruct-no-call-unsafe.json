@@ -2,66 +2,73 @@
   "src/test/resources/solidity/locked-money-no-self-destruct-no-call-unsafe.sol:MarketPlace": {
     "results": {
       "DAO": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       },
       "DAOConstantGas": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       },
       "LockedEther": {
-        "violations": [],
-        "warnings": [],
-        "safe": [],
         "conflicts": [
           1
-        ]
-      },
-      "MissingInputValidation": {
-        "violations": [],
-        "warnings": [
-          2
         ],
         "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
+      },
+      "MissingInputValidation": {
+        "conflicts": [],
+        "safe": [
+          2
+        ],
+        "violations": [],
+        "warnings": []
+      },
+      "RepeatedCall": {
+        "conflicts": [],
+        "safe": [],
+        "violations": [],
+        "warnings": []
       },
       "TODAmount": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       },
       "TODReceiver": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       },
       "UnhandledException": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       },
       "UnrestrictedEtherFlow": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       },
       "UnrestrictedWrite": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       }
     },
     "securifyErrors": {
       "errors": []
-    }
+    },
+    "version": "v0-139-g21ceb5f-dirty"
   }
 }
