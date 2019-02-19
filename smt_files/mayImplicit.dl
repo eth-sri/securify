@@ -26,7 +26,9 @@
 // Inputs
 //
 .decl assignType        (l:Label, v:Var, f:Fact)
+.decl assignTypeDebug (l:Label, v:Var, f:Fact)
 .decl assignVar		(l:Label, v1: Var, v2: Var)
+.decl assignVarDebug (l:Label, v1: Var, v2: Var)
 .decl follows		(l1: Label, l2: Label)
 .decl taint		(l1:Label, l2:Label, v:Var)
 .decl endIf		(l1: Label, l2: Label)
@@ -73,6 +75,8 @@
 .output memoryTags
 .output storage
 .output isAfter
+.output assignTypeDebug
+.output assignVarDebug
 
 //
 // Rules
@@ -154,3 +158,6 @@ assignTypeFive(Lab, Var, Type) :- memory(Lab, Offset, Type), sha3(Lab, Var, Offs
 
 reassignStorage(Lab, Index) :- sstore(Lab, Index, _), !unk(Index).
 reassignMemory(Lab, Offset) :- mstore(Lab, Offset, _), !unk(Offset).
+
+assignTypeDebug(Lab, Var, Type) :- assignType(Lab, Var, Type).
+assignVarDebug(Lab, Var1, Var2) :- assignVar(Lab, Var1, Var2).

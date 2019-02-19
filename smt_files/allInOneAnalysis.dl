@@ -36,6 +36,8 @@
 .decl assignType       (l:Label, v:Var, f:Fact) //in order to manage to have same input this is split in two and then reassigned
 .input assignType
 .decl assignVar		(l:Label, v1: Var, v2: Var)
+.decl assignVarMustDebug		(l:Label, v1: Var, v2: Var)
+.output assignVarMustDebug
 .input assignVar
 
 //together with the jump shows the flow of the program (see DSLAnalysis, method deriveFollowsPredicates)
@@ -119,6 +121,7 @@
 .decl reassignStorage	(l:Label, v:Var)
 
 .decl mustAssignType        (l:Label, v:Var, f:Fact)
+.output mustAssignType
 .decl mayAssignType      (l:Label, v:Var, f:Fact)
 .output mayAssignType
 
@@ -224,14 +227,6 @@ taint(LabStart, LabTo, Var) :- followsMayImplicit(LabFrom, LabTo), taint(LabStar
 assignVarMayImplicitCollapsed(Lab, Var1, Var2) :- assignVar(Lab, Var1, Var2).
 assignVarMayImplicitCollapsed(Lab, Var1, Var2) :- assignVarMayImplicit(Lab, Var1, Var2).
 
-.decl mayDepOnPartOne(v:Var, f:VarFact)
-.output mayDepOnPartOne
-mayDepOnPartOne(Var, Fact) :- mayAssignType(_, Var, Fact).
-
-.decl mayDepOnPartTwo(v:Var, f:VarFact)
-.output mayDepOnPartTwo
-mayDepOnPartTwo(Var1, Fact) :- assignVarMayImplicitCollapsed(_, Var1, Var2), mayDepOn(Var2, Fact).
-
 mayDepOn(Var, Fact) :- mayAssignType(_, Var, Fact).
 mayDepOn(Var1, Fact) :- assignVarMayImplicitCollapsed(_, Var1, Var2), mayDepOn(Var2, Fact).
 
@@ -245,10 +240,6 @@ instrMayDepOn(Lab, Fact) :- taint(_, Lab, Var), mayDepOn(Var, Fact).
 mstoreMay(Lab, Offset, Type) :- mstore(Lab, Offset, Var), mayDepOn(Var, Type).
 mstoreMay(LabTo, Offset, Type) :- followsMayImplicit(LabFrom, LabTo), mstoreMay(LabFrom, Offset, Type), ! reassignMemory(LabTo, Offset).
 memoryTagsMayImplicit(Lab, Type) :- mstoreMay(Lab, _, Type).
-
-.decl mstoreMayTwo		(l:Label, v:Var, f:VarFact)
-.output mstoreMayTwo
-mstoreMayTwo(LabTo, Offset, Type) :- followsMayImplicit(LabFrom, LabTo), mstoreMay(LabFrom, Offset, Type), ! reassignMemory(LabTo, Offset).
 
 sstoreMay(Lab, Index, Type) :- sstore(Lab, Index, Var), mayDepOn(Var, Type).
 sstoreMay(LabTo, Index, Type) :- followsMayImplicit(LabFrom, LabTo), sstoreMay(LabFrom, Index, Type), ! reassignStorage(LabTo, Index).
@@ -269,12 +260,4 @@ reassignMemory(Lab, Offset) :- mstore(Lab, Offset, _), !unk(Offset).
 reassignStorage(Lab, Index) :- sstore(Lab, Index, _), !unk(Index).
 reassignMemory(Lab, Offset) :- mstore(Lab, Offset, _), !unk(Offset).
 
-.decl mayDepTest(v:Var, f:VarFact)
-.output mayDepTest
-
-mayDepTest(v, c) :- mayDepOn(v , c), v = 18, c = 2.
-
-.decl callTest      (l: Label, outVar:Var, gas:Var, amount:Var)
-.output callTest
-
-callTest(Lh , a , b , d) :- call(Lh, a, b, d), d = 18.
+assignVarMustDebug(Lab, Var1, Var2) :- assignVar(Lab, Var1, Var2).

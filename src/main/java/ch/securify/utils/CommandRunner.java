@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 
 public class CommandRunner {
 
-    private static boolean DEBUG = true;
+    private static boolean DEBUG = false;
 
     public static String runCommand(String command) throws IOException, InterruptedException {
         Process proc;

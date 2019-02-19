@@ -232,6 +232,10 @@ public abstract class AbstractDataflow {
         count++;
     }
 
+    public static void resetCounter() {
+        count = 0;
+    }
+
     protected void readFixedpoint(String ruleName) throws IOException {
 
         Reader in = new FileReader(WORKSPACE_OUT + "/" + ruleName + ".csv");

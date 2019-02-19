@@ -185,7 +185,12 @@ public class DSLAnalysis {
        // CommandRunner.runCommand("rm -r " + WORKSPACE_OUT);
         CommandRunner.runCommand("rm -rf outDSL" + count);
         CommandRunner.runCommand("mv " + WORKSPACE_OUT + " outDSL" + count);
+        count++;
 
+    }
+
+    public static void resetCounter() {
+        count = 0;
     }
 
     protected void log(String msg) {
@@ -664,10 +669,16 @@ public class DSLAnalysis {
 
     protected void createSLoadRule(Instruction instr, Variable index, Variable var) { //OK
         appendRule("sloadInstr", getCode(instr), getCode(index), getCode(var));
+        if (!index.hasConstantValue()) {
+            createAssignVarMayImplicitRule(instr, var, index);
+        }
     }
 
     protected void createMLoadRule(Instruction instr, Variable offset, Variable var) { //OK
         appendRule("mloadInstr", getCode(instr), getCode(offset), getCode(var));
+        if (!offset.hasConstantValue()) {
+            createAssignVarMayImplicitRule(instr, var, offset);
+        }
     }
 
     public List<DSLPatternResult> getResults() throws IOException {

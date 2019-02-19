@@ -25,7 +25,9 @@
 // Inputs
 //
 .decl assignType        (l:Label, v:Var, f:Fact)
+.decl assignTypeDebug (l:Label, v:Var, f:Fact)
 .decl assignVar		(l:Label, v1: Var, v2: Var)
+.decl assignVarDebug (l:Label, v1: Var, v2: Var)
 .decl follows		(l1: Label, l2: Label)
 .decl jump		(l1: Label, l2: Label, l3: Label)
 .decl tag       (l1: Label)
@@ -74,6 +76,8 @@
 .output storage
 .output reach
 .output mustPrecede
+.output assignTypeDebug
+.output assignVarDebug
 
 
 //
@@ -113,3 +117,6 @@ assignType(Lab, Var, Type) :- memory(Lab, Offset, Type), sha3(Lab, Var, Offset),
 
 reassignStorage(Lab, Index) :- sstore(Lab, Index, _), !unk(Index).
 reassignMemory(Lab, Offset) :- mstore(Lab, Offset, _), !unk(Offset).
+
+assignTypeDebug(Lab, Var, Type) :- assignType(Lab, Var, Type).
+assignVarDebug(Lab, Var1, Var2) :- assignVar(Lab, Var1, Var2).
