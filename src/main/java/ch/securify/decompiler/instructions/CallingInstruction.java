@@ -15,13 +15,10 @@ public abstract class CallingInstruction extends Instruction {
         if (toAddrVar.hasConstantValue()) {
             BigInteger toAddr = BigIntUtil.fromInt256(toAddrVar.getConstantValue());
             // is call to built-in contract
-            final int firstPrecompiledContractAddress = 1;
-            final int lastPrecompiledContractAddress = 8;
-            for (int i = firstPrecompiledContractAddress; i <= lastPrecompiledContractAddress; i++) {
-                if (toAddr.equals(BigInteger.valueOf(i))) {
-                    return true;
-                }
-            }
+            final BigInteger firstPrecompiledContractAddress = BigInteger.valueOf(1);
+            final BigInteger lastPrecompiledContractAddress = BigInteger.valueOf(8);
+            return toAddr.compareTo(firstPrecompiledContractAddress) >= 0 &&
+                    toAddr.compareTo(lastPrecompiledContractAddress) <= 0;
         }
         return false;
     }

@@ -18,12 +18,7 @@
 
 package ch.securify.decompiler.instructions;
 
-import ch.securify.decompiler.Variable;
-import ch.securify.utils.BigIntUtil;
-
-import java.math.BigInteger;
-
-public class CallCode extends Instruction implements _TypeInstruction {
+public class CallCode extends CallingInstruction implements _TypeInstruction {
 
 	@Override
 	public String getStringRepresentation() {
@@ -32,17 +27,13 @@ public class CallCode extends Instruction implements _TypeInstruction {
 				"out_offset: " + getInput()[5] + ", out_size: " + getInput()[6] + ")";
 	}
 
-	public boolean isBuiltInContractCall() {
-		Variable toAddrVar = getInput()[1];
-		if (toAddrVar.hasConstantValue()) {
-			BigInteger toAddr = BigIntUtil.fromInt256(toAddrVar.getConstantValue());
-			if (toAddr.equals(BigInteger.valueOf(1)) || toAddr.equals(BigInteger.valueOf(2)) ||
-					toAddr.equals(BigInteger.valueOf(3)) || toAddr.equals(BigInteger.valueOf(4))) {
-				// is call to built-in contract
-				return true;
-			}
-		}
-		return false;
+	@Override
+	public int getInputMemoryOffset() {
+		return 3;
 	}
 
+	@Override
+	public int getInputMemorySize() {
+		return 4;
+	}
 }

@@ -18,7 +18,7 @@
 
 package ch.securify.decompiler.instructions;
 
-public class DelegateCall extends Instruction implements _TypeInstruction {
+public class DelegateCall extends CallingInstruction implements _TypeInstruction {
 
 	@Override
 	public String getStringRepresentation() {
@@ -27,4 +27,13 @@ public class DelegateCall extends Instruction implements _TypeInstruction {
 				"out_offset: " + getInput()[4] + ", out_size: " + getInput()[5] + ")";
 	}
 
+	@Override
+	public int getInputMemoryOffset() {
+		return 2;
+	}
+
+	@Override
+	public int getInputMemorySize() {
+		return 3;
+	}
 }
