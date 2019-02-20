@@ -100,7 +100,9 @@
 
 //from mayImplicit
 .decl taint		(l1:Label, l2:Label, v:Var)
+.decl taintDebug (l1:Label, l2:Label, v:Var)
 .input taint
+.output taintDebug
 .decl endIf		(l1: Label, l2: Label)
 .input endIf
 .decl unk	(f:VarFact)
@@ -223,6 +225,7 @@ mayFollow(LabFrom, LabTo) :- followsMayImplicit(LabFrom, LabTo).
 mayFollow(LabFrom, LabTo) :- followsMayImplicit(Lab, LabTo), mayFollow(LabFrom, Lab).
 
 taint(LabStart, LabTo, Var) :- followsMayImplicit(LabFrom, LabTo), taint(LabStart, LabFrom, Var), ! endIf(LabStart, LabTo).
+taintDebug(LabStart, LabTo, Var) :- taint(LabStart, LabTo, Var).
 
 assignVarMayImplicitCollapsed(Lab, Var1, Var2) :- assignVar(Lab, Var1, Var2).
 assignVarMayImplicitCollapsed(Lab, Var1, Var2) :- assignVarMayImplicit(Lab, Var1, Var2).

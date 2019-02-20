@@ -53,9 +53,9 @@ public class FileLengthComparator {
 
         for(int i = 0; i < dirsDSL.length; ++i) {
             String DSLFilename = dirsDSL[i].getName();
-            int fileIndex = Integer.parseInt(DSLFilename.substring(6));
-            String noDSLMustFilename = "outNoDSL" + (fileIndex*2);
-            String noDSLMayFilename = "outNoDSL" + (fileIndex*2 +1);
+            String additionalName = DSLFilename.substring(6);
+            String noDSLMustFilename = "outNoDSL" + additionalName + "mustExpl";
+            String noDSLMayFilename = "outNoDSL" + additionalName + "mayImpl";
 
             //System.out.println(DSLFilename + " " + noDSLMustFilename + " " + noDSLMayFilename);
 
@@ -75,16 +75,13 @@ public class FileLengthComparator {
             compareAndPrint(DSLFilename + "/mstoreMay.csv", noDSLMayFilename + "/memory.csv");
             compareAndPrint(DSLFilename + "/mayAssignType.csv", noDSLMayFilename + "/assignTypeDebug.csv");
             compareAndPrint(DSLFilename + "/assignVarMayImplicitCollapsed.csv", noDSLMayFilename + "/assignVarDebug.csv");
+            compareAndPrint(DSLFilename + "/taintDebug.csv", noDSLMayFilename + "/taintDebug.csv");
         }
 
         return;
     }
 
-    public static void main(String[] args) throws IOException, InterruptedException {
-
-        //compareOutput();
-
-
+    private static void compareAllSolFiles() throws IOException, InterruptedException {
         String[] argsDSL = {"-fs", null, "--usedsl"};
         String[] argsNODSL = {"-fs", null};
 
@@ -112,8 +109,6 @@ public class FileLengthComparator {
             Main.main(argsDSL);
             Main.main(argsNODSL);
 
-            DSLAnalysis.resetCounter();
-            AbstractDataflow.resetCounter();
 
             System.setOut(original);
             compareOutput();
@@ -135,9 +130,14 @@ public class FileLengthComparator {
                     e.printStackTrace();
                 }
             });
-            //CommandRunner.runCommand("find -name . 'outDSL*' -exec rm {} \\;");//"rm -rf outDSL*");
-            //CommandRunner.runCommand("rm -rf outNoDSL*");
         }
+    }
+
+    public static void main(String[] args) throws IOException, InterruptedException {
+
+        //compareOutput();
+
+        compareAllSolFiles();
 
         return;
     }

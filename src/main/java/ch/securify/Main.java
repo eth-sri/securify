@@ -229,6 +229,7 @@ public class Main {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            analyzer.copyOutputForDebug("noMethodsDataflow");
             analyzer.dispose();
         } else {
 
@@ -246,7 +247,9 @@ public class Main {
                     List<DSLPatternResult> results = analyzer.getResults();
                     log.println("result size = " + results.size());
                     updateStatusWithDSLPattResults(results);
-                    analyzer.dispose();
+                if(body.get(0) instanceof _VirtualMethodHead)
+                    analyzer.copyOutputForDebug(((_VirtualMethodHead) body.get(0)).getLabel());
+                analyzer.dispose();
             }
         }
 
@@ -474,6 +477,7 @@ public class Main {
                     e.printStackTrace();
                 }
             }
+            dataflow.copyOutputForDebug("noMethodsDataflow");
             dataflow.dispose();
         } else {
             // split instructions into methods and check them independently
@@ -494,6 +498,8 @@ public class Main {
                         e.printStackTrace();
                     }
                 }
+                if(body.get(0) instanceof _VirtualMethodHead)
+                    bodyDataflow.copyOutputForDebug(((_VirtualMethodHead) body.get(0)).getLabel());
                 bodyDataflow.dispose();
             }
 

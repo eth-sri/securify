@@ -31,6 +31,7 @@
 .decl assignVarDebug (l:Label, v1: Var, v2: Var)
 .decl follows		(l1: Label, l2: Label)
 .decl taint		(l1:Label, l2:Label, v:Var)
+.decl taintDebug (l1:Label, l2:Label, v:Var)
 .decl endIf		(l1: Label, l2: Label)
 .decl mload		(l: Label, v:Var, f:VarFact)
 .decl mstore		(l: Label, v:Var, f:VarFact)
@@ -77,6 +78,7 @@
 .output isAfter
 .output assignTypeDebug
 .output assignVarDebug
+.output taintDebug
 
 //
 // Rules
@@ -85,6 +87,9 @@ isAfter(LabFrom, LabTo) :- follows(LabFrom, LabTo).
 isAfter(LabFrom, LabTo) :- follows(Lab, LabTo), isAfter(LabFrom, Lab).
 
 taint(LabStart, LabTo, Var) :- follows(LabFrom, LabTo), taint(LabStart, LabFrom, Var), ! endIf(LabStart, LabTo).
+
+taintDebug(LabStart, LabTo, Var) :- taint(LabStart, LabTo, Var).
+
 
 .decl reachPartOne(v:Var, f:VarFact)
 .output reachPartOne

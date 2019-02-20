@@ -221,20 +221,22 @@ public abstract class AbstractDataflow {
         }
     }
 
-    private static int count = 0;
+    //private static int count = 0;
+
+    public void copyOutputForDebug(String folderName) throws IOException, InterruptedException {
+        runCommand("rm -rf outNoDSL" + folderName);
+        runCommand("mv " + WORKSPACE_OUT + " outNoDSL" + folderName);
+    }
 
     public void dispose() throws IOException, InterruptedException {
         thingToIntegerFileWriter.close();
-        runCommand("rm -r " + WORKSPACE);
-        //runCommand("rm -r " + WORKSPACE_OUT);
-        runCommand("rm -rf outNoDSL" + count);
-        runCommand("mv " + WORKSPACE_OUT + " outNoDSL" + count);
-        count++;
+        runCommand("rm -rf " + WORKSPACE);
+        runCommand("rm -rf " + WORKSPACE_OUT);
     }
 
-    public static void resetCounter() {
+   /* public static void resetCounter() {
         count = 0;
-    }
+    }*/
 
     protected void readFixedpoint(String ruleName) throws IOException {
 
@@ -362,14 +364,10 @@ public abstract class AbstractDataflow {
 
     protected void createAssignTypeRule(Instruction instr, Variable var, Class type) {
         appendRule("assignType", getCode(instr), getCode(var), getCode(type));
-        if(getCode(var) == 72)
-            log("FOUND");
     }
 
     protected void createAssignTopRule(Instruction instr, Variable var) {
         appendRule("assignType", getCode(instr), getCode(var), unk);
-        if(getCode(var) == 72)
-            log("FOUND");
     }
 
     protected void createEndIfRule(Instruction start, Instruction end) {
@@ -475,7 +473,7 @@ public abstract class AbstractDataflow {
                     || instr instanceof Difficulty
                     || instr instanceof SLoad
                     || instr instanceof Address) {
-                log("created assign type rule " + getCode(instr.getOutput()[0]) + " " + getCode(instr.getClass()));
+                log("created assign type rule " + getCode(instr)  + " " + getCode(instr.getOutput()[0]) + " " + getCode(instr.getClass()));
 
                 createAssignTypeRule(instr, instr.getOutput()[0], instr.getClass());
             } else if (instr instanceof Div) {
@@ -490,26 +488,36 @@ public abstract class AbstractDataflow {
 
                     continue;
                 }
+                log("created assign type rule " + getCode(instr) + " " + getCode(instr.getOutput()[0]) + " " + getCode(instr.getClass()));
                 createAssignTypeRule(instr, instr.getOutput()[0], instr.getClass());
             } else if (instr instanceof _VirtualMethodHead) {
                 for (Variable arg : instr.getOutput()) {
                     log("Type of " + arg + " is unk");
                     createAssignTopRule(instr, arg);
+                    appendRule("assignType", getCode(instr), getCode(arg), unk);
+
                     // assign the arguments as an abstract type (to check later
                     // for missing input validation)
+                    log("created assign type rule " + getCode(instr) + " " + getCode(arg) + " " + getCode(arg));
                     appendRule("assignType", getCode(instr), getCode(arg), getCode(arg));
                     // tag the arguments to depend on user input (CallDataLoad)
                     createAssignTypeRule(instr, arg, CallDataLoad.class);
+                    log("created assign type rule " + getCode(instr) + " " + getCode(arg) + " " + getCode(CallDataLoad.class));
                 }
             } else if (instr instanceof Call || instr instanceof StaticCall) {
                 log("Type of " + instr.getOutput()[0] + " is Call");
                 createAssignTopRule(instr, instr.getOutput()[0]);
+                appendRule("assignType", getCode(instr), getCode(instr.getOutput()[0]), unk);
+
                 // assign the return value as an abstract type (to check later
                 // for unhandled exception)
                 appendRule("assignType", getCode(instr), getCode(instr.getOutput()[0]), getCode(instr.getOutput()[0]));
+                log("created assign type rule " + getCode(instr) + " " + getCode(instr.getOutput()[0]) + " " + getCode(instr.getOutput()[0]));
             } else if (instr instanceof BlockHash) {
                 log("Type of " + instr.getOutput()[0] + " is BlockHash");
                 createAssignTypeRule(instr, instr.getOutput()[0], instr.getClass());
+                log("created assign type rule " + getCode(instr) + " " + getCode(instr.getOutput()[0]) + " " + getCode(instr.getClass()));
+
                 // TODO: double check whether to propagate the type of the
                 // argument to the output of blockhash
                 createAssignVarRule(instr, instr.getOutput()[0], instr.getInput()[0]);
@@ -570,8 +578,11 @@ public abstract class AbstractDataflow {
                     Variable storageVar = getStorageVarForIndex(storageOffsetValue);
 
                     // big hack: adding an assignType predicate below
+                    log("created assign type rule " + getCode(instr) + " " + getCode(lhs) + " " + getCode(storageVar));
                     appendRule("assignType", getCode(instr), getCode(lhs), getCode(storageVar));
+
                 } else {
+                    log("created assign type rule " + getCode(instr) + " " + getCode(lhs) + " " + unk);
                     appendRule("assignType", getCode(instr), getCode(lhs), unk);
                 }
             }
@@ -584,8 +595,10 @@ public abstract class AbstractDataflow {
                     Variable memoryVar = getMemoryVarForIndex(memoryOffsetValue);
 
                     // big hack: adding an assignType predicate below
+                    log("created assign type rule " + getCode(instr) + " " + getCode(lhs) + " " + getCode(memoryVar));
                     appendRule("assignType", getCode(instr), getCode(lhs), getCode(memoryVar));
                 } else {
+                    log("created assign type rule " + getCode(instr) + " " + getCode(lhs) + " " + getCode(unk));
                     appendRule("assignType", getCode(instr), getCode(lhs), unk);
                 }
             }

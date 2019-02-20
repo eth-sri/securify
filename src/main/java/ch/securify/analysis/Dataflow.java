@@ -39,6 +39,12 @@ public class Dataflow extends AbstractDataflow {
     }
 
     @Override
+    public void copyOutputForDebug(String folderName) throws IOException, InterruptedException {
+        mustExplicitDataflow.copyOutputForDebug(folderName + "mustExpl");
+        mayImplicitDataflow.copyOutputForDebug(folderName + "mayImpl");
+    }
+
+    @Override
     public void dispose() throws IOException, InterruptedException {
         mustExplicitDataflow.dispose();
         mayImplicitDataflow.dispose();

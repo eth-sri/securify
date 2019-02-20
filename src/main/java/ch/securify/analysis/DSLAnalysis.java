@@ -175,23 +175,22 @@ public class DSLAnalysis {
         }
     }
 
-    private static int count = 0;
+    public void copyOutputForDebug(String folderName) throws IOException, InterruptedException {
+        CommandRunner.runCommand("rm -rf outDSL" + folderName);
+        CommandRunner.runCommand("mv " + WORKSPACE_OUT + " outDSL" + folderName);
+    }
 
     public void dispose() throws IOException, InterruptedException {
         if(CREATE_THING_TO_INTEGER_FILE_MAP)
             thingToIntegerFileWriter.close();
 
-        CommandRunner.runCommand("rm -r " + WORKSPACE);
-       // CommandRunner.runCommand("rm -r " + WORKSPACE_OUT);
-        CommandRunner.runCommand("rm -rf outDSL" + count);
-        CommandRunner.runCommand("mv " + WORKSPACE_OUT + " outDSL" + count);
-        count++;
-
+        CommandRunner.runCommand("rm -rf " + WORKSPACE);
+        CommandRunner.runCommand("rm -rf " + WORKSPACE_OUT);
     }
 
-    public static void resetCounter() {
+    /*public static void resetCounter() {
         count = 0;
-    }
+    }*/
 
     protected void log(String msg) {
         if (DEBUG)
@@ -463,7 +462,9 @@ public class DSLAnalysis {
 
                     // big hack: adding an assignType predicate below
                     //appendRule("assignType", getCode(instr), getCode(lhs), getCode(storageVar));
+                    log("created assign type rule " + getCode(instr) + " " + getCode(lhs) + " " + storageOffsetValue);
                     appendRule("assignType", getCode(instr), getCode(lhs), storageOffsetValue);
+
                 } else {
                     appendRule("assignType", getCode(instr), getCode(lhs), unk);
                 }
