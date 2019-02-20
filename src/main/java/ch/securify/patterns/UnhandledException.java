@@ -39,7 +39,7 @@ public class UnhandledException extends AbstractInstructionPattern {
 
     @Override
     protected boolean applicable(Instruction instr, AbstractDataflow dataflow) {
-        return instr instanceof Call;
+        return instr instanceof Call && !((Call) instr).isBuiltInContractCall();
     }
 
     @Override

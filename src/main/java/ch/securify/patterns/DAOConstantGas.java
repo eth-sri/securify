@@ -42,7 +42,7 @@ public class DAOConstantGas extends AbstractInstructionPattern {
 
     @Override
     protected boolean applicable(Instruction instr, AbstractDataflow dataflow) {
-        if (!(instr instanceof Call))
+        if (!(instr instanceof Call) || ((Call) instr).isBuiltInContractCall())
             return false;
 
         Variable value = instr.getInput()[2];
