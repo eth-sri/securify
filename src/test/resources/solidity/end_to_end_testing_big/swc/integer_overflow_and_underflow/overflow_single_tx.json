@@ -23,17 +23,8 @@
       },
       "MissingInputValidation": {
         "conflicts": [],
-        "safe": [
-          11,
-          29,
-          34,
-          39
-        ],
-        "violations": [
-          14,
-          19,
-          24
-        ],
+        "safe": [],
+        "violations": [],
         "warnings": []
       },
       "RepeatedCall": {
@@ -80,6 +71,6 @@
     "securifyErrors": {
       "errors": []
     },
-    "version": "v0-139-g21ceb5f-dirty"
+    "version": "v0-140-ga6b9b3b-dirty"
   }
 }

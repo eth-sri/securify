@@ -183,7 +183,7 @@
     "securifyErrors": {
       "errors": []
     },
-    "version": "v0-139-g21ceb5f-dirty"
+    "version": "v0-140-ga6b9b3b-dirty"
   },
   "src/test/resources/solidity/end_to_end_testing_quick/kybernetwork_flattened.sol:PermissionGroups": {
     "results": {
@@ -269,7 +269,7 @@
     "securifyErrors": {
       "errors": []
     },
-    "version": "v0-139-g21ceb5f-dirty"
+    "version": "v0-140-ga6b9b3b-dirty"
   },
   "src/test/resources/solidity/end_to_end_testing_quick/kybernetwork_flattened.sol:Utils": {
     "results": {
@@ -339,7 +339,7 @@
     "securifyErrors": {
       "errors": []
     },
-    "version": "v0-139-g21ceb5f-dirty"
+    "version": "v0-140-ga6b9b3b-dirty"
   },
   "src/test/resources/solidity/end_to_end_testing_quick/kybernetwork_flattened.sol:Utils2": {
     "results": {
@@ -366,9 +366,7 @@
       "MissingInputValidation": {
         "conflicts": [],
         "safe": [],
-        "violations": [
-          304
-        ],
+        "violations": [],
         "warnings": []
       },
       "RepeatedCall": {
@@ -417,7 +415,7 @@
     "securifyErrors": {
       "errors": []
     },
-    "version": "v0-139-g21ceb5f-dirty"
+    "version": "v0-140-ga6b9b3b-dirty"
   },
   "src/test/resources/solidity/end_to_end_testing_quick/kybernetwork_flattened.sol:Withdrawable": {
     "results": {
@@ -519,6 +517,6 @@
     "securifyErrors": {
       "errors": []
     },
-    "version": "v0-139-g21ceb5f-dirty"
+    "version": "v0-140-ga6b9b3b-dirty"
   }
 }

@@ -17,21 +17,16 @@
       },
       "LockedEther": {
         "conflicts": [],
-        "safe": [],
-        "violations": [],
-        "warnings": [
+        "safe": [
           7
-        ]
+        ],
+        "violations": [],
+        "warnings": []
       },
       "MissingInputValidation": {
         "conflicts": [],
-        "safe": [
-          17,
-          28
-        ],
-        "violations": [
-          22
-        ],
+        "safe": [],
+        "violations": [],
         "warnings": []
       },
       "RepeatedCall": {
@@ -86,6 +81,6 @@
     "securifyErrors": {
       "errors": []
     },
-    "version": "v0-139-g21ceb5f-dirty"
+    "version": "v0-140-ga6b9b3b-dirty"
   }
 }

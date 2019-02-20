@@ -23,10 +23,7 @@
       },
       "MissingInputValidation": {
         "conflicts": [],
-        "safe": [
-          57,
-          83
-        ],
+        "safe": [],
         "violations": [],
         "warnings": []
       },
@@ -72,7 +69,7 @@
     "securifyErrors": {
       "errors": []
     },
-    "version": "v0-139-g21ceb5f-dirty"
+    "version": "v0-140-ga6b9b3b-dirty"
   },
   "src/test/resources/solidity/reentrancy2.sol:SafeMath": {
     "results": {
@@ -142,7 +139,7 @@
     "securifyErrors": {
       "errors": []
     },
-    "version": "v0-139-g21ceb5f-dirty"
+    "version": "v0-140-ga6b9b3b-dirty"
   },
   "src/test/resources/solidity/reentrancy2.sol:Vault": {
     "results": {
@@ -248,6 +245,6 @@
     "securifyErrors": {
       "errors": []
     },
-    "version": "v0-139-g21ceb5f-dirty"
+    "version": "v0-140-ga6b9b3b-dirty"
   }
 }

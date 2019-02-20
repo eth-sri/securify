@@ -23,9 +23,7 @@
       },
       "MissingInputValidation": {
         "conflicts": [],
-        "safe": [
-          18
-        ],
+        "safe": [],
         "violations": [],
         "warnings": []
       },
@@ -69,7 +67,7 @@
     "securifyErrors": {
       "errors": []
     },
-    "version": "v0-139-g21ceb5f-dirty"
+    "version": "v0-140-ga6b9b3b-dirty"
   },
   "src/test/resources/solidity/end_to_end_testing_big/swc/assert_violations/constructor_create.sol:ConstructorCreate": {
     "results": {
@@ -95,9 +93,7 @@
       },
       "MissingInputValidation": {
         "conflicts": [],
-        "safe": [
-          10
-        ],
+        "safe": [],
         "violations": [],
         "warnings": []
       },
@@ -147,6 +143,6 @@
     "securifyErrors": {
       "errors": []
     },
-    "version": "v0-139-g21ceb5f-dirty"
+    "version": "v0-140-ga6b9b3b-dirty"
   }
 }

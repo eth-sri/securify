@@ -67,7 +67,7 @@
     "securifyErrors": {
       "errors": []
     },
-    "version": "v0-139-g21ceb5f-dirty"
+    "version": "v0-140-ga6b9b3b-dirty"
   },
   "src/test/resources/solidity/end_to_end_testing_big/swc/typographical_error/typo_safe_math.sol:TypoSafeMath": {
     "results": {
@@ -142,6 +142,6 @@
     "securifyErrors": {
       "errors": []
     },
-    "version": "v0-139-g21ceb5f-dirty"
+    "version": "v0-140-ga6b9b3b-dirty"
   }
 }
