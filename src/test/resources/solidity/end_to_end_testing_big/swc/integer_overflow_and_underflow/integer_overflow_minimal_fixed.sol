@@ -2,7 +2,7 @@
 //Post-transaction effect: overflow escapes to publicly-readable storage
 //Safe version
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 contract IntegerOverflowMinimal {
     uint public count = 1;

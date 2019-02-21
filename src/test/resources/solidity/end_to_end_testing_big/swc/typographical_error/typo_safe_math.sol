@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 /** Taken from the OpenZeppelin github
  * @title SafeMath
@@ -72,7 +72,7 @@ contract TypoSafeMath {
     bool public win = false;
 
     function addOne() public {
-        numberOne =+ 1;
+        numberOne = 1;
     }
 
     function addOneCorrect() public {

@@ -2,7 +2,7 @@
  * @source: ChainSecurity
  * @author: Anton Permenev
  */
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 contract MappingPerformance2sets{
 
@@ -14,11 +14,11 @@ contract MappingPerformance2sets{
     mapping(bytes32=>uint) m5;
     uint b;
 
-    constructor(){
+    constructor() public {
         b = 10;
     }
 
-    function set(bytes32 a, uint cond){
+    function set(bytes32 a, uint cond) public {
         if(cond == 0){
             m0[a] = 5;
         }else if(cond == 1){
@@ -32,7 +32,7 @@ contract MappingPerformance2sets{
         }
     }
     function check(bytes32 a0, uint cond0,
-                  bytes32 a1, uint cond1, bytes32 a){
+                  bytes32 a1, uint cond1, bytes32 a) public {
                       set(a0, cond0);
                       set(a1, cond1);
                       assert(m5[a] == 0);

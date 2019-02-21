@@ -4,17 +4,17 @@
  * Modified by Gerhard Wagner
  */
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 contract MyContract {
 
     address owner;
 
-    function MyContract() public {
+    constructor() public {
         owner = msg.sender;
     }
 
-    function sendTo(address receiver, uint amount) public {
+    function sendTo(address payable receiver, uint amount) public {
       require(msg.sender == owner);
       receiver.transfer(amount);
     }

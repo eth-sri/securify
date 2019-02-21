@@ -1,14 +1,15 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 contract ReturnValue {
 
-  address callee = 0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef;
+  address callee = 0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF;
 
   function callchecked() public {
-  	require(callee.call());
+  	(bool success, bytes memory data) = (callee.call(""));
+        require(success);
   }
 
   function callnotchecked() public {
-    callee.call();
+    callee.call("");
   }
 }

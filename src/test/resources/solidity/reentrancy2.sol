@@ -1,4 +1,4 @@
-pragma solidity ^0.4.21;
+pragma solidity ^0.5.0;
 
 
 
@@ -65,7 +65,7 @@ contract Ownable {
    * @dev The Ownable constructor sets the original `owner` of the contract to the sender
    * account.
    */
-  function Ownable() public {
+  constructor() public {
     owner = msg.sender;
   }
 
@@ -98,8 +98,8 @@ contract Vault is Ownable {
   using SafeMath for uint256;
 
   mapping (address => uint256) public deposited;
-  address[] fundsOwners;
-  address public wallet;
+  address payable[] fundsOwners;
+  address payable public wallet;
 
   event Refunded(address beneficiary, uint256 weiAmount);
   event Deposited(address beneficiary, uint256 weiAmount);
@@ -109,7 +109,7 @@ contract Vault is Ownable {
   /**
    * @param _wallet Vault address
    */
-  function Vault(address _wallet) public {
+  constructor(address payable _wallet) public {
     require(_wallet != address(0));
     wallet = _wallet;
   }
@@ -117,35 +117,35 @@ contract Vault is Ownable {
   /**
    * @param beneficiary Investor address
    */
-  function deposit(address beneficiary) onlyOwner public payable {
+  function deposit(address payable beneficiary) onlyOwner public payable {
     deposited[beneficiary] = deposited[beneficiary].add(msg.value);
     fundsOwners.push(beneficiary);
-    Deposited(beneficiary, msg.value);
+    emit Deposited(beneficiary, msg.value);
   }
 
   /**
    * @param beneficiary Investor address
    */
-  function release(address beneficiary, uint256 overflow) onlyOwner public {
+  function release(address payable beneficiary, uint256 overflow) onlyOwner public {
     uint256 amount = deposited[beneficiary].sub(overflow);
     deposited[beneficiary] = 0;
 
     wallet.transfer(amount);
     if (overflow > 0) {
       beneficiary.transfer(overflow);
-      PartialRefund(beneficiary, overflow);
+      emit PartialRefund(beneficiary, overflow);
     }
-    Released(beneficiary, amount);
+    emit Released(beneficiary, amount);
   }
 
   /**
    * @param beneficiary Investor address
    */
-  function refund(address beneficiary) onlyOwner public {
+  function refund(address payable beneficiary) onlyOwner public {
     uint256 depositedValue = deposited[beneficiary];
     deposited[beneficiary] = 0;
     
-    Refunded(beneficiary, depositedValue);
+    emit Refunded(beneficiary, depositedValue);
     beneficiary.transfer(depositedValue);
   }
 
@@ -153,7 +153,7 @@ contract Vault is Ownable {
    * refunds all funds on the vault to the corresponding beneficiaries
    * @param indexes list of indexes to look up for in the fundsOwner array to refund
    */
-  function refundAll(uint[] indexes) onlyOwner public {
+  function refundAll(uint[] memory indexes) onlyOwner public {
     require(indexes.length <= fundsOwners.length);
     for (uint i = 0; i < indexes.length; i++) {
       refund(fundsOwners[indexes[i]]);

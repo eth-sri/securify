@@ -3,12 +3,12 @@
  * @author: Anton Permenev
  */
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 contract ConstructorCreate{
     B b = new B();
 
-    function check(){
+    function check() public {
         assert(b.foo() == 10);
     }
 
@@ -16,7 +16,7 @@ contract ConstructorCreate{
 
 contract B{
 
-    function foo() returns(uint){
+    function foo() public returns(uint){
         return 11;
     }
 }

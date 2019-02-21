@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 /**
  * @title MultiOwnable
@@ -20,7 +20,7 @@ contract MultiOwnable {
   * @dev Throws if called by any account other than the owner.
   */
   modifier onlyOwner() {
-    require(owners[msg.sender] != 0);
+    require(owners[msg.sender] != address(0));
     _;
   }
   
@@ -29,7 +29,7 @@ contract MultiOwnable {
   * Note that the "onlyOwner" modifier is missing here.
   */ 
   function newOwner(address _owner) external returns (bool) {
-    require(_owner != 0);
+    require(_owner != address(0));
     owners[_owner] = msg.sender;
     return true;
   }
@@ -38,19 +38,19 @@ contract MultiOwnable {
     * @dev Deleting owners
     */
   function deleteOwner(address _owner) onlyOwner external returns (bool) {
-    require(owners[_owner] == msg.sender || (owners[_owner] != 0 && msg.sender == root));
-    owners[_owner] = 0;
+    require(owners[_owner] == msg.sender || (owners[_owner] != address(0) && msg.sender == root));
+    owners[_owner] = address(0);
     return true;
   }
 }
 
 contract TestContract is MultiOwnable {
   
-  function withdrawAll() onlyOwner {
-    msg.sender.transfer(this.balance);
+  function withdrawAll() onlyOwner public {
+    msg.sender.transfer(address(this).balance);
   }
 
-  function() payable {
+  function() payable external {
   }
 
 }

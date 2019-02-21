@@ -2,12 +2,12 @@
  * @source: ChainSecurity
  * @author: Anton Permenev
  */
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 contract ConstructorCreateArgument{
     B b = new B(11);
 
-    function check(){
+    function check() public {
         assert(b.foo() == 10);
     }
 
@@ -16,11 +16,11 @@ contract ConstructorCreateArgument{
 contract B{
 
     uint x_;
-    constructor(uint x){
+    constructor(uint x) public {
         x_ = x;
     }
 
-    function foo() returns(uint){
+    function foo() public returns(uint) {
         return x_;
     }
 }

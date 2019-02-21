@@ -3,7 +3,7 @@
  * @author: Atzei N., Bartoletti M., Cimoli T
  * Modified by Bernhard Mueller, Josselin Feist
  */
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 contract SimpleDAO {
   mapping (address => uint) public credit;
@@ -15,7 +15,8 @@ contract SimpleDAO {
   function withdraw(uint amount) public {
     if (credit[msg.sender]>= amount) {
       credit[msg.sender]-=amount;
-      require(msg.sender.call.value(amount)());
+      (bool success, bytes memory data) = msg.sender.call.value(amount)("");
+      require(success);
     }
   }  
 

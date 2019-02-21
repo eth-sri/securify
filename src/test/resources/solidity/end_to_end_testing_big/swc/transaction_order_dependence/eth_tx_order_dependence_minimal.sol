@@ -3,14 +3,14 @@
  * @author: Suhabe Bugrara
  */
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 contract EthTxOrderDependenceMinimal {
-    address public owner;
+    address payable public owner;
     bool public claimed;
     uint public reward;
 
-    function EthTxOrderDependenceMinimal() public {
+    constructor() public {
         owner = msg.sender;
     }
 
@@ -22,7 +22,7 @@ contract EthTxOrderDependenceMinimal {
         reward = msg.value;
     }
 
-    function claimReward(uint256 submission) {
+    function claimReward(uint256 submission) public {
         require (!claimed);
         require(submission < 10);
 

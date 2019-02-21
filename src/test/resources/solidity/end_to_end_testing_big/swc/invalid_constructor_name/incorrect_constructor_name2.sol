@@ -5,10 +5,10 @@
  */
 
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 contract Missing{
-    address private owner;
+    address payable private owner;
 
     modifier onlyowner {
         require(msg.sender==owner);
@@ -21,12 +21,12 @@ contract Missing{
         owner = msg.sender;
     }
 
-    function () payable {} 
+    function () payable external {} 
 
     function withdraw() 
         public 
         onlyowner
     {
-       owner.transfer(this.balance);
+       owner.transfer(address(this).balance);
     }
 }

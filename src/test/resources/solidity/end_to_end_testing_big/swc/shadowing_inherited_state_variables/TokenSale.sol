@@ -1,11 +1,11 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 contract Tokensale {
     uint hardcap = 10000 ether;
 
-    function Tokensale() {}
+    constructor() public {}
 
-    function fetchCap() public constant returns(uint) {
+    function fetchCap() public view returns(uint) {
         return hardcap;
     }
 }
@@ -13,5 +13,5 @@ contract Tokensale {
 contract Presale is Tokensale {
     uint hardcap = 1000 ether;
 
-    function Presale() Tokensale() {}
+    constructor() Tokensale() public {}
 }

@@ -1,6 +1,6 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 contract C{
-  function() public payable{
+  function() external payable{
     selfdestruct(address(0x123));
   }
 }

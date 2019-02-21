@@ -2,24 +2,24 @@
 
 contract DeprecatedSimple {
 	
-	function useDeprecated() public constant {
+	function useDeprecated() public {
 
 		// Do everything that's deprecated, then commit suicide.
 
-		bytes32 blockhash = block.blockhash(0);
-		bytes32 hashofhash = sha3(blockhash);
+		bytes32 blockhash = blockhash(0);
+		bytes32 hashofhash = keccak256(abi.encodePacked(blockhash));
 
-		uint gas = msg.gas;
+		uint gas = gasleft();
 
 		if (gas == 0) {
-			throw;
+			assert(false);
 		}
 
-		address(this).callcode();
+		address(this).delegatecall("");
 
-		suicide(address(0));
+		selfdestruct(address(0));
 	}
 
-	function () public {}
+	function () external {}
 
 }

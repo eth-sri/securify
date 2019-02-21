@@ -1,11 +1,11 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 contract MarketPlace {
     uint balance = 0;
     
-    function noReentrancy() {
+    function noReentrancy() public {
         uint x = balance;
         balance = 0;
-        msg.sender.call.value(x)();
+        msg.sender.call.value(x)("");
     }
     
     // function reentrancy() {

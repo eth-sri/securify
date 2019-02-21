@@ -1,12 +1,12 @@
 contract Game {
-    address winner;
+    address payable winner;
 
-    function play(bytes guess) {
-        if (keccak256(guess) == 0xDEADBEEF) {
+    function play(bytes memory guess) public {
+        if (uint(keccak256(guess)) == 0xDEADBEEF) {
             winner = msg.sender;
         }
     }
-    function getReward() {
+    function getReward() payable public {
         winner.transfer(msg.value);
     }
 }

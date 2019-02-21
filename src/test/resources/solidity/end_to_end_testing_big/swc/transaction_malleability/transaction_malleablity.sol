@@ -1,10 +1,10 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 contract transaction_malleablity{
   mapping(address => uint256) balances;
   mapping(bytes32 => bool) signatureUsed;
 
-  constructor(address[] owners, uint[] init){
+  constructor(address[] memory owners, uint[] memory init) public {
     require(owners.length == init.length);
     for(uint i=0; i < owners.length; i ++){
       balances[owners[i]] = init[i];
@@ -12,7 +12,7 @@ contract transaction_malleablity{
   }
 
   function transfer(
-        bytes _signature,
+        bytes memory _signature,
         address _to,
         uint256 _value,
         uint256 _gasPrice,
@@ -33,7 +33,7 @@ contract transaction_malleablity{
     }
 
     function recoverTransferPreSigned(
-        bytes _sig,
+        bytes memory _sig,
         address _to,
         uint256 _value,
         uint256 _gasPrice,
@@ -53,7 +53,8 @@ contract transaction_malleablity{
       public
       view
     returns (bytes32 txHash) {
-        return keccak256(address(this), bytes4(0x1296830d), _to, _value, _gasPrice, _nonce);
+        return keccak256(abi.encodePacked(address(this), bytes4(0x1296830d), _to, _value,
+                                          _gasPrice, _nonce));
     }
 
     function getSignHash(bytes32 _hash)
@@ -61,10 +62,10 @@ contract transaction_malleablity{
       pure
     returns (bytes32 signHash)
     {
-        return keccak256("\x19Ethereum Signed Message:\n32", _hash);
+        return keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", _hash));
     }
 
-    function ecrecoverFromSig(bytes32 hash, bytes sig)
+    function ecrecoverFromSig(bytes32 hash, bytes memory sig)
       public
       pure
     returns (address recoveredAddress)

@@ -3,10 +3,10 @@
  * @author: Suhabe Bugrara
  */
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 contract AssertConstructor {
-    function AssertConstructor() public {
+    constructor() public {
         assert(false);
     }
 }

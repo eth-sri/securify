@@ -1,7 +1,7 @@
 //Single transaction overflow
 //Post-transaction effect: overflow never escapes function
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 contract IntegerOverflowBenign1 {
     uint public count = 1;

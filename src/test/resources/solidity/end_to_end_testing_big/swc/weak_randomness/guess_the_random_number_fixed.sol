@@ -3,7 +3,7 @@
  * @author: Steve Marx
  */
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 contract GuessTheRandomNumberChallenge {
     uint8 answer;
@@ -11,7 +11,7 @@ contract GuessTheRandomNumberChallenge {
     uint commitBlock;
     address guesser;
 
-    function GuessTheRandomNumberChallenge() public payable {
+    constructor() public payable {
         require(msg.value == 1 ether);
     }
 

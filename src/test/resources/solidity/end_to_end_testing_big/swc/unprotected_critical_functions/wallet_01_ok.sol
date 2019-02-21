@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 /* User can add pay in and withdraw Ether.
    Nobody can withdraw more Ether than they paid in.
@@ -31,9 +31,9 @@ contract Wallet {
 
     // In an emergency the owner can migrate  allfunds to a different address.
 
-    function migrateTo(address to) public {
+    function migrateTo(address payable to) public {
         require(creator == msg.sender);
-        to.transfer(this.balance);
+        to.transfer(address(this).balance);
     }
 
 }

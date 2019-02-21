@@ -24,7 +24,7 @@ contract Token{
         balances[msg.sender] += 1;
     }
  
-   function test_invariants() {
+   function test_invariants() public {
       assert(balances[msg.sender] <= 1000);
   }
 }

@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 /** Taken from the OpenZeppelin github
  * @title SafeMath
@@ -77,7 +77,7 @@ contract ERC20 {
 
   uint256 private _totalSupply;
 
-  constructor(uint totalSupply){
+  constructor(uint totalSupply) public{
     _balances[msg.sender] = totalSupply;
   }
 

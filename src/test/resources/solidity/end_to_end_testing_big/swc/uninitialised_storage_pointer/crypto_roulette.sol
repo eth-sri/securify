@@ -1,7 +1,7 @@
 /*
  * @source: https://github.com/thec00n/smart-contract-honeypots/blob/master/CryptoRoulette.sol
  */
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 // CryptoRoulette
 //
@@ -23,27 +23,28 @@ contract CryptoRoulette {
     }
     Game[] public gamesPlayed;
 
-    function CryptoRoulette() public {
+    constructor() public {
         ownerAddr = msg.sender;
         shuffle();
     }
 
     function shuffle() internal {
         // randomly set secretNumber with a value between 1 and 20
-        secretNumber = uint8(sha3(now, block.blockhash(block.number-1))) % 20 + 1;
+        secretNumber = uint8(uint(keccak256(abi.encodePacked(now,
+                                                             blockhash(block.number-1))))) % 20 + 1;
     }
 
     function play(uint256 number) payable public {
         require(msg.value >= betPrice && number <= 10);
 
-        Game game;
+        Game memory game;
         game.player = msg.sender;
         game.number = number;
         gamesPlayed.push(game);
 
         if (number == secretNumber) {
             // win!
-            msg.sender.transfer(this.balance);
+            msg.sender.transfer(address(this).balance);
         }
 
         shuffle();
@@ -52,9 +53,9 @@ contract CryptoRoulette {
 
     function kill() public {
         if (msg.sender == ownerAddr && now > lastPlayed + 1 days) {
-            suicide(msg.sender);
+            selfdestruct(msg.sender);
         }
     }
 
-    function() public payable { }
+    function() external payable { }
 }

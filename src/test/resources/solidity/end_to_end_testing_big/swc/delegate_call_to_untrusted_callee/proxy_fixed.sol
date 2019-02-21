@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 contract Proxy {
 
@@ -19,8 +19,9 @@ contract Proxy {
   	callee = newCallee;
   }
 
-  function forward(bytes _data) public {
-    require(callee.delegatecall(_data));
+  function forward(bytes memory _data) public {
+    (bool success, bytes memory data) = (callee.delegatecall(_data));
+    require(success);
   }
 
 }

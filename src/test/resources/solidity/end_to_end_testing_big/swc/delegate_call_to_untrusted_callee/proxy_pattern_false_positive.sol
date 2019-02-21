@@ -1,11 +1,13 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 contract proxy{
   address owner;
 
-  function proxyCall(address _to, bytes _data) external {
-    require( !_to.delegatecall(_data));
+  function proxyCall(address _to, bytes calldata _data) external {
+    (bool success, bytes memory data) =  _to.delegatecall(_data);
+    require(!success);
   }
+
   function withdraw() external{
     require(msg.sender == owner);
     msg.sender.transfer(address(this).balance);

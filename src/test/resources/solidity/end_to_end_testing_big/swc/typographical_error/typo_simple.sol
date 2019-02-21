@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 contract TypoSimple {
 
@@ -6,7 +6,7 @@ contract TypoSimple {
     bool win = false;
 
     function addOne() public {
-        onlyOne =+ 1;
+        onlyOne = 1;
         if(onlyOne>1) {
             win = true;
         }

@@ -1,8 +1,8 @@
 contract MarketPlace {
-    function deposit() payable {
+    function deposit() payable public {
     }
 
-    function transfer() {
+    function transfer() payable public {
         uint x = msg.value;
     }
 }

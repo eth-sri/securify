@@ -4,7 +4,7 @@
  * Modified by Gerhard Wagner
  */
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 contract HashForEther {
 
@@ -15,6 +15,6 @@ contract HashForEther {
      }
 
      function _sendWinnings() internal{
-         msg.sender.transfer(this.balance);
+         msg.sender.transfer(address(this).balance);
      }
 }

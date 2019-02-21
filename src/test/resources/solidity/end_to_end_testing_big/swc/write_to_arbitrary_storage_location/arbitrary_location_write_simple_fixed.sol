@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 contract Wallet {
     uint[] private bonusCodes;
@@ -9,7 +9,7 @@ contract Wallet {
         owner = msg.sender;
     }
 
-    function () public payable {
+    function () external payable {
     }
 
     function PushBonusCode(uint c) public {

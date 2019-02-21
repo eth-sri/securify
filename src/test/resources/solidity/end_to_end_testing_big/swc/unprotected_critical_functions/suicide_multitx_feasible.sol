@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 contract SuicideMultiTxFeasible {
     uint256 private initialized = 0;
@@ -8,7 +8,7 @@ contract SuicideMultiTxFeasible {
         initialized = 1;
     }
 
-    function run(uint256 input) {
+    function run(uint256 input) public {
         if (initialized == 0) {
             return;
         }

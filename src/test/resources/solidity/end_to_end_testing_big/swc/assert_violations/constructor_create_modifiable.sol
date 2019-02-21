@@ -6,12 +6,12 @@
  * - ContructorCreateModifiable.check()
  */
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 contract ContructorCreateModifiable{
     B b = new B(10);
 
-    function check(){
+    function check() public {
         assert(b.foo() == 10);
     }
 
@@ -20,15 +20,15 @@ contract ContructorCreateModifiable{
 contract B{
 
     uint x_;
-    constructor(uint x){
+    constructor(uint x) public {
         x_ = x;
     }
 
-    function foo() returns(uint){
+    function foo()  public returns(uint){
         return x_;
     }
 
-    function set_x(uint x){
+    function set_x(uint x) public {
         x_ = x;
     }
 }

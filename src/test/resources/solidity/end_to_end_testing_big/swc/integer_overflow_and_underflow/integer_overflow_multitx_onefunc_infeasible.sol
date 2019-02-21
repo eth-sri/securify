@@ -6,7 +6,7 @@
 //Multi-transactional, single function
 //Overflow infeasible because arithmetic instruction not reachable
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 contract IntegerOverflowMultiTxOneFuncInfeasible {
     uint256 private initialized = 0;

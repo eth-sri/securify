@@ -4,16 +4,16 @@
  * Modified by Bernhard Mueller
  */
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 contract Refunder {
 	
-address[] private refundAddresses;
+address payable[] private refundAddresses;
 mapping (address => uint) public refunds;
 
-	constructor() {
+	constructor() public {
 		refundAddresses.push(0x79B483371E87d664cd39491b5F06250165e4b184);
-		refundAddresses.push(0x79B483371E87d664cd39491b5F06250165e4b185);
+		refundAddresses.push(0x79B483371E87d664cd39491b5f06250165e4b185);
 	}
 
 	// bad
