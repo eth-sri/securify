@@ -179,6 +179,9 @@ public class DSLAnalysis {
         CommandRunner.runCommand("mv " + WORKSPACE_OUT + " outDSL" + folderName);
         CommandRunner.runCommand("mv " + WORKSPACE + "/assignType.facts" + " outDSL" + folderName + "/assignType.facts");
         CommandRunner.runCommand("mv " + WORKSPACE + "/sstore.facts" + " outDSL" + folderName + "/sstore.facts");
+        CommandRunner.runCommand("mv " + WORKSPACE + "/call.facts" + " outDSL" + folderName + "/call.facts");
+        CommandRunner.runCommand("mv " + WORKSPACE + "/isConst.facts" + " outDSL" + folderName + "/isConst.facts");
+        CommandRunner.runCommand("mv " + WORKSPACE + "/hasValue.facts" + " outDSL" + folderName + "/hasValue.facts");
     }
 
     public void dispose() throws IOException, InterruptedException {
@@ -453,9 +456,9 @@ public class DSLAnalysis {
 
         constants.forEach(var -> {
         appendRule("isConst", getCode(var));
-            createHasValueRule(var);
+        createHasValueRule(var);
 
-        log("isConst(" + var + ")");
+        log("isConst(" + var + ") " + getCode(var));
         log("constValue: " + BigIntUtil.fromInt256(var.getConstantValue()));
         });
     }
@@ -481,12 +484,20 @@ public class DSLAnalysis {
     protected void createHasValueRule(Variable constVar) {
         if(!constVar.hasConstantValue())
             return;
+      /*  //try {
+        System.out.print("[" + getCode(constVar) + "] constVar.getConstantValue() = " + constVar.getConstantValue());
+            System.out.println(" | " + getInt(constVar.getConstantValue()));
+                //System.out.println( " | " + BigIntUtil.fromInt256(constVar.getConstantValue()).intValueExact());
+        System.out.println("Variable.VALUE_ANY = " + Variable.VALUE_ANY + " | " + getInt(Variable.VALUE_ANY) + " | " +
+                BigIntUtil.fromInt256(Variable.VALUE_ANY));
+        System.out.println("Variable.VALUE_UNDEFINED = " + Variable.VALUE_UNDEFINED + " | " + getInt(Variable.VALUE_UNDEFINED) + " | " +
+                BigIntUtil.fromInt256(Variable.VALUE_UNDEFINED));
+    } catch (ArithmeticException e) {
+        log("Value didn't fit into 32 bits souffle number size, skipped");
+    }*/
+
         if(constVar.getConstantValue() != Variable.VALUE_ANY && constVar.getConstantValue() != Variable.VALUE_UNDEFINED) {
-            try {
-                appendRule("hasValue", getCode(constVar), BigIntUtil.fromInt256(constVar.getConstantValue()).intValueExact());
-            } catch (ArithmeticException e) {
-                log("Value didn't fit into 32 bits souffle number size, skipped");
-            }
+                appendRule("hasValue", getCode(constVar), getInt(constVar.getConstantValue()));
         }
     }
 

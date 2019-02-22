@@ -323,7 +323,7 @@ public class DSLPatternsCompiler {
         log(patternViolationTOD.getStringRepresentation());
         patterns.add(new CompletePattern("TOD", patternComplianceTOD, patternViolationTOD));
 
-        log(" *** TOD - transaction ordering dependency");
+        log(" *** TODII - transaction ordering dependency");
         InstructionDSLPattern patternComplianceTODII = instructionPattern(call(dcLabel, dcVar, dcVar, amount),
                 and(not(mayDepOn(amount, SLoad.class)), not(mayDepOn(amount, Balance.class))));
         log(patternComplianceTOD.getStringRepresentation());
@@ -333,6 +333,17 @@ public class DSLPatternsCompiler {
                                 sstore(dcLabel, X, dcVar), isConst(X), hasValue(X, Y), detBy(amount, Y)));
         log(patternViolationTOD.getStringRepresentation());
         patterns.add(new CompletePattern("TODIIAmount", patternComplianceTODII, patternViolationTODII));
+
+        /*log(" *** TODIII - transaction ordering dependency");
+        InstructionDSLPattern patternComplianceTODIII = instructionPattern(call(dcLabel, dcVar, dcVar, amount),
+                or(and(isConst(amount), hasValue(amount, 0), and(not(mayDepOn(amount, SLoad.class)), not(mayDepOn(amount, Balance.class))));
+        log(patternComplianceTOD.getStringRepresentation());
+
+        InstructionDSLPattern patternViolationTODIII = instructionPattern(call(dcLabel, dcVar, dcVar, amount),
+                and(or(detBy(amount, SLoad.class),  detBy(amount, Balance.class)),
+                        sstore(dcLabel, X, dcVar), isConst(X), hasValue(X, Y), detBy(amount, Y)));
+        log(patternViolationTOD.getStringRepresentation());
+        patterns.add(new CompletePattern("TODIIIAmount", patternComplianceTODIII, patternViolationTODIII));*/
 
         log(" *** VA - validated arguments");
         InstructionDSLPattern patternComplianceVA = instructionPattern(sstore(l1, dcVar, X),
@@ -349,6 +360,16 @@ public class DSLPatternsCompiler {
                                         mayDepOn(Y, DSLArg.class))))));
         log(patternViolationVA.getStringRepresentation());
         patterns.add(new CompletePattern("ValidatedArgumentsMissingInputValidation", patternComplianceVA, patternViolationVA));
+
+        log(" *** CALL - callTest");
+        InstructionDSLPattern callTestCompliance = instructionPattern(call(l1, dcVar, dcVar, dcVar),
+                call(l1, dcVar, dcVar, dcVar));
+        log(callTestCompliance.getStringRepresentation());
+
+        InstructionDSLPattern callTestViolation = instructionPattern(call(l1, dcVar, dcVar, dcVar),
+                not(call(l1, dcVar, dcVar, dcVar)));
+        log(callTestViolation.getStringRepresentation());
+        patterns.add(new CompletePattern("callTest", callTestCompliance, callTestViolation));
         
         return patterns;
 

@@ -275,9 +275,10 @@ public class Main {
 
     private static void updateStatusWithDSLPattResults(List<DSLPatternResult> results) {
 
+
         for (DSLPatternResult result : results) {
 
-            PatternResult status = new PatternResult();
+            PatternResult status = contractResult.patternResults.getOrDefault(result.getName(), new PatternResult());
 
             log.println("Checking pattern " + result.getName() + ": ");
 

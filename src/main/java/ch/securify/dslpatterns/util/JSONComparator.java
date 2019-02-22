@@ -117,12 +117,12 @@ public class JSONComparator {
             Map<String, SingleResult> DSLContractResults = DSLResults.get(contractName);
 
             //NoWritesAfterCallDAO
-            SingleResult DAO = noDSLContractResults.get("DAO");
+            SingleResult DAOConstantGas = noDSLContractResults.get("DAOConstantGas");
             SingleResult NoWritesAfterCall = DSLContractResults.get("NoWritesAfterCallDAO");
-            if(DAO == null || NoWritesAfterCall == null)
+            if(DAOConstantGas == null || NoWritesAfterCall == null)
                 continue;
-            System.out.println("NoWritesAfterCall / DAO: ");
-            compareAndPrintSingleResult(DAO, NoWritesAfterCall);
+            System.out.println("NoWritesAfterCall / DAOConstantGas: ");
+            compareAndPrintSingleResult(DAOConstantGas, NoWritesAfterCall);
 
 
             //unRestrictedWriteUP
@@ -143,7 +143,7 @@ public class JSONComparator {
             System.out.println("unHandledException");
             compareAndPrintSingleResult(UnhandledException, unHandledException);
 
-            //unHandledException
+            //TODAmount
             SingleResult TODAmount = noDSLContractResults.get("TODAmount");
             SingleResult TODIIAmount = DSLContractResults.get("TODIIAmount");
             System.out.println("TODAmount");
