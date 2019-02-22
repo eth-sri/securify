@@ -70,8 +70,12 @@ public class LockedEther extends AbstractContractPattern {
             return true;
 
 
-        // Check if the contract can send ether (has a call instruction with positive amount)
+        // Check if the contract can send ether (has a call instruction with positive amount or a selfdestruct)
         for (Instruction callInstr : instructions) {
+            if (callInstr instanceof SelfDestruct) {
+                return true;
+            }
+
             if (! (callInstr instanceof Call))
                 continue;
 
@@ -105,12 +109,13 @@ public class LockedEther extends AbstractContractPattern {
 
         // check if the contract can transfer ether
         for (Instruction callInstr : instructions) {
-            if (!(callInstr instanceof Call))
-                continue;
-
-            Variable amount = callInstr.getInput()[2];
-            if (!amount.hasConstantValue() || BigIntUtil.fromInt256(amount.getConstantValue()).compareTo(BigInteger.ZERO) != 0) {
-                return false;
+            if (callInstr instanceof Call) {
+                Variable amount = callInstr.getInput()[2];
+                if (!amount.hasConstantValue() || BigIntUtil.fromInt256(amount.getConstantValue()).compareTo(BigInteger.ZERO) != 0) {
+                    return false;
+                }
+            } else if (callInstr instanceof SelfDestruct) {
+               return false;
             }
         }
         return true;
