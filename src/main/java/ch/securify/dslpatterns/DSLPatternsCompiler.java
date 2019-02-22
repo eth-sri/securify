@@ -217,6 +217,7 @@ public class DSLPatternsCompiler {
         Variable X = new Variable();
         Variable Y = new Variable();
         Variable amount = new Variable();
+        Variable constVar = new Variable();
 
         DSLToDatalogTranslator transl = new DSLToDatalogTranslator();
 
@@ -329,8 +330,9 @@ public class DSLPatternsCompiler {
         log(patternComplianceTOD.getStringRepresentation());
 
         InstructionDSLPattern patternViolationTODII = instructionPattern(call(dcLabel, dcVar, dcVar, amount),
-                        and(or(detBy(amount, SLoad.class),  detBy(amount, Balance.class)),
-                                sstore(dcLabel, X, dcVar), isConst(X), hasValue(X, Y), detBy(amount, Y)));
+                        or(detBy(amount, Balance.class), and(detBy(amount, SLoad.class),
+                                sstore(dcLabel, X, dcVar), isConst(X), hasValue(X, constVar),
+                                offsetToStorageVar(constVar, Y), detBy(amount, Y))));
         log(patternViolationTOD.getStringRepresentation());
         patterns.add(new CompletePattern("TODIIAmount", patternComplianceTODII, patternViolationTODII));
 

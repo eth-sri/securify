@@ -158,4 +158,12 @@ public class DSLPatternFactory {
     public static DSLSload sload(DSLLabel label, Variable offset, Variable var) {
         return new DSLSload(label, offset, var);
     }
+
+    public static OffsetToMemoryVar offsetToMemoryVar(Variable offsetVar, Variable memoryVar) {
+        return new OffsetToMemoryVar(offsetVar, memoryVar);
+    }
+
+    public static OffsetToStorageVar offsetToStorageVar(Variable offsetVar, Variable storageVar) {
+        return new OffsetToStorageVar(offsetVar, storageVar);
+    }
 }

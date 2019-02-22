@@ -98,6 +98,13 @@
 .decl sstoreInstr		(l: Label, v:Var, f:VarFact)
 .input sstoreInstr
 
+//maps real variables to their respective storage or memory variable, introduced during rule creation not to have conflicts
+//mimics the same hashmap contained in DSLAnalysis
+.decl offsetToMemoryVar (index: number, v:Var)
+.input offsetToMemoryVar
+.decl offsetToStorageVar (index: number, v:Var)
+.input offsetToStorageVar
+
 //from mayImplicit
 .decl taint		(l1:Label, l2:Label, v:Var)
 .decl taintDebug (l1:Label, l2:Label, v:Var)

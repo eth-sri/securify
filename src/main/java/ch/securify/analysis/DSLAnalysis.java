@@ -102,6 +102,8 @@ public class DSLAnalysis {
         ruleToSB.put("mstoreInstr", new StringBuffer());
         ruleToSB.put("sloadInstr", new StringBuffer());
         ruleToSB.put("sstoreInstr", new StringBuffer());
+        ruleToSB.put("offsetToStorageVar", new StringBuffer());
+        ruleToSB.put("offsetToMemoryVar", new StringBuffer());
         ruleToSB.put("virtualMethodHead", new StringBuffer());
         ruleToSB.put("noArgsVirtualMethodHead", new StringBuffer());
         ruleToSB.put("goto", new StringBuffer());
@@ -179,9 +181,11 @@ public class DSLAnalysis {
         CommandRunner.runCommand("mv " + WORKSPACE_OUT + " outDSL" + folderName);
         CommandRunner.runCommand("mv " + WORKSPACE + "/assignType.facts" + " outDSL" + folderName + "/assignType.facts");
         CommandRunner.runCommand("mv " + WORKSPACE + "/sstore.facts" + " outDSL" + folderName + "/sstore.facts");
+        CommandRunner.runCommand("mv " + WORKSPACE + "/sstoreInstr.facts" + " outDSL" + folderName + "/sstoreInstr.facts");
         CommandRunner.runCommand("mv " + WORKSPACE + "/call.facts" + " outDSL" + folderName + "/call.facts");
         CommandRunner.runCommand("mv " + WORKSPACE + "/isConst.facts" + " outDSL" + folderName + "/isConst.facts");
         CommandRunner.runCommand("mv " + WORKSPACE + "/hasValue.facts" + " outDSL" + folderName + "/hasValue.facts");
+        CommandRunner.runCommand("mv " + WORKSPACE + "/offsetToStorageVar.facts" + " outDSL" + folderName + "/offsetToStorageVar.facts");
     }
 
     public void dispose() throws IOException, InterruptedException {
@@ -442,9 +446,15 @@ public class DSLAnalysis {
         Set<Variable> constants = new HashSet<>();
         for (Instruction instr : instructions) {
             for(Variable var : instr.getInput()) {
+                if(var != null && getCode(var) == 55) {
+                    log("lkjhgfdsa");
+                    if(var.hasConstantValue())
+                        log("constant");
+                }
                 if(var != null && var.hasConstantValue()) {
                     constants.add(var);
-                    log("Added constant: " + var.getName() + " from instr " + instr.getStringRepresentation());
+                    log("Added constant: " + var.getName() + " from instr " + instr.getStringRepresentation()
+                    + " variable code = " + getCode(var));
                 }
             }
 
@@ -459,7 +469,7 @@ public class DSLAnalysis {
         createHasValueRule(var);
 
         log("isConst(" + var + ") " + getCode(var));
-        log("constValue: " + BigIntUtil.fromInt256(var.getConstantValue()));
+        log("constValue: " + getInt(var.getConstantValue()));
         });
     }
 
@@ -467,6 +477,7 @@ public class DSLAnalysis {
         if (!offsetToStorageVar.containsKey(index)) {
             Variable newVar = new Variable();
             offsetToStorageVar.put(index, newVar);
+            appendRule("offsetToStorageVar", index, getCode(newVar));
             return newVar;
         }
         return offsetToStorageVar.get(index);
@@ -476,6 +487,7 @@ public class DSLAnalysis {
         if (!offsetToMemoryVar.containsKey(index)) {
             Variable newVar = new Variable();
             offsetToMemoryVar.put(index, newVar);
+            appendRule("offsetToMemoryVar", index, getCode(newVar));
             return newVar;
         }
         return offsetToMemoryVar.get(index);
