@@ -28,7 +28,6 @@ import ch.securify.decompiler.Variable;
 import ch.securify.decompiler.instructions.*;
 import ch.securify.utils.BigIntUtil;
 
-// TODO: buggy
 public class LockedEther extends AbstractContractPattern {
 
     public LockedEther() {
@@ -41,17 +40,14 @@ public class LockedEther extends AbstractContractPattern {
 
     }
 
-    @Override
-    protected boolean isSafe(List<Instruction> instructions, AbstractDataflow dataflow) {
-        // Check if the contract cannot receive ether
-        boolean allStopsCannotReceiveEther = true;
-        for (Instruction stopInstr : instructions) {
-            if (stopInstr instanceof Stop) {
+    private boolean allStopsCannotReceiveEther(List<Instruction> instructions, AbstractDataflow dataflow) {
+        for (Instruction haltInstr : instructions) {
+            if (haltInstr instanceof Stop || haltInstr instanceof Return) {
                 boolean stopCannotReceiveEther = false;
                 for (Instruction jumpInstr : instructions) {
                     if (jumpInstr instanceof JumpI) {
                         Variable cond = ((JumpI) jumpInstr).getCondition();
-                        if (dataflow.mustPrecede(jumpInstr, stopInstr) == Status.SATISFIABLE
+                        if (dataflow.mustPrecede(jumpInstr, haltInstr) == Status.SATISFIABLE
                                 && dataflow.varMustDepOn(jumpInstr, cond, CallValue.class) == Status.SATISFIABLE
                                 && dataflow.varMustDepOn(jumpInstr, cond, IsZero.class) == Status.SATISFIABLE) {
                             stopCannotReceiveEther = true;
@@ -60,24 +56,39 @@ public class LockedEther extends AbstractContractPattern {
                     }
                 }
                 if (!stopCannotReceiveEther) {
-                    allStopsCannotReceiveEther = false;
-                    break;
+                    return false;
                 }
             }
         }
+        return true;
+    }
 
-        if (allStopsCannotReceiveEther)
+    @Override
+    protected boolean isSafe(List<Instruction> instructions, AbstractDataflow dataflow) {
+        if (allStopsCannotReceiveEther(instructions, dataflow)) {
             return true;
+        }
 
+        // Check if the contract can send ether (has a call instruction with positive amount or a selfdestruct)
+        for (Instruction instr : instructions) {
+            if (instr instanceof SelfDestruct) {
+                return true;
+            }
 
-        // Check if the contract can send ether (has a call instruction with positive amount)
-        for (Instruction callInstr : instructions) {
-            if (! (callInstr instanceof Call))
+            if (!(instr instanceof CallingInstruction))
                 continue;
 
-            Variable amount = callInstr.getInput()[2];
-            if (dataflow.varMustDepOn(callInstr, amount, Balance.class) == Status.SATISFIABLE
+            if (instr instanceof DelegateCall) {
+                return true;
+            }
+
+            CallingInstruction callInstr = (CallingInstruction) instr;
+
+            Variable amount = callInstr.getValue();
+            if (amount.hasConstantValue() && AbstractDataflow.getInt(amount.getConstantValue()) != 0
+                    || dataflow.varMustDepOn(callInstr, amount, Balance.class) == Status.SATISFIABLE
                     || dataflow.varMustDepOn(callInstr, amount, CallDataLoad.class) == Status.SATISFIABLE
+                    || dataflow.varMustDepOn(callInstr, amount, CallValue.class) == Status.SATISFIABLE
                     || dataflow.varMustDepOn(callInstr, amount, MLoad.class) == Status.SATISFIABLE
                     || dataflow.varMustDepOn(callInstr, amount, SLoad.class) == Status.SATISFIABLE) {
                 return true;
@@ -88,28 +99,24 @@ public class LockedEther extends AbstractContractPattern {
 
     @Override
     protected boolean isViolation(List<Instruction> instructions, AbstractDataflow dataflow) {
-        boolean contractCanReceiveEther = false;
-
-        for (Instruction stopInstr : instructions) {
-            if (!(stopInstr instanceof Stop))
-                continue;
-
-            if (dataflow.instrMayDepOn(stopInstr, CallValue.class) == Status.UNSATISFIABLE) {
-                contractCanReceiveEther = true;
-                break;
-            }
+        if (allStopsCannotReceiveEther(instructions, dataflow)) {
+            return false;
         }
 
-        if (!contractCanReceiveEther)
-            return false;
+        System.out.println("contract can receive ether");
 
         // check if the contract can transfer ether
         for (Instruction callInstr : instructions) {
-            if (!(callInstr instanceof Call))
-                continue;
-
-            Variable amount = callInstr.getInput()[2];
-            if (!amount.hasConstantValue() || BigIntUtil.fromInt256(amount.getConstantValue()).compareTo(BigInteger.ZERO) != 0) {
+            if (callInstr instanceof CallingInstruction) {
+                if (callInstr instanceof DelegateCall) {
+                    return false;
+                } else {
+                    Variable amount = ((CallingInstruction) callInstr).getValue();
+                    if (!amount.hasConstantValue() || BigIntUtil.fromInt256(amount.getConstantValue()).compareTo(BigInteger.ZERO) != 0) {
+                        return false;
+                    }
+                }
+            } else if (callInstr instanceof SelfDestruct) {
                 return false;
             }
         }

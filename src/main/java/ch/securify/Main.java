@@ -337,7 +337,6 @@ public class Main {
         // allPatterns.add(new DelegateCallWithUserInput());
         // allPatterns.add(new DivisionBeforeCallvalue());
         // allPatterns.add(new DivisionBeforeMultiply());
-        // TODO: buggy
         allPatterns.add(new LockedEther());
         // allPatterns.add(new DivisionBeforeCallvalue());
         // allPatterns.add(new DivisionBeforeMultiply());

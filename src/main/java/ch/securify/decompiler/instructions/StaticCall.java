@@ -18,7 +18,15 @@
 
 package ch.securify.decompiler.instructions;
 
+import ch.securify.decompiler.Variable;
+
 public class StaticCall extends CallingInstruction implements _TypeInstruction {
+    private Variable value;
+
+    public StaticCall() {
+        value = new Variable();
+        value.setConstantValue(new byte[]{0});
+    }
 
     @Override
     public String getStringRepresentation() {
@@ -36,4 +44,10 @@ public class StaticCall extends CallingInstruction implements _TypeInstruction {
     public int getInputMemorySize() {
         return 3;
     }
+
+    @Override
+    public Variable getValue() {
+        return value;
+    }
+
 }

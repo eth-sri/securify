@@ -33,4 +33,14 @@ public class LockedEtherTest {
         // as many violations as there are functions in the smart contract
         assertEquals(2, instructionPatternTest.pattern.violations.size());
     }
+    
+    @Test
+    public void isNoViolationDelegate() throws IOException {
+        String hex = "src/test/resources/solidity/LockedEtherDelegate.bin.hex";
+        ContractPatternTest instructionPatternTest = new ContractPatternTest(hex, new LockedEther());
+        // as many violations as there are functions in the smart contract
+        assertEquals(0, instructionPatternTest.pattern.violations.size());
+        assertEquals(0, instructionPatternTest.pattern.warnings.size());
+        assertEquals(1, instructionPatternTest.pattern.safe.size());
+    }
 }
