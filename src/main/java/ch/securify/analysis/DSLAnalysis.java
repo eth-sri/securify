@@ -108,7 +108,6 @@ public class DSLAnalysis {
         ruleToSB.put("isConst", new StringBuffer());
         ruleToSB.put("hasValue", new StringBuffer());
         ruleToSB.put("isArg", new StringBuffer());
-        ruleToSB.put("isStorageVar", new StringBuffer());
         ruleToSB.put("sha3", new StringBuffer());
         ruleToSB.put("call", new StringBuffer());
         ruleToSB.put("unk", new StringBuffer());
@@ -178,6 +177,8 @@ public class DSLAnalysis {
     public void copyOutputForDebug(String folderName) throws IOException, InterruptedException {
         CommandRunner.runCommand("rm -rf outDSL" + folderName);
         CommandRunner.runCommand("mv " + WORKSPACE_OUT + " outDSL" + folderName);
+        CommandRunner.runCommand("mv " + WORKSPACE + "/assignType.facts" + " outDSL" + folderName + "/assignType.facts");
+        CommandRunner.runCommand("mv " + WORKSPACE + "/sstore.facts" + " outDSL" + folderName + "/sstore.facts");
     }
 
     public void dispose() throws IOException, InterruptedException {
@@ -198,10 +199,26 @@ public class DSLAnalysis {
     }
 
     protected void createMStoreRule(Instruction instr, Variable offset, Variable var) {
+        int offsetCode;
+        if (offset.hasConstantValue()) {
+            log("Offset " + offset + ", int offset " + getInt(offset.getConstantValue()) + "memory var " + getMemoryVarForIndex(getInt(offset.getConstantValue())) + ", code " + getCode(getMemoryVarForIndex(getInt(offset.getConstantValue()))));
+            offsetCode = getCode(getMemoryVarForIndex(getInt(offset.getConstantValue())));
+        } else {
+            offsetCode = unk;
+        }
+
+        appendRule("mstore", getCode(instr), offsetCode, getCode(var));
         appendRule("mstoreInstr", getCode(instr), getCode(offset), getCode(var));
     }
 
     protected void createSStoreRule(Instruction instr, Variable index, Variable var) {
+        int indexCode;
+        if (index.hasConstantValue()) {
+            indexCode = getCode(getStorageVarForIndex(getInt(index.getConstantValue())));
+        } else {
+            indexCode = unk;
+        }
+        appendRule("sstore", getCode(instr), indexCode, getCode(var));
         appendRule("sstoreInstr", getCode(instr), getCode(index), getCode(var));
     }
 
@@ -337,6 +354,7 @@ public class DSLAnalysis {
 
                     continue;
                 }
+                //log("created assign type rule " + getCode(instr) + " " + getCode(instr.getOutput()[0]) + " " + getCode(instr.getClass()));
                 createAssignTypeRule(instr, instr.getOutput()[0], instr.getClass());
             } else if (instr instanceof _VirtualMethodHead) {
                 log("**** inside _VirtualMethodHead");
@@ -353,6 +371,7 @@ public class DSLAnalysis {
             } else if (instr instanceof Call || instr instanceof StaticCall) {
                 log("Type of " + instr.getOutput()[0] + " is Call");
                 createAssignTopRule(instr, instr.getOutput()[0]);
+                //appendRule("assignType", getCode(instr), getCode(instr.getOutput()[0]), unk);
                 // assign the return value as an abstract type (to check later
                 // for unhandled exception)
                 appendRule("assignType", getCode(instr), getCode(instr.getOutput()[0]), getCode(instr.getOutput()[0]));
@@ -434,18 +453,41 @@ public class DSLAnalysis {
 
         constants.forEach(var -> {
         appendRule("isConst", getCode(var));
-        if(var.getConstantValue() != Variable.VALUE_ANY && var.getConstantValue() != Variable.VALUE_UNDEFINED) {
-            try {
-                appendRule("hasValue", getCode(var), BigIntUtil.fromInt256(var.getConstantValue()).intValueExact());
-            } catch (ArithmeticException e) {
-                log("Value didn't fit into 32 bits souffle number size, skipped");
-            }
-        }
-
+            createHasValueRule(var);
 
         log("isConst(" + var + ")");
         log("constValue: " + BigIntUtil.fromInt256(var.getConstantValue()));
         });
+    }
+
+    public Variable getStorageVarForIndex(int index) {
+        if (!offsetToStorageVar.containsKey(index)) {
+            Variable newVar = new Variable();
+            offsetToStorageVar.put(index, newVar);
+            return newVar;
+        }
+        return offsetToStorageVar.get(index);
+    }
+
+    protected Variable getMemoryVarForIndex(int index) {
+        if (!offsetToMemoryVar.containsKey(index)) {
+            Variable newVar = new Variable();
+            offsetToMemoryVar.put(index, newVar);
+            return newVar;
+        }
+        return offsetToMemoryVar.get(index);
+    }
+
+    protected void createHasValueRule(Variable constVar) {
+        if(!constVar.hasConstantValue())
+            return;
+        if(constVar.getConstantValue() != Variable.VALUE_ANY && constVar.getConstantValue() != Variable.VALUE_UNDEFINED) {
+            try {
+                appendRule("hasValue", getCode(constVar), BigIntUtil.fromInt256(constVar.getConstantValue()).intValueExact());
+            } catch (ArithmeticException e) {
+                log("Value didn't fit into 32 bits souffle number size, skipped");
+            }
+        }
     }
 
     protected void deriveAssignVarPredicates() {
@@ -458,12 +500,12 @@ public class DSLAnalysis {
                 Variable lhs = instr.getOutput()[0];
                 if (storageOffset.hasConstantValue()) {
                     int storageOffsetValue = getInt(storageOffset.getConstantValue());
-                    //Variable storageVar = getStorageVarForIndex(storageOffsetValue);
+                    Variable storageVar = getStorageVarForIndex(storageOffsetValue);
 
                     // big hack: adding an assignType predicate below
-                    //appendRule("assignType", getCode(instr), getCode(lhs), getCode(storageVar));
-                    log("created assign type rule " + getCode(instr) + " " + getCode(lhs) + " " + storageOffsetValue);
-                    appendRule("assignType", getCode(instr), getCode(lhs), storageOffsetValue);
+                    appendRule("assignType", getCode(instr), getCode(lhs), getCode(storageVar));
+                    log("created assign type rule " + getCode(instr) + " " + getCode(lhs) + " " + getCode(storageVar));
+                    //appendRule("assignType", getCode(instr), getCode(lhs), storageOffsetValue);
 
                 } else {
                     appendRule("assignType", getCode(instr), getCode(lhs), unk);
@@ -475,11 +517,11 @@ public class DSLAnalysis {
                 Variable lhs = instr.getOutput()[0];
                 if (memoryOffset.hasConstantValue()) {
                     int memoryOffsetValue = getInt(memoryOffset.getConstantValue());
-                    //Variable memoryVar = getMemoryVarForIndex(memoryOffsetValue);
+                    Variable memoryVar = getMemoryVarForIndex(memoryOffsetValue);
 
                     // big hack: adding an assignType predicate below
-                    //appendRule("assignType", getCode(instr), getCode(lhs), getCode(memoryVar));
-                    appendRule("assignType", getCode(instr), getCode(lhs), memoryOffsetValue);
+                    appendRule("assignType", getCode(instr), getCode(lhs), getCode(memoryVar));
+                    //appendRule("assignType", getCode(instr), getCode(lhs), memoryOffsetValue);
                 } else {
                     appendRule("assignType", getCode(instr), getCode(lhs), unk);
                 }
@@ -497,8 +539,8 @@ public class DSLAnalysis {
                     for (int offset = startOffset; offset < startOffset + length; offset += 4) {
                         log("sha3: " + instr + " " + instr.getOutput()[0]);
                         //log("Offset " + offset + ", memory var " + getMemoryVarForIndex(offset) + ", code " + getCode(getMemoryVarForIndex(offset)));
-                        //appendRule("sha3", getCode(instr), getCode(instr.getOutput()[0]), getCode(getMemoryVarForIndex(offset)));
-                        appendRule("sha3", getCode(instr), getCode(instr.getOutput()[0]), offset);
+                        appendRule("sha3", getCode(instr), getCode(instr.getOutput()[0]), getCode(getMemoryVarForIndex(offset)));
+                        //appendRule("sha3", getCode(instr), getCode(instr.getOutput()[0]), offset);
                         //since we changed the way to handle sstore and other instructions, we should change also here, removing the new intoduced variables and replacing them with the index
                     }
                 } else {
@@ -669,17 +711,34 @@ public class DSLAnalysis {
     }
 
     protected void createSLoadRule(Instruction instr, Variable index, Variable var) { //OK
-        appendRule("sloadInstr", getCode(instr), getCode(index), getCode(var));
-        if (!index.hasConstantValue()) {
+        int indexCode;
+        if (index.hasConstantValue()) {
+            indexCode = getCode(getInt(index.getConstantValue()));
+        } else {
+            indexCode = unk;
+            // if you have "var = sload(index)", to propagate labels from index to var we add "var = index"
             createAssignVarMayImplicitRule(instr, var, index);
         }
+        appendRule("sload", getCode(instr), indexCode, getCode(var));
+        appendRule("sloadInstr", getCode(instr), getCode(index), getCode(var));
+        /*if (!index.hasConstantValue()) {
+            createAssignVarMayImplicitRule(instr, var, index);
+        }*/
     }
 
     protected void createMLoadRule(Instruction instr, Variable offset, Variable var) { //OK
-        appendRule("mloadInstr", getCode(instr), getCode(offset), getCode(var));
-        if (!offset.hasConstantValue()) {
+        int offsetCode;
+        if (offset.hasConstantValue()) {
+            offsetCode = getCode(getMemoryVarForIndex(getInt(offset.getConstantValue())));
+        } else {
+            offsetCode = unk;
             createAssignVarMayImplicitRule(instr, var, offset);
         }
+        appendRule("mload", getCode(instr), offsetCode, getCode(var));
+        appendRule("mloadInstr", getCode(instr), getCode(offset), getCode(var));
+        /*if (!offset.hasConstantValue()) {
+            createAssignVarMayImplicitRule(instr, var, offset);
+        }*/
     }
 
     public List<DSLPatternResult> getResults() throws IOException {

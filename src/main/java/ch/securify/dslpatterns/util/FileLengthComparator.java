@@ -66,6 +66,7 @@ public class FileLengthComparator {
             compareAndPrint(DSLFilename + "/mstoreMust.csv", noDSLMustFilename + "/memory.csv");
             compareAndPrint(DSLFilename + "/mustAssignType.csv", noDSLMustFilename + "/assignTypeDebug.csv");
             compareAndPrint(DSLFilename + "/assignVarMustDebug.csv", noDSLMustFilename + "/assignVarDebug.csv");
+            compareAndPrint(DSLFilename + "/assignType.facts", noDSLMustFilename + "/assignType.facts");
 
             //mayImplicit part
             compareAndPrint(DSLFilename + "/mayFollow.csv", noDSLMayFilename + "/isAfter.csv");
@@ -76,6 +77,7 @@ public class FileLengthComparator {
             compareAndPrint(DSLFilename + "/mayAssignType.csv", noDSLMayFilename + "/assignTypeDebug.csv");
             compareAndPrint(DSLFilename + "/assignVarMayImplicitCollapsed.csv", noDSLMayFilename + "/assignVarDebug.csv");
             compareAndPrint(DSLFilename + "/taintDebug.csv", noDSLMayFilename + "/taintDebug.csv");
+            compareAndPrint(DSLFilename + "/assignType.facts", noDSLMayFilename + "/assignType.facts");
         }
 
         return;

@@ -76,13 +76,13 @@
 .decl join		(l1: Label, l2: Label, l3: Label)
 .input join
 .decl mload		(l: Label, v:Var, f:VarFact)
-.output mload
+.input mload
 .decl mstore		(l: Label, v:Var, f:VarFact)
-.output mstore
+.input mstore
 .decl sload		(l: Label, v:Var, f:VarFact)
-.output sload
+.input sload
 .decl sstore		(l: Label, v:Var, f:VarFact)
-.output sstore
+.input sstore
 .decl sha3		(l: Label, v:Var, f:VarFact)
 .input sha3
 .decl call      (l: Label, outVar:Var, gas:Var, amount:Var)
@@ -132,17 +132,18 @@
 //sstore(Lab,Index,Var) :- sstoreInstr(Lab,Index,Var), isConst(Index).
 //sstore(Lab,Index,Var) :- sstoreInstr(Lab,IndexVar,Var), !isConst(IndexVar), unk(Unk), Index=Unk.
 
-sstore(Lab,Index,Var) :- sstoreInstr(Lab,IndexVar,Var), isConst(IndexVar), hasValue(IndexVar,Index).
-sstore(Lab,Index,Var) :- sstoreInstr(Lab,IndexVar,Var), !isConst(IndexVar), unk(Unk), Index=Unk.
 
-sload(Lab,Index,Var) :- sloadInstr(Lab,IndexVar,Var), isConst(IndexVar), hasValue(IndexVar,Index).
-sload(Lab,Index,Var) :- sloadInstr(Lab,IndexVar,Var), !isConst(IndexVar), unk(Unk), Index=Unk.
+//sstore(Lab,Index,Var) :- sstoreInstr(Lab,IndexVar,Var), isConst(IndexVar), hasValue(IndexVar,Index).
+//sstore(Lab,Index,Var) :- sstoreInstr(Lab,IndexVar,Var), !isConst(IndexVar), unk(Unk), Index=Unk.
 
-mload(Lab,Index,Var) :- mloadInstr(Lab,IndexVar,Var), isConst(IndexVar), hasValue(IndexVar,Index).
-mload(Lab,Index,Var) :- mloadInstr(Lab,IndexVar,Var), !isConst(IndexVar), unk(Unk), Index=Unk.
+//sload(Lab,Index,Var) :- sloadInstr(Lab,IndexVar,Var), isConst(IndexVar), hasValue(IndexVar,Index).
+//sload(Lab,Index,Var) :- sloadInstr(Lab,IndexVar,Var), !isConst(IndexVar), unk(Unk), Index=Unk.
 
-mstore(Lab,Index,Var) :- mstoreInstr(Lab,IndexVar,Var), isConst(IndexVar), hasValue(IndexVar,Index).
-mstore(Lab,Index,Var) :- mstoreInstr(Lab,IndexVar,Var), !isConst(IndexVar), unk(Unk), Index=Unk.
+//mload(Lab,Index,Var) :- mloadInstr(Lab,IndexVar,Var), isConst(IndexVar), hasValue(IndexVar,Index).
+//mload(Lab,Index,Var) :- mloadInstr(Lab,IndexVar,Var), !isConst(IndexVar), unk(Unk), Index=Unk.
+
+//mstore(Lab,Index,Var) :- mstoreInstr(Lab,IndexVar,Var), isConst(IndexVar), hasValue(IndexVar,Index).
+//mstore(Lab,Index,Var) :- mstoreInstr(Lab,IndexVar,Var), !isConst(IndexVar), unk(Unk), Index=Unk.
 
 
 //
@@ -207,7 +208,7 @@ mstoreMust(LabTo, Offset, Type) :- join(LabFrom1, LabFrom2, LabTo),
 
 sstoreMust(Lab, Index, Type) :- sstore(Lab, Index, Var), mustDepOn(Lab, Var, Type), ! unk(Index).
 sstoreMust(LabTo, Index, Type) :- mustPrecedeStep(LabFrom, LabTo), sstoreMust(LabFrom, Index, Type), ! reassignStorage(LabTo, Index).
-sstoreMust(LabTo, Index, Type) :- join(LabFrom1, LabFrom2, LabTo),
+sstoreMust(LabTo, Index, Type) :- join(LabFromm1, LabFrom2, LabTo),
 								sstoreMust(LabFrom1, Index, Type),
 								sstoreMust(LabFrom2, Index, Type),
 								! unk(Index).

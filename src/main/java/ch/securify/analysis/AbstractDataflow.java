@@ -21,6 +21,7 @@ package ch.securify.analysis;
 import ch.securify.decompiler.Variable;
 import ch.securify.decompiler.instructions.*;
 import ch.securify.utils.BigIntUtil;
+import ch.securify.utils.CommandRunner;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import org.apache.commons.csv.CSVFormat;
@@ -143,6 +144,7 @@ public abstract class AbstractDataflow {
         ruleToSB.put("unk", new StringBuffer());
 
         unk = getCode(UNK_CONST_VAL);
+        log("unk = " + unk);
         appendRule("unk", unk);
 
         log("Souffle Analysis");
@@ -226,6 +228,8 @@ public abstract class AbstractDataflow {
     public void copyOutputForDebug(String folderName) throws IOException, InterruptedException {
         runCommand("rm -rf outNoDSL" + folderName);
         runCommand("mv " + WORKSPACE_OUT + " outNoDSL" + folderName);
+        runCommand("mv " + WORKSPACE + "/assignType.facts" + " outNoDSL" + folderName + "/assignType.facts");
+        runCommand("mv " + WORKSPACE + "/sstore.facts" + " outNoDSL" + folderName + "/sstore.facts");
     }
 
     public void dispose() throws IOException, InterruptedException {
@@ -493,30 +497,33 @@ public abstract class AbstractDataflow {
             } else if (instr instanceof _VirtualMethodHead) {
                 for (Variable arg : instr.getOutput()) {
                     log("Type of " + arg + " is unk");
+                    log("created assign type rule " + getCode(instr) + " " + getCode(arg) + " " + unk);
                     createAssignTopRule(instr, arg);
-                    appendRule("assignType", getCode(instr), getCode(arg), unk);
+
 
                     // assign the arguments as an abstract type (to check later
                     // for missing input validation)
                     log("created assign type rule " + getCode(instr) + " " + getCode(arg) + " " + getCode(arg));
                     appendRule("assignType", getCode(instr), getCode(arg), getCode(arg));
                     // tag the arguments to depend on user input (CallDataLoad)
-                    createAssignTypeRule(instr, arg, CallDataLoad.class);
                     log("created assign type rule " + getCode(instr) + " " + getCode(arg) + " " + getCode(CallDataLoad.class));
+                    createAssignTypeRule(instr, arg, CallDataLoad.class);
                 }
             } else if (instr instanceof Call || instr instanceof StaticCall) {
                 log("Type of " + instr.getOutput()[0] + " is Call");
+                log("created assign type rule " + getCode(instr) + " " + getCode(instr.getOutput()[0]) + " " + unk);
                 createAssignTopRule(instr, instr.getOutput()[0]);
-                appendRule("assignType", getCode(instr), getCode(instr.getOutput()[0]), unk);
+                //log("created assign type rule " + getCode(instr) + " " + getCode(instr.getOutput()[0]) + " " + unk);
+                //appendRule("assignType", getCode(instr), getCode(instr.getOutput()[0]), unk);
 
                 // assign the return value as an abstract type (to check later
                 // for unhandled exception)
-                appendRule("assignType", getCode(instr), getCode(instr.getOutput()[0]), getCode(instr.getOutput()[0]));
                 log("created assign type rule " + getCode(instr) + " " + getCode(instr.getOutput()[0]) + " " + getCode(instr.getOutput()[0]));
+                appendRule("assignType", getCode(instr), getCode(instr.getOutput()[0]), getCode(instr.getOutput()[0]));
             } else if (instr instanceof BlockHash) {
                 log("Type of " + instr.getOutput()[0] + " is BlockHash");
-                createAssignTypeRule(instr, instr.getOutput()[0], instr.getClass());
                 log("created assign type rule " + getCode(instr) + " " + getCode(instr.getOutput()[0]) + " " + getCode(instr.getClass()));
+                createAssignTypeRule(instr, instr.getOutput()[0], instr.getClass());
 
                 // TODO: double check whether to propagate the type of the
                 // argument to the output of blockhash
@@ -598,7 +605,7 @@ public abstract class AbstractDataflow {
                     log("created assign type rule " + getCode(instr) + " " + getCode(lhs) + " " + getCode(memoryVar));
                     appendRule("assignType", getCode(instr), getCode(lhs), getCode(memoryVar));
                 } else {
-                    log("created assign type rule " + getCode(instr) + " " + getCode(lhs) + " " + getCode(unk));
+                    log("created assign type rule " + getCode(instr) + " " + getCode(lhs) + " " + unk);
                     appendRule("assignType", getCode(instr), getCode(lhs), unk);
                 }
             }
