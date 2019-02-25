@@ -71,15 +71,18 @@ public class LockedEther extends AbstractContractPattern {
 
 
         // Check if the contract can send ether (has a call instruction with positive amount or a selfdestruct)
-        for (Instruction callInstr : instructions) {
-            if (callInstr instanceof SelfDestruct) {
+        for (Instruction instr : instructions) {
+            if (instr instanceof SelfDestruct) {
                 return true;
             }
 
-            if (! (callInstr instanceof Call))
+            if (!(instr instanceof CallingInstruction))
                 continue;
 
-            Variable amount = callInstr.getInput()[2];
+            CallingInstruction callInstr = (CallingInstruction) instr;
+
+            Variable amount = callInstr.getValue();
+            // TODO: should there be a CallValue.class here?
             if (dataflow.varMustDepOn(callInstr, amount, Balance.class) == Status.SATISFIABLE
                     || dataflow.varMustDepOn(callInstr, amount, CallDataLoad.class) == Status.SATISFIABLE
                     || dataflow.varMustDepOn(callInstr, amount, MLoad.class) == Status.SATISFIABLE
@@ -92,30 +95,23 @@ public class LockedEther extends AbstractContractPattern {
 
     @Override
     protected boolean isViolation(List<Instruction> instructions, AbstractDataflow dataflow) {
-        boolean contractCanReceiveEther = false;
-
+        // check that the contract can receive ether
         for (Instruction stopInstr : instructions) {
-            if (!(stopInstr instanceof Stop))
-                continue;
-
-            if (dataflow.instrMayDepOn(stopInstr, CallValue.class) == Status.UNSATISFIABLE) {
-                contractCanReceiveEther = true;
-                break;
+            // TODO: should we check for Return as well?
+            if (stopInstr instanceof Stop && dataflow.instrMayDepOn(stopInstr, CallValue.class) == Status.UNSATISFIABLE) {
+                return false;
             }
         }
 
-        if (!contractCanReceiveEther)
-            return false;
-
         // check if the contract can transfer ether
         for (Instruction callInstr : instructions) {
-            if (callInstr instanceof Call) {
-                Variable amount = callInstr.getInput()[2];
+            if (callInstr instanceof CallingInstruction) {
+                Variable amount = ((CallingInstruction) callInstr).getValue();
                 if (!amount.hasConstantValue() || BigIntUtil.fromInt256(amount.getConstantValue()).compareTo(BigInteger.ZERO) != 0) {
                     return false;
                 }
             } else if (callInstr instanceof SelfDestruct) {
-               return false;
+                return false;
             }
         }
         return true;

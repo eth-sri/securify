@@ -10,6 +10,8 @@ public abstract class CallingInstruction extends Instruction {
 
     public abstract int getInputMemorySize();
 
+    public abstract Variable getValue();
+
     public boolean isBuiltInContractCall() {
         Variable toAddrVar = this.getInput()[1];
         if (toAddrVar.hasConstantValue()) {

@@ -18,6 +18,8 @@
 
 package ch.securify.decompiler.instructions;
 
+import ch.securify.decompiler.Variable;
+
 public class DelegateCall extends CallingInstruction implements _TypeInstruction {
 
 	@Override
@@ -35,5 +37,11 @@ public class DelegateCall extends CallingInstruction implements _TypeInstruction
 	@Override
 	public int getInputMemorySize() {
 		return 3;
+	}
+
+	@Override
+	public Variable getValue() {
+	    CallValue value = new CallValue();
+	    return value.getOutput()[0];
 	}
 }
