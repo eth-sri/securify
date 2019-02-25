@@ -106,7 +106,7 @@ def rewrite_json_output(curr_json, outj):
         json.dump(curr_json, fso, sort_keys=True, indent=2)
 
 
-def test_securify_analysis(c_file, json_output, memory=8, overwrite=False):
+def test_securify_analysis(c_file, json_output, memory=2, overwrite=False):
     """Compare the output of Securify on c_file with its expected output
 
     Args:
@@ -179,9 +179,10 @@ def test(tests_dir, overwrite=False, recursive=False):
 
 if __name__ == '__main__':
     UNIT = Path('src/test/resources/solidity')
-    test(UNIT)
+    overwrite = False
+    test(UNIT, overwrite=overwrite)
     QUICK = Path('src/test/resources/solidity/end_to_end_testing_quick')
-    test(QUICK)
+    test(QUICK, overwrite=overwrite)
     BIG = Path('src/test/resources/solidity/end_to_end_testing_big')
-    test(BIG, recursive=True)
+    test(BIG, recursive=True, overwrite=overwrite)
     print('Done.')
