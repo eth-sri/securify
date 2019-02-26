@@ -39,7 +39,7 @@ public class LockedEtherTest {
         String hex = "src/test/resources/solidity/LockedEtherDelegate.bin.hex";
         ContractPatternTest instructionPatternTest = new ContractPatternTest(hex, new LockedEther());
         // as many violations as there are functions in the smart contract
-        assertEquals(0, instructionPatternTest.pattern.violations.size());
+        assertEquals(1, instructionPatternTest.pattern.violations.size());
         assertEquals(0, instructionPatternTest.pattern.warnings.size());        
     }    
 }

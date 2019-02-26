@@ -22,26 +22,28 @@ import ch.securify.decompiler.Variable;
 
 public class DelegateCall extends CallingInstruction implements _TypeInstruction {
 
-	@Override
-	public String getStringRepresentation() {
-		return getOutput()[0] + " = delegatecall(gas: " + getInput()[0] + ", to_addr: " + getInput()[1] + ", " +
-				"in_offset: " + getInput()[2] + ", in_size: " + getInput()[3] + ", " +
-				"out_offset: " + getInput()[4] + ", out_size: " + getInput()[5] + ")";
-	}
+    @Override
+    public String getStringRepresentation() {
+        return getOutput()[0] + " = delegatecall(gas: " + getInput()[0] + ", to_addr: " + getInput()[1] + ", " +
+                "in_offset: " + getInput()[2] + ", in_size: " + getInput()[3] + ", " +
+                "out_offset: " + getInput()[4] + ", out_size: " + getInput()[5] + ")";
+    }
 
-	@Override
-	public int getInputMemoryOffset() {
-		return 2;
-	}
+    @Override
+    public int getInputMemoryOffset() {
+        return 2;
+    }
 
-	@Override
-	public int getInputMemorySize() {
-		return 3;
-	}
+    @Override
+    public int getInputMemorySize() {
+        return 3;
+    }
 
-	@Override
-	public Variable getValue() {
-	    CallValue value = new CallValue();
-	    return value.getOutput()[0];
-	}
+    @Override
+    public Variable getValue() {
+        CallValue value = new CallValue();
+        value.setInput(NO_VARIABLES);
+        value.setOutput(new Variable());
+        return value.getOutput()[0];
+    }
 }

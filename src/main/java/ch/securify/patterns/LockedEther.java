@@ -96,18 +96,41 @@ public class LockedEther extends AbstractContractPattern {
     @Override
     protected boolean isViolation(List<Instruction> instructions, AbstractDataflow dataflow) {
         // check that the contract can receive ether
+        boolean contractCannotReceiveEther = true;
         for (Instruction stopInstr : instructions) {
             // TODO: should we check for Return as well?
-            if (stopInstr instanceof Stop && dataflow.instrMayDepOn(stopInstr, CallValue.class) == Status.UNSATISFIABLE) {
-                return false;
+            if ((stopInstr instanceof Stop || stopInstr instanceof Return) && dataflow.instrMayDepOn(stopInstr, CallValue.class) == Status.UNSATISFIABLE) {
+                contractCannotReceiveEther = false;
+                break;
             }
+        }
+        if (contractCannotReceiveEther) {
+            System.out.println("first cond");
+           return false;
         }
 
         // check if the contract can transfer ether
         for (Instruction callInstr : instructions) {
             if (callInstr instanceof CallingInstruction) {
                 Variable amount = ((CallingInstruction) callInstr).getValue();
-                if (!amount.hasConstantValue() || BigIntUtil.fromInt256(amount.getConstantValue()).compareTo(BigInteger.ZERO) != 0) {
+                if(callInstr instanceof DelegateCall) {
+                    // checking if the corresponding function is payable
+                    boolean canReceiveEther = true;
+                    for (Instruction jumpInstr : instructions) {
+                        if (jumpInstr instanceof JumpI) {
+                            Variable cond = ((JumpI) jumpInstr).getCondition();
+                            if (dataflow.mustPrecede(jumpInstr, callInstr) == Status.SATISFIABLE
+                                    && dataflow.varMustDepOn(jumpInstr, cond, CallValue.class) == Status.SATISFIABLE
+                                    && dataflow.varMustDepOn(jumpInstr, cond, IsZero.class) == Status.SATISFIABLE) {
+                                canReceiveEther = false;
+                                break;
+                            }
+                        }
+                    }
+                    return canReceiveEther;
+                }
+
+                else if (!amount.hasConstantValue() || BigIntUtil.fromInt256(amount.getConstantValue()).compareTo(BigInteger.ZERO) != 0) {
                     return false;
                 }
             } else if (callInstr instanceof SelfDestruct) {
