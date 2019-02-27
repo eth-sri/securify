@@ -79,6 +79,10 @@ public class LockedEther extends AbstractContractPattern {
             if (!(instr instanceof CallingInstruction))
                 continue;
 
+            if (instr instanceof DelegateCall) {
+                return true;
+            }
+
             CallingInstruction callInstr = (CallingInstruction) instr;
 
             Variable amount = callInstr.getValue();
@@ -108,30 +112,19 @@ public class LockedEther extends AbstractContractPattern {
             System.out.println("first cond");
            return false;
         }
+        System.out.println("contract can receive ether");
 
         // check if the contract can transfer ether
         for (Instruction callInstr : instructions) {
             if (callInstr instanceof CallingInstruction) {
-                Variable amount = ((CallingInstruction) callInstr).getValue();
                 if(callInstr instanceof DelegateCall) {
-                    // checking if the corresponding function is payable
-                    boolean canReceiveEther = true;
-                    for (Instruction jumpInstr : instructions) {
-                        if (jumpInstr instanceof JumpI) {
-                            Variable cond = ((JumpI) jumpInstr).getCondition();
-                            if (dataflow.mustPrecede(jumpInstr, callInstr) == Status.SATISFIABLE
-                                    && dataflow.varMustDepOn(jumpInstr, cond, CallValue.class) == Status.SATISFIABLE
-                                    && dataflow.varMustDepOn(jumpInstr, cond, IsZero.class) == Status.SATISFIABLE) {
-                                canReceiveEther = false;
-                                break;
-                            }
-                        }
-                    }
-                    return canReceiveEther;
-                }
-
-                else if (!amount.hasConstantValue() || BigIntUtil.fromInt256(amount.getConstantValue()).compareTo(BigInteger.ZERO) != 0) {
                     return false;
+                } else
+                {
+                    Variable amount = ((CallingInstruction) callInstr).getValue();
+                    if (!amount.hasConstantValue() || BigIntUtil.fromInt256(amount.getConstantValue()).compareTo(BigInteger.ZERO) != 0) {
+                        return false;
+                    }
                 }
             } else if (callInstr instanceof SelfDestruct) {
                 return false;

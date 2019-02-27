@@ -41,9 +41,7 @@ public class DelegateCall extends CallingInstruction implements _TypeInstruction
 
     @Override
     public Variable getValue() {
-        CallValue value = new CallValue();
-        value.setInput(NO_VARIABLES);
-        value.setOutput(new Variable());
-        return value.getOutput()[0];
+        // no use for this yet, could (maybe) be implemented by using the Callvalue opcode in the dataflow and returning its output
+        throw new UnsupportedOperationException("Not Implemented");
     }
 }
