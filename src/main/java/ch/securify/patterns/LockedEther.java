@@ -45,13 +45,13 @@ public class LockedEther extends AbstractContractPattern {
     protected boolean isSafe(List<Instruction> instructions, AbstractDataflow dataflow) {
         // Check if the contract cannot receive ether
         boolean allStopsCannotReceiveEther = true;
-        for (Instruction stopInstr : instructions) {
-            if (stopInstr instanceof Stop) {
+        for (Instruction haltInstr : instructions) {
+            if (haltInstr instanceof Stop || haltInstr instanceof Return) {
                 boolean stopCannotReceiveEther = false;
                 for (Instruction jumpInstr : instructions) {
                     if (jumpInstr instanceof JumpI) {
                         Variable cond = ((JumpI) jumpInstr).getCondition();
-                        if (dataflow.mustPrecede(jumpInstr, stopInstr) == Status.SATISFIABLE
+                        if (dataflow.mustPrecede(jumpInstr, haltInstr) == Status.SATISFIABLE
                                 && dataflow.varMustDepOn(jumpInstr, cond, CallValue.class) == Status.SATISFIABLE
                                 && dataflow.varMustDepOn(jumpInstr, cond, IsZero.class) == Status.SATISFIABLE) {
                             stopCannotReceiveEther = true;
@@ -66,8 +66,9 @@ public class LockedEther extends AbstractContractPattern {
             }
         }
 
-        if (allStopsCannotReceiveEther)
+        if (allStopsCannotReceiveEther) {
             return true;
+        }
 
 
         // Check if the contract can send ether (has a call instruction with positive amount or a selfdestruct)
@@ -86,9 +87,9 @@ public class LockedEther extends AbstractContractPattern {
             CallingInstruction callInstr = (CallingInstruction) instr;
 
             Variable amount = callInstr.getValue();
-            // TODO: should there be a CallValue.class here?
             if (dataflow.varMustDepOn(callInstr, amount, Balance.class) == Status.SATISFIABLE
                     || dataflow.varMustDepOn(callInstr, amount, CallDataLoad.class) == Status.SATISFIABLE
+                    || dataflow.varMustDepOn(callInstr, amount, CallValue.class) == Status.SATISFIABLE
                     || dataflow.varMustDepOn(callInstr, amount, MLoad.class) == Status.SATISFIABLE
                     || dataflow.varMustDepOn(callInstr, amount, SLoad.class) == Status.SATISFIABLE) {
                 return true;
@@ -101,18 +102,15 @@ public class LockedEther extends AbstractContractPattern {
     protected boolean isViolation(List<Instruction> instructions, AbstractDataflow dataflow) {
         // check that the contract can receive ether
         boolean contractCannotReceiveEther = true;
-        for (Instruction stopInstr : instructions) {
-            // TODO: should we check for Return as well?
-            if ((stopInstr instanceof Stop || stopInstr instanceof Return) && dataflow.instrMayDepOn(stopInstr, CallValue.class) == Status.UNSATISFIABLE) {
+        for (Instruction haltingInstr : instructions) {
+            if ((haltingInstr instanceof Stop || haltingInstr instanceof Return) && dataflow.instrMayDepOn(haltingInstr, CallValue.class) == Status.UNSATISFIABLE) {
                 contractCannotReceiveEther = false;
                 break;
             }
         }
         if (contractCannotReceiveEther) {
-            System.out.println("first cond");
            return false;
         }
-        System.out.println("contract can receive ether");
 
         // check if the contract can transfer ether
         for (Instruction callInstr : instructions) {

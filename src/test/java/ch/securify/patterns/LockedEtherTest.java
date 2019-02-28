@@ -40,6 +40,7 @@ public class LockedEtherTest {
         ContractPatternTest instructionPatternTest = new ContractPatternTest(hex, new LockedEther());
         // as many violations as there are functions in the smart contract
         assertEquals(0, instructionPatternTest.pattern.violations.size());
-        assertEquals(0, instructionPatternTest.pattern.warnings.size());        
-    }    
+        assertEquals(0, instructionPatternTest.pattern.warnings.size());
+        assertEquals(1, instructionPatternTest.pattern.safe.size());
+    }
 }
