@@ -21,6 +21,7 @@ package ch.securify.decompiler.instructions;
 import ch.securify.decompiler.Variable;
 
 public class StaticCall extends CallingInstruction implements _TypeInstruction {
+    private Variable value;
 
     public StaticCall() {
         value = new Variable();
@@ -49,5 +50,4 @@ public class StaticCall extends CallingInstruction implements _TypeInstruction {
         return value;
     }
 
-    private Variable value;
 }
