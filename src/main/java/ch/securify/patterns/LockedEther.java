@@ -28,7 +28,6 @@ import ch.securify.decompiler.Variable;
 import ch.securify.decompiler.instructions.*;
 import ch.securify.utils.BigIntUtil;
 
-// TODO: buggy
 public class LockedEther extends AbstractContractPattern {
 
     public LockedEther() {
