@@ -103,8 +103,6 @@ public class LockedEther extends AbstractContractPattern {
             return false;
         }
 
-        System.out.println("contract can receive ether");
-
         // check if the contract can transfer ether
         for (Instruction callInstr : instructions) {
             if (callInstr instanceof CallingInstruction) {
