@@ -140,6 +140,8 @@ public class InstructionFactory {
 			case OpCodes.XOR: return new Xor();
 			case OpCodes.NOT: return new Not();
 			case OpCodes.BYTE: return new Byte();
+			case OpCodes.SHL: return new Shl();
+			case OpCodes.SHR: return new Shr();
 			case OpCodes.SHA3: return new Sha3();
 			case OpCodes.ADDRESS: return new Address();
 			case OpCodes.BALANCE: return new Balance();
@@ -156,6 +158,7 @@ public class InstructionFactory {
 			case OpCodes.EXTCODECOPY: return new ExtCodeCopy();
 			case OpCodes.RETURNDATASIZE: return new ReturnDataSize();
 			case OpCodes.RETURNDATACOPY: return new ReturnDataCopy();
+			case OpCodes.EXTCODEHASH: return new Extcodehash();
 			case OpCodes.BLOCKHASH: return new BlockHash();
 			case OpCodes.COINBASE: return new Coinbase();
 			case OpCodes.TIMESTAMP: return new BlockTimestamp();
@@ -184,6 +187,7 @@ public class InstructionFactory {
 			case OpCodes.CALLCODE: return new CallCode();
 			case OpCodes.RETURN: return new Return();
 			case OpCodes.DELEGATECALL: return new DelegateCall();
+			case OpCodes.CREATE2: return new Create2();
 			case OpCodes.STATICCALL: return new StaticCall();
 			case OpCodes.REVERT: return new Revert();
 			case OpCodes.INVALID: return new Invalid();
@@ -233,6 +237,9 @@ public class InstructionFactory {
 			case OpCodes.XOR: return Xor.class.getSimpleName();
 			case OpCodes.NOT: return Not.class.getSimpleName();
 			case OpCodes.BYTE: return Byte.class.getSimpleName();
+			case OpCodes.SHL: return Shl.class.getSimpleName();
+			case OpCodes.SHR: return Shr.class.getSimpleName();
+			case OpCodes.SAR: return Sar.class.getSimpleName();
 			case OpCodes.SHA3: return Sha3.class.getSimpleName();
 			case OpCodes.ADDRESS: return Address.class.getSimpleName();
 			case OpCodes.BALANCE: return Balance.class.getSimpleName();
@@ -249,6 +256,7 @@ public class InstructionFactory {
 			case OpCodes.EXTCODECOPY: return ExtCodeCopy.class.getSimpleName();
 			case OpCodes.RETURNDATASIZE: return ReturnDataSize.class.getSimpleName();
 			case OpCodes.RETURNDATACOPY: return ReturnDataCopy.class.getSimpleName();
+			case OpCodes.EXTCODEHASH: return Extcodehash.class.getSimpleName();
 			case OpCodes.BLOCKHASH: return BlockHash.class.getSimpleName();
 			case OpCodes.COINBASE: return Coinbase.class.getSimpleName();
 			case OpCodes.TIMESTAMP: return BlockTimestamp.class.getSimpleName();
@@ -277,6 +285,7 @@ public class InstructionFactory {
 			case OpCodes.CALLCODE: return CallCode.class.getSimpleName();
 			case OpCodes.RETURN: return Return.class.getSimpleName();
 			case OpCodes.DELEGATECALL: return DelegateCall.class.getSimpleName();
+			case OpCodes.CREATE2: return Create2.class.getSimpleName();
 			case OpCodes.STATICCALL: return StaticCall.class.getSimpleName();
 			case OpCodes.REVERT: return Revert.class.getSimpleName();
 			case OpCodes.INVALID: return Invalid.class.getSimpleName();
