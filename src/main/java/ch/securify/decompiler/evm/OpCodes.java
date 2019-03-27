@@ -49,6 +49,9 @@ public class OpCodes {
 	public static final int XOR = 0x18;
 	public static final int NOT = 0x19;
 	public static final int BYTE = 0x1a;
+	public static final int SHL = 0x1b;
+	public static final int SHR = 0x1c;
+	public static final int SAR = 0x1d;
 
 	// SHA3
 	public static final int SHA3 = 0x20;
@@ -69,6 +72,7 @@ public class OpCodes {
 	public static final int EXTCODECOPY = 0x3c;
 	public static final int RETURNDATASIZE = 0x3d;
 	public static final int RETURNDATACOPY = 0x3e;
+	public static final int EXTCODEHASH = 0x3f;
 
 	// Block Information
 	public static final int BLOCKHASH = 0x40;
@@ -168,6 +172,7 @@ public class OpCodes {
 	public static final int CALLCODE = 0xf2;
 	public static final int RETURN = 0xf3;
 	public static final int DELEGATECALL = 0xf4;
+	public static final int CREATE2 = 0xf5;
 	public static final int STATICCALL = 0xfa;
 	public static final int REVERT = 0xfd;
 	public static final int INVALID = 0xfe;
@@ -261,6 +266,9 @@ public class OpCodes {
 			case XOR: return 2;
 			case NOT: return 1;
 			case BYTE: return 2;
+			case SHL: return 2;
+			case SHR: return 2;
+			case SAR: return 2;
 			case SHA3: return 2;
 			case ADDRESS: return 0;
 			case BALANCE: return 1;
@@ -277,6 +285,7 @@ public class OpCodes {
 			case EXTCODECOPY: return 4;
 			case RETURNDATASIZE: return 0;
 			case RETURNDATACOPY: return 3;
+			case EXTCODEHASH: return 1;
 			case BLOCKHASH: return 1;
 			case COINBASE: return 0;
 			case TIMESTAMP: return 0;
@@ -301,6 +310,7 @@ public class OpCodes {
 			case LOG3: return 5;
 			case LOG4: return 6;
 			case CREATE: return 3;
+			case CREATE2: return 4;
 			case CALL: return 7;
 			case CALLCODE: return 7;
 			case RETURN: return 2;
@@ -354,6 +364,9 @@ public class OpCodes {
 			case XOR: return 1;
 			case NOT: return 1;
 			case BYTE: return 1;
+			case SHL: return 1;
+			case SHR: return 1;
+			case SAR: return 1;
 			case SHA3: return 1;
 			case ADDRESS: return 1;
 			case BALANCE: return 1;
@@ -370,6 +383,7 @@ public class OpCodes {
 			case EXTCODECOPY: return 0;
 			case RETURNDATASIZE: return 1;
 			case RETURNDATACOPY: return 0;
+			case EXTCODEHASH: return 1;
 			case BLOCKHASH: return 1;
 			case COINBASE: return 1;
 			case TIMESTAMP: return 1;
@@ -394,6 +408,7 @@ public class OpCodes {
 			case LOG3: return 0;
 			case LOG4: return 0;
 			case CREATE: return 1;
+			case CREATE2: return 1;
 			case CALL: return 1;
 			case CALLCODE: return 1;
 			case RETURN: return 0;

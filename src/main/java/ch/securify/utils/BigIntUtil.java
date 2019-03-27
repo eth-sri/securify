@@ -33,6 +33,10 @@ public class BigIntUtil {
 		return new BigInteger(sig, int256);
 	}
 
+	public static BigInteger fromUint256(byte[] uint256) {
+		return new BigInteger(1, uint256);
+	}
+
 
 	/**
 	 * Convert a BigInteger to an int256 (big-endian byte array).
