@@ -59,7 +59,7 @@ public class Main {
         @Parameter(names = {"-o", "--output"}, description = "json output file")
         private String outputfile;
 
-        @Parameter(names = {"-fh", "--filehex"}, description = "contract runtime code to parse as a hex-encoded file")
+        @Parameter(names = {"-fh", "--filehex"}, description = "contract runtime code to parse as a hex-encoded file, please use --livestatusfile to record the output")
         private String filehex;
 
         @Parameter(names = {"-ca", "--contractaddress"}, description = "specific contract address to search for in the provided set of contracts")
