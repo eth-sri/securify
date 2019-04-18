@@ -57,7 +57,7 @@ java -jar build/libs/securify.jar -fs src/test/resources/solidity/transaction-re
 ```
 
 To run Securify on the decompilation output provided by the [pysolc.py
-script](scripts/isolc/pysolc.py) (which requires py-solc):
+script](scripts/pysolc.py) (which requires py-solc):
 ```sh
 java -jar build/libs/securify.jar -co out.json
 ```
