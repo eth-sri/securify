@@ -1,0 +1,101 @@
+image: ubuntu:18.10
+
+
+stages:
+  - build
+  - test
+  - deploy
+
+before_script:
+  - apt-get update
+  - apt-get install -y software-properties-common locales
+  - locale-gen en_US.UTF-8
+  - export LANG=en_US.UTF-8
+  - export LANGUAGE=en_US:en
+  - export LC_ALL=en_US.UTF-8
+  - apt-get -y install wget gdebi openjdk-8-jdk curl python3-pip
+  - wget https://github.com/souffle-lang/souffle/releases/download/1.5.1/souffle_1.5.1-1_amd64.deb -O /tmp/souffle.deb
+  - gdebi --n /tmp/souffle.deb
+  - wget -O /usr/bin/solc https://github.com/ethereum/solidity/releases/latest/download/solc-static-linux 
+  - chmod +x /usr/bin/solc
+  - export GRADLE_USER_HOME=`pwd`/.gradle
+  - pip3 install -r requirements.txt
+
+cache:
+  paths:
+    - .gradle/wrapper
+    - .gradle/caches
+
+build_docker:
+  stage: build 
+  before_script:
+    - apt-get update
+    - apt-get -y install docker.io
+    - docker info
+  script:
+    - docker build -t securify .
+
+build_jar:
+  stage: build 
+  script:
+    - ./gradlew jar
+  artifacts:
+    paths:
+      - build/libs/*.jar
+  only:
+    changes:
+      - gradle/**/*
+      - smt_files/**/*
+      - src/**/*
+
+gradle_test:
+  stage: test
+  script:
+    - ./gradlew test 
+  only:
+    changes:
+      - gradle/**/*
+      - smt_files/**/*
+      - src/**/*
+
+result_test:
+  stage: test
+  script:
+    - python3 test.py 
+  only:
+    changes:
+      - gradle/**/*
+      - smt_files/**/*
+      - src/**/*
+
+truffle_docker_test:
+  stage: deploy
+  before_script:
+    - apt-get update
+    - apt-get -y install docker.io curl software-properties-common
+    - docker info
+    - curl -sL https://deb.nodesource.com/setup_11.x | bash -
+    - apt-get install -y nodejs
+    - npm install -g truffle
+  script:
+    - cd /secvol
+    - rm -rf *
+    - truffle unbox
+    - docker run -v "secvol:/project" securify --truffle --noexiterror > /tmp/sec.out
+    - grep "Violation" /tmp/sec.out
+    - grep "Warning" /tmp/sec.out
+
+solc_docker_test:
+  stage: deploy
+  before_script:
+    - apt-get update
+    - apt-get -y install docker.io software-properties-common
+    - docker info
+  script:
+    - rm -rf /secvol/*
+    - cp src/test/resources/solidity/DAO.sol /secvol 
+    - docker run -v "secvol:/project" securify --noexiterror > /tmp/sec.out
+    - grep "Violation" /tmp/sec.out
+
+after_script:
+- echo "End CI"

@@ -59,6 +59,6 @@ class SolcProject(project.Project):
     def _compile_solfiles(self, files, solc_version=None, output_values=pysolc.OUTPUT_VALUES):
         """Compiles the files using the solc compiler.
         """
-        pysolc.compile_solfiles(files, self.project_root, solc_version, output_values)
+        return pysolc.compile_solfiles(files, self.project_root, solc_version, output_values)
 
 

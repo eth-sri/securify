@@ -33,6 +33,8 @@ from solcx import install_solc
 
 from .utils import find_node_modules_dir
 
+MINIMAL_SOLC_VERSION = "0.4.11"
+
 class NoSolidityProject(BaseException):
     def __init__(self, dir):
         self.dir = dir
@@ -105,10 +107,7 @@ def _get_binary(solc_version):
 def get_supported_solc_versions():
     versions = [SolidityVersion(v[1:])
                 for v in get_installed_solc_versions()]
-    return [v for v in versions if v >= SolidityVersion('0.4.11')]
-
-SOLC_VERSIONS = list(get_supported_solc_versions())
-DEFAULT_SOLC_VERSION = SOLC_VERSIONS[-1]
+    return [v for v in versions if v >= SolidityVersion(MINIMAL_SOLC_VERSION)]
 
 def parse_version(source):
     with open(source, encoding='utf-8') as f:
@@ -125,11 +124,11 @@ def parse_version(source):
             def fullfills_all_conditions(v):
                 return all(map(lambda cond: cond.op(v, cond.v), conditions))
             try:
-                return min(filter(fullfills_all_conditions, SOLC_VERSIONS))
+                return min(filter(fullfills_all_conditions, list(get_supported_solc_versions())))
             except ValueError:
                 raise CompilerVersionNotSupported()
     else:
-        return DEFAULT_SOLC_VERSION
+        return list(get_supported_solc_versions())[-1] 
 
 
 def compile_solfiles(files, proj_dir, solc_version=None, output_values=OUTPUT_VALUES, remappings=None):
@@ -188,13 +187,38 @@ def get_sol_files(src_dir_path):
 
 
 def install_all_versions():
-    for v in SOLC_VERSIONS:
-        install_solc(f'v{v}')
+    # First install last version
+    if not install_last_version():
+        print("Failed to install all compiler. Trying to continue...")
+        print("This might lead to later errors.")
+        return False
+
+    last_version = SolidityVersion(get_installed_solc_versions()[-1][1:])
+    
+    next_version = MINIMAL_SOLC_VERSION
+
+    while SolidityVersion(next_version) < last_version:
+        try:
+            install_solc(f'v{next_version}')
+            # Increase major version
+            new_minor = int(next_version.split(".")[2]) + 1
+            old_major = int(next_version.split(".")[1])
+            next_version = f'0.{old_major}.{new_minor}'
+
+        except:
+            # Increase major version
+            new_major = int(next_version.split(".")[1]) + 1
+            next_version = f'0.{new_major}.0'
 
 
 def install_last_version():
-    v = SOLC_VERSIONS[-1]
-    install_solc(f'v{v}')
+    try:
+        install_solc()
+        return True
+    except: #urllib3.exceptions.NewConnectionError as e:#, urllib3.exceptions.MaxRetryError:
+        print("Failed to install latest compiler. Trying to continue...")
+        print("This might lead to later errors.")
+        return False
 
 
 if __name__ == '__main__':
