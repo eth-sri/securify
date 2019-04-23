@@ -2,28 +2,30 @@
   "src/test/resources/solidity/end_to_end_testing_big/swc/reentracy/simple_dao_fixed.sol:SimpleDAO": {
     "results": {
       "DAO": {
+        "conflicts": [],
+        "safe": [],
         "violations": [],
         "warnings": [
           17
-        ],
-        "safe": [],
-        "conflicts": []
+        ]
       },
       "DAOConstantGas": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       },
       "LockedEther": {
+        "conflicts": [],
+        "safe": [],
         "violations": [],
         "warnings": [
           7
-        ],
-        "safe": [],
-        "conflicts": []
+        ]
       },
       "MissingInputValidation": {
+        "conflicts": [],
+        "safe": [],
         "violations": [
           8,
           10,
@@ -31,51 +33,49 @@
         ],
         "warnings": [
           14
-        ],
-        "safe": [],
-        "conflicts": []
+        ]
       },
       "TODAmount": {
+        "conflicts": [],
+        "safe": [],
         "violations": [],
         "warnings": [
           17
-        ],
-        "safe": [],
-        "conflicts": []
+        ]
       },
       "TODReceiver": {
+        "conflicts": [],
+        "safe": [],
         "violations": [],
         "warnings": [
           17
-        ],
-        "safe": [],
-        "conflicts": []
+        ]
       },
       "UnhandledException": {
+        "conflicts": [],
+        "safe": [],
         "violations": [],
         "warnings": [
           17
-        ],
-        "safe": [],
-        "conflicts": []
+        ]
       },
       "UnrestrictedEtherFlow": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [
           17
         ],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       },
       "UnrestrictedWrite": {
+        "conflicts": [],
+        "safe": [],
         "violations": [
           11
         ],
         "warnings": [
           16
-        ],
-        "safe": [],
-        "conflicts": []
+        ]
       }
     },
     "securifyErrors": {

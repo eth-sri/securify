@@ -2,72 +2,72 @@
   "src/test/resources/solidity/locked-money-call-safe.sol:MarketPlace": {
     "results": {
       "DAO": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       },
       "DAOConstantGas": {
+        "conflicts": [],
+        "safe": [],
         "violations": [],
         "warnings": [
           4
-        ],
-        "safe": [],
-        "conflicts": []
+        ]
       },
       "LockedEther": {
+        "conflicts": [],
+        "safe": [],
         "violations": [],
         "warnings": [
           1
-        ],
-        "safe": [],
-        "conflicts": []
+        ]
       },
       "MissingInputValidation": {
+        "conflicts": [],
+        "safe": [],
         "violations": [],
         "warnings": [
           2
-        ],
-        "safe": [],
-        "conflicts": []
+        ]
       },
       "TODAmount": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [
           4
         ],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       },
       "TODReceiver": {
+        "conflicts": [],
+        "safe": [],
         "violations": [],
         "warnings": [
           4
-        ],
-        "safe": [],
-        "conflicts": []
+        ]
       },
       "UnhandledException": {
+        "conflicts": [],
+        "safe": [],
         "violations": [
           4
         ],
-        "warnings": [],
-        "safe": [],
-        "conflicts": []
+        "warnings": []
       },
       "UnrestrictedEtherFlow": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [
           4
         ],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       },
       "UnrestrictedWrite": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       }
     },
     "securifyErrors": {

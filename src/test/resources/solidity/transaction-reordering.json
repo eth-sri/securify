@@ -2,87 +2,87 @@
   "src/test/resources/solidity/transaction-reordering.sol:MarketPlace": {
     "results": {
       "DAO": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       },
       "DAOConstantGas": {
+        "conflicts": [],
+        "safe": [],
         "violations": [],
         "warnings": [
           4,
           10,
           15
-        ],
-        "safe": [],
-        "conflicts": []
+        ]
       },
       "LockedEther": {
+        "conflicts": [],
+        "safe": [],
         "violations": [],
         "warnings": [
           1
-        ],
-        "safe": [],
-        "conflicts": []
+        ]
       },
       "MissingInputValidation": {
+        "conflicts": [],
+        "safe": [],
         "violations": [],
         "warnings": [
           2,
           7,
           13
-        ],
-        "safe": [],
-        "conflicts": []
+        ]
       },
       "TODAmount": {
-        "violations": [
-          15
-        ],
-        "warnings": [
-          10
-        ],
+        "conflicts": [],
         "safe": [
           4
         ],
-        "conflicts": []
+        "violations": [
+          15
+        ],
+        "warnings": [
+          10
+        ]
       },
       "TODReceiver": {
+        "conflicts": [],
+        "safe": [],
         "violations": [],
         "warnings": [
           4,
           10,
           15
-        ],
-        "safe": [],
-        "conflicts": []
+        ]
       },
       "UnhandledException": {
+        "conflicts": [],
+        "safe": [],
         "violations": [
           4,
           10,
           15
         ],
-        "warnings": [],
-        "safe": [],
-        "conflicts": []
+        "warnings": []
       },
       "UnrestrictedEtherFlow": {
-        "violations": [
-          10
-        ],
-        "warnings": [],
+        "conflicts": [],
         "safe": [
           4,
           15
         ],
-        "conflicts": []
+        "violations": [
+          10
+        ],
+        "warnings": []
       },
       "UnrestrictedWrite": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       }
     },
     "securifyErrors": {

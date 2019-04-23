@@ -2,65 +2,65 @@
   "src/test/resources/solidity/reentrancy2.sol:Ownable": {
     "results": {
       "DAO": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       },
       "DAOConstantGas": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       },
       "LockedEther": {
-        "violations": [],
-        "warnings": [],
-        "safe": [],
         "conflicts": [
           56
-        ]
+        ],
+        "safe": [],
+        "violations": [],
+        "warnings": []
       },
       "MissingInputValidation": {
+        "conflicts": [],
+        "safe": [],
         "violations": [],
         "warnings": [
           57,
           83
-        ],
-        "safe": [],
-        "conflicts": []
+        ]
       },
       "TODAmount": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       },
       "TODReceiver": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       },
       "UnhandledException": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       },
       "UnrestrictedEtherFlow": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       },
       "UnrestrictedWrite": {
-        "violations": [],
-        "warnings": [],
-        "safe": [],
         "conflicts": [
           86
-        ]
+        ],
+        "safe": [],
+        "violations": [],
+        "warnings": []
       }
     },
     "securifyErrors": {
@@ -70,60 +70,60 @@
   "src/test/resources/solidity/reentrancy2.sol:SafeMath": {
     "results": {
       "DAO": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       },
       "DAOConstantGas": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       },
       "LockedEther": {
+        "conflicts": [],
+        "safe": [],
         "violations": [],
         "warnings": [
           8
-        ],
-        "safe": [],
-        "conflicts": []
+        ]
       },
       "MissingInputValidation": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       },
       "TODAmount": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       },
       "TODReceiver": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       },
       "UnhandledException": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       },
       "UnrestrictedEtherFlow": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       },
       "UnrestrictedWrite": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       }
     },
     "securifyErrors": {
@@ -133,83 +133,80 @@
   "src/test/resources/solidity/reentrancy2.sol:Vault": {
     "results": {
       "DAO": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       },
       "DAOConstantGas": {
+        "conflicts": [],
+        "safe": [],
         "violations": [
           148
         ],
         "warnings": [
           132,
           134
-        ],
-        "safe": [],
-        "conflicts": []
+        ]
       },
       "LockedEther": {
+        "conflicts": [],
+        "safe": [],
         "violations": [],
         "warnings": [
           96
-        ],
-        "safe": [],
-        "conflicts": []
+        ]
       },
       "MissingInputValidation": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       },
       "TODAmount": {
-        "violations": [],
-        "warnings": [
-          132,
-          134
-        ],
+        "conflicts": [],
         "safe": [
           148
         ],
-        "conflicts": []
-      },
-      "TODReceiver": {
         "violations": [],
         "warnings": [
-          134,
-          148
-        ],
-        "safe": [
-          132
-        ],
-        "conflicts": []
-      },
-      "UnhandledException": {
-        "violations": [],
-        "warnings": [
-          132,
-          134,
-          148
-        ],
-        "safe": [],
-        "conflicts": []
-      },
-      "UnrestrictedEtherFlow": {
-        "violations": [],
-        "warnings": [
-          148
-        ],
-        "safe": [],
-        "conflicts": [
           132,
           134
         ]
       },
-      "UnrestrictedWrite": {
+      "TODReceiver": {
+        "conflicts": [],
+        "safe": [
+          132
+        ],
         "violations": [],
-        "warnings": [],
+        "warnings": [
+          134,
+          148
+        ]
+      },
+      "UnhandledException": {
+        "conflicts": [],
         "safe": [],
+        "violations": [],
+        "warnings": [
+          132,
+          134,
+          148
+        ]
+      },
+      "UnrestrictedEtherFlow": {
+        "conflicts": [
+          132,
+          134
+        ],
+        "safe": [],
+        "violations": [],
+        "warnings": [
+          148
+        ]
+      },
+      "UnrestrictedWrite": {
         "conflicts": [
           5,
           86,
@@ -217,7 +214,10 @@
           121,
           130,
           145
-        ]
+        ],
+        "safe": [],
+        "violations": [],
+        "warnings": []
       }
     },
     "securifyErrors": {

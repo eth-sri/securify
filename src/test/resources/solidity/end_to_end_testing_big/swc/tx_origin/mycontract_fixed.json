@@ -2,72 +2,72 @@
   "src/test/resources/solidity/end_to_end_testing_big/swc/tx_origin/mycontract_fixed.sol:MyContract": {
     "results": {
       "DAO": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       },
       "DAOConstantGas": {
+        "conflicts": [],
+        "safe": [],
         "violations": [],
         "warnings": [
-          18
-        ],
-        "safe": [],
-        "conflicts": []
-      },
-      "LockedEther": {
-        "violations": [],
-        "warnings": [
-          8
-        ],
-        "safe": [],
-        "conflicts": []
-      },
-      "MissingInputValidation": {
-        "violations": [
-          16
-        ],
-        "warnings": [],
-        "safe": [],
-        "conflicts": []
-      },
-      "TODAmount": {
-        "violations": [],
-        "warnings": [
-          18
-        ],
-        "safe": [],
-        "conflicts": []
-      },
-      "TODReceiver": {
-        "violations": [],
-        "warnings": [
-          18
-        ],
-        "safe": [],
-        "conflicts": []
-      },
-      "UnhandledException": {
-        "violations": [],
-        "warnings": [
-          18
-        ],
-        "safe": [],
-        "conflicts": []
-      },
-      "UnrestrictedEtherFlow": {
-        "violations": [],
-        "warnings": [],
-        "safe": [],
-        "conflicts": [
           18
         ]
       },
-      "UnrestrictedWrite": {
-        "violations": [],
-        "warnings": [],
+      "LockedEther": {
+        "conflicts": [],
         "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": [
+          8
+        ]
+      },
+      "MissingInputValidation": {
+        "conflicts": [],
+        "safe": [],
+        "violations": [
+          16
+        ],
+        "warnings": []
+      },
+      "TODAmount": {
+        "conflicts": [],
+        "safe": [],
+        "violations": [],
+        "warnings": [
+          18
+        ]
+      },
+      "TODReceiver": {
+        "conflicts": [],
+        "safe": [],
+        "violations": [],
+        "warnings": [
+          18
+        ]
+      },
+      "UnhandledException": {
+        "conflicts": [],
+        "safe": [],
+        "violations": [],
+        "warnings": [
+          18
+        ]
+      },
+      "UnrestrictedEtherFlow": {
+        "conflicts": [
+          18
+        ],
+        "safe": [],
+        "violations": [],
+        "warnings": []
+      },
+      "UnrestrictedWrite": {
+        "conflicts": [],
+        "safe": [],
+        "violations": [],
+        "warnings": []
       }
     },
     "securifyErrors": {

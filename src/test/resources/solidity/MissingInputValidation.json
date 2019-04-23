@@ -2,74 +2,74 @@
   "src/test/resources/solidity/MissingInputValidation.sol:SimpleBank": {
     "results": {
       "DAO": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       },
       "DAOConstantGas": {
+        "conflicts": [],
+        "safe": [],
         "violations": [],
         "warnings": [
           5
-        ],
-        "safe": [],
-        "conflicts": []
+        ]
       },
       "LockedEther": {
+        "conflicts": [],
+        "safe": [],
         "violations": [],
         "warnings": [
           0
-        ],
-        "safe": [],
-        "conflicts": []
+        ]
       },
       "MissingInputValidation": {
+        "conflicts": [],
+        "safe": [],
         "violations": [
           3
         ],
-        "warnings": [],
-        "safe": [],
-        "conflicts": []
+        "warnings": []
       },
       "TODAmount": {
+        "conflicts": [],
+        "safe": [],
         "violations": [],
         "warnings": [
           5
-        ],
-        "safe": [],
-        "conflicts": []
+        ]
       },
       "TODReceiver": {
+        "conflicts": [],
+        "safe": [],
         "violations": [],
         "warnings": [
           5
-        ],
-        "safe": [],
-        "conflicts": []
+        ]
       },
       "UnhandledException": {
+        "conflicts": [],
+        "safe": [],
         "violations": [],
         "warnings": [
           5
-        ],
-        "safe": [],
-        "conflicts": []
+        ]
       },
       "UnrestrictedEtherFlow": {
+        "conflicts": [],
+        "safe": [],
         "violations": [
           5
         ],
-        "warnings": [],
-        "safe": [],
-        "conflicts": []
+        "warnings": []
       },
       "UnrestrictedWrite": {
+        "conflicts": [],
+        "safe": [],
         "violations": [],
         "warnings": [
           4
-        ],
-        "safe": [],
-        "conflicts": []
+        ]
       }
     },
     "securifyErrors": {
