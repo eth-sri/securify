@@ -22,10 +22,17 @@ import json
 import shutil
 import subprocess
 import tempfile
+import argparse
+import sys
+import os.path
 
 from pathlib import Path
 
 import psutil
+from scripts import pysolc 
+from scripts import controller
+from scripts import solc_file
+
 
 
 class MismatchError(Exception):
@@ -106,83 +113,113 @@ def rewrite_json_output(curr_json, outj):
         json.dump(curr_json, fso, sort_keys=True, indent=2)
 
 
-def test_securify_analysis(c_file, json_output, memory=2, overwrite=False):
+class MyArgs(object):
+    def __init__(self):
+        self.json = True
+        self.descriptions = False
+        self.verbose = False
+        self.quiet = True
+
+
+def test_securify_analysis(c_file, json_output, args):
     """Compare the output of Securify on c_file with its expected output
 
     Args:
         c_file: the contract to analyze
         json_output: the expected json_output
-        memory: the number of GB to use
-        overwrite: whether to overwrite the output in case of mismatch
+        args: overwrite, printdiffs, memory
+    Returns: Whether changes were found
     """
     mem_available = psutil.virtual_memory().available // 1024 ** 3
-    assert mem_available >= memory, ('Not enough memory to run: '
+    assert mem_available >= args.memory, ('Not enough memory to run: '
                                      f'{mem_available}G')
 
-    with tempfile.TemporaryDirectory() as tmpdir:
-        output = Path(tmpdir) / 'sec_output.json'
+    if args.printdiffs:
+        outfname = "/tmp/testdiffs/"  + os.path.basename(json_output)
 
-        cmd = ['java',
-               # enable assertions
-               '-ea',
-               f'-Xmx{memory}G',
-               '-jar', 'build/libs/securify.jar',
-               '-fs', c_file,
-               '-o', output]
+    project = solc_file.SolcFile(c_file, MyArgs(), "")
 
-        try:
-            print('Running:')
-            print(' '.join(str(o) for o in cmd))
-            subprocess.check_output(cmd, stderr=subprocess.STDOUT)
-        except subprocess.CalledProcessError as exn:
-            print('Securify already failed during execution!')
-            print(exn.output.decode('utf-8'))
-            raise exn
+    curr_json = project.execute_for_json()
 
-        with open(output) as fsc:
-            curr_json = json.load(fsc)
+    try:
+        with open(json_output) as fsj:
+            expc_json = json.load(fsj)
+    except FileNotFoundError:
+        if args.overwrite:
+            print(f'Creating {json_output}.')
+            rewrite_json_output(curr_json, json_output)
+            return True
 
-        try:
-            with open(json_output) as fsj:
-                expc_json = json.load(fsj)
-        except FileNotFoundError:
-            expc_json = {}
+        if args.printdiffs:
+            print(f'Storing diffs for {json_output}.')
+            with open(outfname, "w") as diff:
+                json.dump(curr_json, diff)
+            return True 
 
-    for contract in expc_json:
+        raise AssertionError('We should never get here')
+
+    # If different contracts were detected
+    if set(curr_json.keys()) != set(expc_json.keys()):
+        raise MismatchError(f'Different contracts detected for {c_file}')
+
+    for contract in curr_json:
         try:
             check_securify_errors(curr_json, expc_json, contract)
             check_all_patterns(curr_json, expc_json, contract)
         except MismatchError as e:
-            if not overwrite:
-                raise e
+            if args.overwrite:
+                print(f'Overwriting {json_output}.')
+                rewrite_json_output(curr_json, json_output)
+                return True
+            if args.printdiffs:
+                print(f'Storing diffs for {json_output}.')
+                with open(outfname, "w") as diff:
+                    diff.write(json.dumps(curr_json))
+                return True
+            raise e
+    return False
 
-            print('Overwriting.')
-            rewrite_json_output(curr_json, json_output)
-            return
 
 
-def test(tests_dir, overwrite=False, recursive=False):
+def test(tests_dir, args, recursive=False):
     """Run all the tests in the given path
 
     Args:
         tests_dir: the path in which to look for .sol and .json files
-        overwrite: whether to write the (new) .json output
+        args: overwrite, printdiffs, memory
     """
     find = tests_dir.rglob if recursive else tests_dir.glob
+    changes_found = False
     for contract_file in find('*.sol'):
         print(f'Running on {contract_file}')
         json_output = contract_file.with_suffix('.json')
-        assert (json_output.exists() or overwrite), f'Missing {json_output}'
-        test_securify_analysis(contract_file, json_output, overwrite=overwrite)
+        assert (json_output.exists() or args.overwrite or args.printdiffs), f'Missing {json_output}'
+        changes_found |= test_securify_analysis(contract_file, json_output, args)
     print(f'Done with files in folder: {tests_dir}.')
-
+    return changes_found
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Run Securify Tests.')
+    parser.add_argument('-o', '--overwrite',
+                                action="store_true",
+                                help="Overwrite previous results")
+    parser.add_argument('-d', '--printdiffs',
+                                action="store_true",
+                                help="Write all diffs to disk")
+    parser.add_argument('-m', '--memory',
+                                action="store_true",
+                                help="Number of GB to use")
+    args = parser.parse_args()
+
+    pysolc.install_all_versions()
+
+    changes_found = False
+
     UNIT = Path('src/test/resources/solidity')
-    overwrite = False
-    test(UNIT, overwrite=overwrite)
+    changes_found |= test(UNIT, args)
     QUICK = Path('src/test/resources/solidity/end_to_end_testing_quick')
-    test(QUICK, overwrite=overwrite)
+    changes_found |= test(QUICK, args)
     BIG = Path('src/test/resources/solidity/end_to_end_testing_big')
-    test(BIG, recursive=True, overwrite=overwrite)
+    changes_found |= test(BIG, args, recursive=True) 
     print('Done.')
+    sys.exit(changes_found)
