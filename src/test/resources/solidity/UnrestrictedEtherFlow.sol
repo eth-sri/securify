@@ -1,3 +1,4 @@
+pragma solidity 0.5.1;
 contract Wallet {
     address payable owner;
 

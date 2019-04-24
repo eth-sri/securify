@@ -1,3 +1,4 @@
+pragma solidity 0.5.2;
 /*
  *  Copyright 2019 ChainSecurity AG
  *

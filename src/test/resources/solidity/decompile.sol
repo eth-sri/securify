@@ -1,3 +1,4 @@
+pragma solidity ^0.5.0;
 contract A {
     uint a;
     function f1(uint i) public {

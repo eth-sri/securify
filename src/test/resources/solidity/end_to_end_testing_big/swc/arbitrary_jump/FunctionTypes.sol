@@ -27,3 +27,5 @@ contract FunctionTypes {
         func.f();
     }
 }
+
+
