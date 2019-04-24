@@ -16,18 +16,24 @@
       "LockedEther": {
         "conflicts": [],
         "safe": [],
-        "violations": [],
-        "warnings": [
+        "violations": [
           24
-        ]
+        ],
+        "warnings": []
       },
       "MissingInputValidation": {
         "conflicts": [],
+        "safe": [
+          25
+        ],
+        "violations": [],
+        "warnings": []
+      },
+      "RepeatedCall": {
+        "conflicts": [],
         "safe": [],
         "violations": [],
-        "warnings": [
-          25
-        ]
+        "warnings": []
       },
       "TODAmount": {
         "conflicts": [],
@@ -62,7 +68,8 @@
     },
     "securifyErrors": {
       "errors": []
-    }
+    },
+    "version": "v0-147-g283223d-dirty"
   },
   "src/test/resources/solidity/end_to_end_testing_quick/metacoin_flattened.sol:MetaCoin": {
     "results": {
@@ -80,15 +87,23 @@
       },
       "LockedEther": {
         "conflicts": [],
-        "safe": [],
-        "violations": [],
-        "warnings": [
+        "safe": [
           36
-        ]
+        ],
+        "violations": [],
+        "warnings": []
       },
       "MissingInputValidation": {
         "conflicts": [],
         "safe": [],
+        "violations": [],
+        "warnings": []
+      },
+      "RepeatedCall": {
+        "conflicts": [],
+        "safe": [
+          54
+        ],
         "violations": [],
         "warnings": []
       },
@@ -119,16 +134,17 @@
       "UnrestrictedWrite": {
         "conflicts": [],
         "safe": [
-          48
+          47
         ],
         "violations": [],
         "warnings": [
-          47
+          48
         ]
       }
     },
     "securifyErrors": {
       "errors": []
-    }
+    },
+    "version": "v0-147-g283223d-dirty"
   }
 }

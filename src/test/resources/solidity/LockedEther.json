@@ -17,18 +17,24 @@
         "conflicts": [],
         "safe": [],
         "violations": [
-          0
+          1
         ],
         "warnings": []
       },
       "MissingInputValidation": {
         "conflicts": [],
+        "safe": [
+          2,
+          5
+        ],
+        "violations": [],
+        "warnings": []
+      },
+      "RepeatedCall": {
+        "conflicts": [],
         "safe": [],
         "violations": [],
-        "warnings": [
-          1,
-          4
-        ]
+        "warnings": []
       },
       "TODAmount": {
         "conflicts": [],
@@ -63,6 +69,7 @@
     },
     "securifyErrors": {
       "errors": []
-    }
+    },
+    "version": "v0-147-g283223d-dirty"
   }
 }

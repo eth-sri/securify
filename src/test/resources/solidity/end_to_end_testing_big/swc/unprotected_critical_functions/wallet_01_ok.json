@@ -9,92 +9,103 @@
       },
       "DAOConstantGas": {
         "conflicts": [],
-        "safe": [],
+        "safe": [
+          35
+        ],
         "violations": [
           22,
           27
         ],
-        "warnings": [
-          35
-        ]
+        "warnings": []
       },
       "LockedEther": {
         "conflicts": [],
-        "safe": [],
-        "violations": [],
-        "warnings": [
+        "safe": [
           6
-        ]
+        ],
+        "violations": [],
+        "warnings": []
       },
       "MissingInputValidation": {
         "conflicts": [],
-        "safe": [],
-        "violations": [
-          33
-        ],
-        "warnings": [
+        "safe": [
           15,
           20,
           26
-        ]
+        ],
+        "violations": [
+          33
+        ],
+        "warnings": []
+      },
+      "RepeatedCall": {
+        "conflicts": [],
+        "safe": [
+          22,
+          27,
+          35
+        ],
+        "violations": [],
+        "warnings": []
       },
       "TODAmount": {
         "conflicts": [],
         "safe": [
-          27
+          22
         ],
         "violations": [
           35
         ],
         "warnings": [
-          22
+          27
         ]
       },
       "TODReceiver": {
         "conflicts": [],
-        "safe": [],
-        "violations": [],
-        "warnings": [
+        "safe": [
           22,
           27,
           35
-        ]
+        ],
+        "violations": [],
+        "warnings": []
       },
       "UnhandledException": {
         "conflicts": [],
-        "safe": [],
-        "violations": [],
-        "warnings": [
+        "safe": [
           22,
           27,
           35
-        ]
+        ],
+        "violations": [],
+        "warnings": []
       },
       "UnrestrictedEtherFlow": {
         "conflicts": [],
         "safe": [
-          27
+          35
         ],
         "violations": [
           22
         ],
         "warnings": [
-          35
+          27
         ]
       },
       "UnrestrictedWrite": {
         "conflicts": [],
-        "safe": [],
-        "violations": [],
-        "warnings": [
+        "safe": [
           17,
           23,
           28
-        ]
+        ],
+        "violations": [],
+        "warnings": []
       }
     },
     "securifyErrors": {
       "errors": []
-    }
+    },
+    "version": "v0-147-g283223d-dirty"
   }
 }

@@ -14,10 +14,10 @@
         "warnings": []
       },
       "LockedEther": {
-        "conflicts": [
+        "conflicts": [],
+        "safe": [
           6
         ],
-        "safe": [],
         "violations": [],
         "warnings": []
       },
@@ -28,6 +28,12 @@
           20,
           33
         ],
+        "warnings": []
+      },
+      "RepeatedCall": {
+        "conflicts": [],
+        "safe": [],
+        "violations": [],
         "warnings": []
       },
       "TODAmount": {
@@ -69,6 +75,7 @@
     },
     "securifyErrors": {
       "errors": []
-    }
+    },
+    "version": "v0-147-g283223d-dirty"
   }
 }

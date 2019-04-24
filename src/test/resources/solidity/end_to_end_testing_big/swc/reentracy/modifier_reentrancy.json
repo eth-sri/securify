@@ -15,19 +15,25 @@
       },
       "LockedEther": {
         "conflicts": [],
-        "safe": [],
-        "violations": [],
-        "warnings": [
+        "safe": [
           23
-        ]
+        ],
+        "violations": [],
+        "warnings": []
       },
       "MissingInputValidation": {
         "conflicts": [],
+        "safe": [
+          24
+        ],
+        "violations": [],
+        "warnings": []
+      },
+      "RepeatedCall": {
+        "conflicts": [],
         "safe": [],
         "violations": [],
-        "warnings": [
-          24
-        ]
+        "warnings": []
       },
       "TODAmount": {
         "conflicts": [],
@@ -62,7 +68,8 @@
     },
     "securifyErrors": {
       "errors": []
-    }
+    },
+    "version": "v0-147-g283223d-dirty"
   },
   "src/test/resources/solidity/end_to_end_testing_big/swc/reentracy/modifier_reentrancy.sol:ModifierEntrancy": {
     "results": {
@@ -79,22 +86,30 @@
         "warnings": []
       },
       "LockedEther": {
-        "conflicts": [
+        "conflicts": [],
+        "safe": [
           2
         ],
-        "safe": [],
         "violations": [],
         "warnings": []
       },
       "MissingInputValidation": {
         "conflicts": [],
-        "safe": [],
+        "safe": [
+          7
+        ],
         "violations": [
           3
         ],
-        "warnings": [
-          7
-        ]
+        "warnings": []
+      },
+      "RepeatedCall": {
+        "conflicts": [],
+        "safe": [
+          13
+        ],
+        "violations": [],
+        "warnings": []
       },
       "TODAmount": {
         "conflicts": [],
@@ -112,30 +127,27 @@
         "conflicts": [],
         "safe": [],
         "violations": [],
-        "warnings": [
-          13
-        ]
+        "warnings": []
       },
       "UnrestrictedEtherFlow": {
         "conflicts": [],
         "safe": [],
         "violations": [],
-        "warnings": [
-          13
-        ]
+        "warnings": []
       },
       "UnrestrictedWrite": {
         "conflicts": [],
-        "safe": [],
-        "violations": [],
-        "warnings": [
+        "safe": [
           8
-        ]
+        ],
+        "violations": [],
+        "warnings": []
       }
     },
     "securifyErrors": {
       "errors": []
-    }
+    },
+    "version": "v0-147-g283223d-dirty"
   },
   "src/test/resources/solidity/end_to_end_testing_big/swc/reentracy/modifier_reentrancy.sol:attack": {
     "results": {
@@ -152,21 +164,30 @@
         "warnings": []
       },
       "LockedEther": {
-        "conflicts": [
+        "conflicts": [],
+        "safe": [
           29
         ],
-        "safe": [],
         "violations": [],
         "warnings": []
       },
       "MissingInputValidation": {
         "conflicts": [],
-        "safe": [],
-        "violations": [],
-        "warnings": [
+        "safe": [
           31,
           38
-        ]
+        ],
+        "violations": [],
+        "warnings": []
+      },
+      "RepeatedCall": {
+        "conflicts": [],
+        "safe": [
+          34,
+          39
+        ],
+        "violations": [],
+        "warnings": []
       },
       "TODAmount": {
         "conflicts": [],
@@ -182,21 +203,21 @@
       },
       "UnhandledException": {
         "conflicts": [],
-        "safe": [],
-        "violations": [],
-        "warnings": [
+        "safe": [
           34,
           39
-        ]
+        ],
+        "violations": [],
+        "warnings": []
       },
       "UnrestrictedEtherFlow": {
         "conflicts": [],
-        "safe": [],
-        "violations": [],
-        "warnings": [
+        "safe": [
           34,
           39
-        ]
+        ],
+        "violations": [],
+        "warnings": []
       },
       "UnrestrictedWrite": {
         "conflicts": [],
@@ -209,6 +230,7 @@
     },
     "securifyErrors": {
       "errors": []
-    }
+    },
+    "version": "v0-147-g283223d-dirty"
   }
 }

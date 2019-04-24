@@ -9,72 +9,81 @@
       },
       "DAOConstantGas": {
         "conflicts": [],
-        "safe": [],
+        "safe": [
+          10
+        ],
         "violations": [],
-        "warnings": [
-          9
-        ]
+        "warnings": []
       },
       "LockedEther": {
         "conflicts": [],
-        "safe": [],
+        "safe": [
+          1
+        ],
         "violations": [],
-        "warnings": [
-          0
-        ]
+        "warnings": []
       },
       "MissingInputValidation": {
         "conflicts": [],
-        "safe": [],
-        "violations": [],
-        "warnings": [
-          3,
-          8
-        ]
-      },
-      "TODAmount": {
-        "conflicts": [],
         "safe": [
+          4,
           9
         ],
         "violations": [],
         "warnings": []
+      },
+      "RepeatedCall": {
+        "conflicts": [],
+        "safe": [
+          10
+        ],
+        "violations": [],
+        "warnings": []
+      },
+      "TODAmount": {
+        "conflicts": [],
+        "safe": [],
+        "violations": [],
+        "warnings": [
+          10
+        ]
       },
       "TODReceiver": {
         "conflicts": [],
         "safe": [],
         "violations": [
-          9
+          10
         ],
         "warnings": []
       },
       "UnhandledException": {
         "conflicts": [],
-        "safe": [],
-        "violations": [],
-        "warnings": [
-          9
-        ]
-      },
-      "UnrestrictedEtherFlow": {
-        "conflicts": [],
         "safe": [
-          9
+          10
         ],
         "violations": [],
         "warnings": []
+      },
+      "UnrestrictedEtherFlow": {
+        "conflicts": [],
+        "safe": [],
+        "violations": [],
+        "warnings": [
+          10
+        ]
       },
       "UnrestrictedWrite": {
         "conflicts": [],
         "safe": [],
         "violations": [
-          5
+          6
         ],
         "warnings": []
       }
     },
     "securifyErrors": {
       "errors": []
-    }
+    },
+    "version": "v0-147-g283223d-dirty"
   }
 }

@@ -14,21 +14,27 @@
         "warnings": []
       },
       "LockedEther": {
-        "conflicts": [
+        "conflicts": [],
+        "safe": [
           56
         ],
-        "safe": [],
         "violations": [],
         "warnings": []
       },
       "MissingInputValidation": {
         "conflicts": [],
-        "safe": [],
-        "violations": [],
-        "warnings": [
+        "safe": [
           57,
           83
-        ]
+        ],
+        "violations": [],
+        "warnings": []
+      },
+      "RepeatedCall": {
+        "conflicts": [],
+        "safe": [],
+        "violations": [],
+        "warnings": []
       },
       "TODAmount": {
         "conflicts": [],
@@ -65,7 +71,8 @@
     },
     "securifyErrors": {
       "errors": []
-    }
+    },
+    "version": "v0-147-g283223d-dirty"
   },
   "src/test/resources/solidity/reentrancy2.sol:SafeMath": {
     "results": {
@@ -83,13 +90,19 @@
       },
       "LockedEther": {
         "conflicts": [],
-        "safe": [],
-        "violations": [],
-        "warnings": [
+        "safe": [
           8
-        ]
+        ],
+        "violations": [],
+        "warnings": []
       },
       "MissingInputValidation": {
+        "conflicts": [],
+        "safe": [],
+        "violations": [],
+        "warnings": []
+      },
+      "RepeatedCall": {
         "conflicts": [],
         "safe": [],
         "violations": [],
@@ -128,7 +141,8 @@
     },
     "securifyErrors": {
       "errors": []
-    }
+    },
+    "version": "v0-147-g283223d-dirty"
   },
   "src/test/resources/solidity/reentrancy2.sol:Vault": {
     "results": {
@@ -140,22 +154,22 @@
       },
       "DAOConstantGas": {
         "conflicts": [],
-        "safe": [],
+        "safe": [
+          132,
+          134
+        ],
         "violations": [
           148
         ],
-        "warnings": [
-          132,
-          134
-        ]
+        "warnings": []
       },
       "LockedEther": {
         "conflicts": [],
-        "safe": [],
-        "violations": [],
-        "warnings": [
+        "safe": [
           96
-        ]
+        ],
+        "violations": [],
+        "warnings": []
       },
       "MissingInputValidation": {
         "conflicts": [],
@@ -163,48 +177,59 @@
         "violations": [],
         "warnings": []
       },
+      "RepeatedCall": {
+        "conflicts": [],
+        "safe": [
+          132,
+          134
+        ],
+        "violations": [
+          148
+        ],
+        "warnings": []
+      },
       "TODAmount": {
         "conflicts": [],
         "safe": [
-          148
+          132,
+          134
         ],
         "violations": [],
         "warnings": [
-          132,
-          134
+          148
         ]
       },
       "TODReceiver": {
         "conflicts": [],
         "safe": [
-          132
+          134,
+          148
         ],
         "violations": [],
         "warnings": [
-          134,
-          148
+          132
         ]
       },
       "UnhandledException": {
         "conflicts": [],
-        "safe": [],
-        "violations": [],
-        "warnings": [
+        "safe": [
           132,
           134,
           148
-        ]
+        ],
+        "violations": [],
+        "warnings": []
       },
       "UnrestrictedEtherFlow": {
         "conflicts": [
           132,
           134
         ],
-        "safe": [],
-        "violations": [],
-        "warnings": [
+        "safe": [
           148
-        ]
+        ],
+        "violations": [],
+        "warnings": []
       },
       "UnrestrictedWrite": {
         "conflicts": [
@@ -222,6 +247,7 @@
     },
     "securifyErrors": {
       "errors": []
-    }
+    },
+    "version": "v0-147-g283223d-dirty"
   }
 }

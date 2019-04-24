@@ -14,22 +14,28 @@
         "warnings": []
       },
       "LockedEther": {
-        "conflicts": [
+        "conflicts": [],
+        "safe": [
           7
         ],
-        "safe": [],
         "violations": [],
         "warnings": []
       },
       "MissingInputValidation": {
         "conflicts": [],
-        "safe": [
-          21
-        ],
+        "safe": [],
         "violations": [
           9,
           12
         ],
+        "warnings": [
+          21
+        ]
+      },
+      "RepeatedCall": {
+        "conflicts": [],
+        "safe": [],
+        "violations": [],
         "warnings": []
       },
       "TODAmount": {
@@ -58,19 +64,20 @@
       },
       "UnrestrictedWrite": {
         "conflicts": [],
-        "safe": [],
+        "safe": [
+          16,
+          26
+        ],
         "violations": [
           17,
           27
         ],
-        "warnings": [
-          16,
-          26
-        ]
+        "warnings": []
       }
     },
     "securifyErrors": {
       "errors": []
-    }
+    },
+    "version": "v0-147-g283223d-dirty"
   }
 }

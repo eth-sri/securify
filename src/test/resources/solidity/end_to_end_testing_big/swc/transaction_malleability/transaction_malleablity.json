@@ -15,13 +15,19 @@
       },
       "LockedEther": {
         "conflicts": [],
-        "safe": [],
-        "violations": [],
-        "warnings": [
+        "safe": [
           2
-        ]
+        ],
+        "violations": [],
+        "warnings": []
       },
       "MissingInputValidation": {
+        "conflicts": [],
+        "safe": [],
+        "violations": [],
+        "warnings": []
+      },
+      "RepeatedCall": {
         "conflicts": [],
         "safe": [],
         "violations": [],
@@ -43,17 +49,13 @@
         "conflicts": [],
         "safe": [],
         "violations": [],
-        "warnings": [
-          84
-        ]
+        "warnings": []
       },
       "UnrestrictedEtherFlow": {
         "conflicts": [],
         "safe": [],
         "violations": [],
-        "warnings": [
-          84
-        ]
+        "warnings": []
       },
       "UnrestrictedWrite": {
         "conflicts": [],
@@ -68,6 +70,7 @@
     },
     "securifyErrors": {
       "errors": []
-    }
+    },
+    "version": "v0-147-g283223d-dirty"
   }
 }

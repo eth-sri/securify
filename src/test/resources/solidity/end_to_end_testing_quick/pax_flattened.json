@@ -14,14 +14,20 @@
         "warnings": []
       },
       "LockedEther": {
-        "conflicts": [
-          66
+        "conflicts": [],
+        "safe": [],
+        "violations": [
+          65
         ],
+        "warnings": []
+      },
+      "MissingInputValidation": {
+        "conflicts": [],
         "safe": [],
         "violations": [],
         "warnings": []
       },
-      "MissingInputValidation": {
+      "RepeatedCall": {
         "conflicts": [],
         "safe": [],
         "violations": [],
@@ -53,41 +59,42 @@
       },
       "UnrestrictedWrite": {
         "conflicts": [
-          289,
-          307,
-          316,
-          329,
-          343,
-          353,
+          195,
+          231,
+          232,
+          288,
+          306,
+          315,
+          328,
+          342,
+          352,
+          364,
           365,
-          391
+          390,
+          404,
+          405,
+          418,
+          419
         ],
-        "safe": [],
+        "safe": [
+          194,
+          233,
+          249
+        ],
         "violations": [
+          157,
           158,
           159,
           160,
-          161,
-          162
+          161
         ],
-        "warnings": [
-          195,
-          196,
-          232,
-          233,
-          234,
-          250,
-          366,
-          405,
-          406,
-          419,
-          420
-        ]
+        "warnings": []
       }
     },
     "securifyErrors": {
       "errors": []
-    }
+    },
+    "version": "v0-147-g283223d-dirty"
   },
   "src/test/resources/solidity/end_to_end_testing_quick/pax_flattened.sol:SafeMath": {
     "results": {
@@ -105,13 +112,19 @@
       },
       "LockedEther": {
         "conflicts": [],
-        "safe": [],
+        "safe": [
+          30
+        ],
         "violations": [],
-        "warnings": [
-          31
-        ]
+        "warnings": []
       },
       "MissingInputValidation": {
+        "conflicts": [],
+        "safe": [],
+        "violations": [],
+        "warnings": []
+      },
+      "RepeatedCall": {
         "conflicts": [],
         "safe": [],
         "violations": [],
@@ -150,6 +163,7 @@
     },
     "securifyErrors": {
       "errors": []
-    }
+    },
+    "version": "v0-147-g283223d-dirty"
   }
 }

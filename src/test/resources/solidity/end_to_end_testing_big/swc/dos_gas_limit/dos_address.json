@@ -14,14 +14,20 @@
         "warnings": []
       },
       "LockedEther": {
-        "conflicts": [
+        "conflicts": [],
+        "safe": [],
+        "violations": [
           2
         ],
+        "warnings": []
+      },
+      "MissingInputValidation": {
+        "conflicts": [],
         "safe": [],
         "violations": [],
         "warnings": []
       },
-      "MissingInputValidation": {
+      "RepeatedCall": {
         "conflicts": [],
         "safe": [],
         "violations": [],
@@ -65,6 +71,7 @@
     },
     "securifyErrors": {
       "errors": []
-    }
+    },
+    "version": "v0-147-g283223d-dirty"
   }
 }

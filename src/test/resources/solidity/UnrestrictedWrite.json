@@ -14,10 +14,10 @@
         "warnings": []
       },
       "LockedEther": {
-        "conflicts": [
-          0
+        "conflicts": [],
+        "safe": [
+          1
         ],
-        "safe": [],
         "violations": [],
         "warnings": []
       },
@@ -25,8 +25,14 @@
         "conflicts": [],
         "safe": [],
         "violations": [
-          3
+          4
         ],
+        "warnings": []
+      },
+      "RepeatedCall": {
+        "conflicts": [],
+        "safe": [],
+        "violations": [],
         "warnings": []
       },
       "TODAmount": {
@@ -57,13 +63,14 @@
         "conflicts": [],
         "safe": [],
         "violations": [
-          4
+          5
         ],
         "warnings": []
       }
     },
     "securifyErrors": {
       "errors": []
-    }
+    },
+    "version": "v0-147-g283223d-dirty"
   }
 }

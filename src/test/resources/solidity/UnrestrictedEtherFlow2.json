@@ -9,11 +9,11 @@
       },
       "DAOConstantGas": {
         "conflicts": [],
-        "safe": [],
-        "violations": [],
-        "warnings": [
+        "safe": [
           9
-        ]
+        ],
+        "violations": [],
+        "warnings": []
       },
       "LockedEther": {
         "conflicts": [],
@@ -25,19 +25,25 @@
       },
       "MissingInputValidation": {
         "conflicts": [],
-        "safe": [],
-        "violations": [],
-        "warnings": [
+        "safe": [
           6
-        ]
+        ],
+        "violations": [],
+        "warnings": []
       },
-      "TODAmount": {
+      "RepeatedCall": {
         "conflicts": [],
         "safe": [],
         "violations": [],
-        "warnings": [
+        "warnings": []
+      },
+      "TODAmount": {
+        "conflicts": [],
+        "safe": [
           9
-        ]
+        ],
+        "violations": [],
+        "warnings": []
       },
       "TODReceiver": {
         "conflicts": [],
@@ -49,11 +55,11 @@
       },
       "UnhandledException": {
         "conflicts": [],
-        "safe": [],
-        "violations": [],
-        "warnings": [
+        "safe": [
           9
-        ]
+        ],
+        "violations": [],
+        "warnings": []
       },
       "UnrestrictedEtherFlow": {
         "conflicts": [],
@@ -74,6 +80,7 @@
     },
     "securifyErrors": {
       "errors": []
-    }
+    },
+    "version": "v0-147-g283223d-dirty"
   }
 }

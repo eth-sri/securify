@@ -1,72 +1,4 @@
 {
-  "src/test/resources/solidity/end_to_end_testing_big/swc/assert_violations/runtime_user_input_call.sol:B": {
-    "results": {
-      "DAO": {
-        "conflicts": [],
-        "safe": [],
-        "violations": [],
-        "warnings": []
-      },
-      "DAOConstantGas": {
-        "conflicts": [],
-        "safe": [],
-        "violations": [],
-        "warnings": []
-      },
-      "LockedEther": {
-        "conflicts": [],
-        "safe": [],
-        "violations": [],
-        "warnings": [
-          -1
-        ]
-      },
-      "MissingInputValidation": {
-        "conflicts": [],
-        "safe": [],
-        "violations": [],
-        "warnings": []
-      },
-      "TODAmount": {
-        "conflicts": [],
-        "safe": [],
-        "violations": [],
-        "warnings": []
-      },
-      "TODReceiver": {
-        "conflicts": [],
-        "safe": [],
-        "violations": [],
-        "warnings": []
-      },
-      "UnhandledException": {
-        "conflicts": [],
-        "safe": [],
-        "violations": [],
-        "warnings": []
-      },
-      "UnrestrictedEtherFlow": {
-        "conflicts": [],
-        "safe": [],
-        "violations": [],
-        "warnings": []
-      },
-      "UnrestrictedWrite": {
-        "conflicts": [],
-        "safe": [],
-        "violations": [],
-        "warnings": []
-      }
-    },
-    "securifyErrors": {
-      "errors": [
-        {
-          "error": "mapping_error",
-          "stackTrace": "ch.securify.MappingNotFoundException\n\tat ch.securify.CompilationHelpers.bytecodeOffsetToSourceOffset(CompilationHelpers.java:72)\n\tat ch.securify.CompilationHelpers.getMatchedLines(CompilationHelpers.java:131)\n\tat ch.securify.CompilationHelpers.getMappingsFromStatusFile(CompilationHelpers.java:159)\n\tat ch.securify.Main.processCompilationOutput(Main.java:129)\n\tat ch.securify.Main.processSolidityFile(Main.java:96)\n\tat ch.securify.Main.main(Main.java:231)\n"
-        }
-      ]
-    }
-  },
   "src/test/resources/solidity/end_to_end_testing_big/swc/assert_violations/runtime_user_input_call.sol:RuntimeUserInputCall": {
     "results": {
       "DAO": {
@@ -82,20 +14,28 @@
         "warnings": []
       },
       "LockedEther": {
-        "conflicts": [
+        "conflicts": [],
+        "safe": [
           6
         ],
-        "safe": [],
         "violations": [],
         "warnings": []
       },
       "MissingInputValidation": {
         "conflicts": [],
-        "safe": [],
-        "violations": [],
-        "warnings": [
+        "safe": [
           8
-        ]
+        ],
+        "violations": [],
+        "warnings": []
+      },
+      "RepeatedCall": {
+        "conflicts": [],
+        "safe": [
+          9
+        ],
+        "violations": [],
+        "warnings": []
       },
       "TODAmount": {
         "conflicts": [],
@@ -111,19 +51,19 @@
       },
       "UnhandledException": {
         "conflicts": [],
-        "safe": [],
-        "violations": [],
-        "warnings": [
+        "safe": [
           9
-        ]
+        ],
+        "violations": [],
+        "warnings": []
       },
       "UnrestrictedEtherFlow": {
         "conflicts": [],
-        "safe": [],
-        "violations": [],
-        "warnings": [
+        "safe": [
           9
-        ]
+        ],
+        "violations": [],
+        "warnings": []
       },
       "UnrestrictedWrite": {
         "conflicts": [],
@@ -134,6 +74,7 @@
     },
     "securifyErrors": {
       "errors": []
-    }
+    },
+    "version": "v0-147-g283223d-dirty"
   }
 }

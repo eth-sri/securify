@@ -9,11 +9,11 @@
       },
       "DAOConstantGas": {
         "conflicts": [],
-        "safe": [],
-        "violations": [],
-        "warnings": [
+        "safe": [
           34
-        ]
+        ],
+        "violations": [],
+        "warnings": []
       },
       "LockedEther": {
         "conflicts": [],
@@ -25,39 +25,21 @@
       },
       "MissingInputValidation": {
         "conflicts": [],
-        "safe": [],
+        "safe": [
+          25
+        ],
         "violations": [
           17
         ],
-        "warnings": [
-          25
-        ]
+        "warnings": []
+      },
+      "RepeatedCall": {
+        "conflicts": [],
+        "safe": [],
+        "violations": [],
+        "warnings": []
       },
       "TODAmount": {
-        "conflicts": [],
-        "safe": [],
-        "violations": [],
-        "warnings": [
-          34
-        ]
-      },
-      "TODReceiver": {
-        "conflicts": [],
-        "safe": [],
-        "violations": [],
-        "warnings": [
-          34
-        ]
-      },
-      "UnhandledException": {
-        "conflicts": [],
-        "safe": [],
-        "violations": [],
-        "warnings": [
-          34
-        ]
-      },
-      "UnrestrictedEtherFlow": {
         "conflicts": [],
         "safe": [
           34
@@ -65,19 +47,44 @@
         "violations": [],
         "warnings": []
       },
-      "UnrestrictedWrite": {
+      "TODReceiver": {
+        "conflicts": [],
+        "safe": [
+          34
+        ],
+        "violations": [],
+        "warnings": []
+      },
+      "UnhandledException": {
+        "conflicts": [],
+        "safe": [
+          34
+        ],
+        "violations": [],
+        "warnings": []
+      },
+      "UnrestrictedEtherFlow": {
         "conflicts": [],
         "safe": [],
         "violations": [],
         "warnings": [
+          34
+        ]
+      },
+      "UnrestrictedWrite": {
+        "conflicts": [],
+        "safe": [
           21,
           22,
           32
-        ]
+        ],
+        "violations": [],
+        "warnings": []
       }
     },
     "securifyErrors": {
       "errors": []
-    }
+    },
+    "version": "v0-147-g283223d-dirty"
   }
 }
