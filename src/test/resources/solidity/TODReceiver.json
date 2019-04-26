@@ -2,79 +2,88 @@
   "src/test/resources/solidity/TODReceiver.sol:Game": {
     "results": {
       "DAO": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       },
       "DAOConstantGas": {
-        "violations": [],
-        "warnings": [
-          9
+        "conflicts": [],
+        "safe": [
+          10
         ],
-        "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       },
       "LockedEther": {
-        "violations": [],
-        "warnings": [
-          0
+        "conflicts": [],
+        "safe": [
+          1
         ],
-        "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       },
       "MissingInputValidation": {
-        "violations": [],
-        "warnings": [
-          3,
-          8
+        "conflicts": [],
+        "safe": [
+          4,
+          9
         ],
-        "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
+      },
+      "RepeatedCall": {
+        "conflicts": [],
+        "safe": [
+          10
+        ],
+        "violations": [],
+        "warnings": []
       },
       "TODAmount": {
-        "violations": [],
-        "warnings": [],
-        "safe": [
-          9
-        ],
-        "conflicts": []
-      },
-      "TODReceiver": {
-        "violations": [
-          9
-        ],
-        "warnings": [],
+        "conflicts": [],
         "safe": [],
-        "conflicts": []
-      },
-      "UnhandledException": {
         "violations": [],
         "warnings": [
-          9
-        ],
+          10
+        ]
+      },
+      "TODReceiver": {
+        "conflicts": [],
         "safe": [],
-        "conflicts": []
+        "violations": [
+          10
+        ],
+        "warnings": []
+      },
+      "UnhandledException": {
+        "conflicts": [],
+        "safe": [
+          10
+        ],
+        "violations": [],
+        "warnings": []
       },
       "UnrestrictedEtherFlow": {
+        "conflicts": [],
+        "safe": [],
         "violations": [],
-        "warnings": [],
-        "safe": [
-          9
-        ],
-        "conflicts": []
+        "warnings": [
+          10
+        ]
       },
       "UnrestrictedWrite": {
-        "violations": [
-          5
-        ],
-        "warnings": [],
+        "conflicts": [],
         "safe": [],
-        "conflicts": []
+        "violations": [
+          6
+        ],
+        "warnings": []
       }
     },
     "securifyErrors": {
       "errors": []
-    }
+    },
+    "version": "v0-147-g283223d-dirty"
   }
 }

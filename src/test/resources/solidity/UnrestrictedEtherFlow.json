@@ -2,76 +2,85 @@
   "src/test/resources/solidity/UnrestrictedEtherFlow.sol:Wallet": {
     "results": {
       "DAO": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       },
       "DAOConstantGas": {
-        "violations": [],
-        "warnings": [
-          4
+        "conflicts": [],
+        "safe": [
+          5
         ],
-        "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       },
       "LockedEther": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [
-          0
+          1
         ],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       },
       "MissingInputValidation": {
-        "violations": [],
-        "warnings": [
-          3
+        "conflicts": [],
+        "safe": [
+          4
         ],
-        "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
+      },
+      "RepeatedCall": {
+        "conflicts": [],
+        "safe": [
+          5
+        ],
+        "violations": [],
+        "warnings": []
       },
       "TODAmount": {
+        "conflicts": [],
+        "safe": [],
         "violations": [],
-        "warnings": [],
-        "safe": [
-          4
-        ],
-        "conflicts": []
+        "warnings": [
+          5
+        ]
       },
       "TODReceiver": {
-        "violations": [],
-        "warnings": [
-          4
+        "conflicts": [],
+        "safe": [
+          5
         ],
-        "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       },
       "UnhandledException": {
-        "violations": [],
-        "warnings": [
-          4
+        "conflicts": [],
+        "safe": [
+          5
         ],
-        "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       },
       "UnrestrictedEtherFlow": {
+        "conflicts": [],
+        "safe": [],
         "violations": [],
-        "warnings": [],
-        "safe": [
-          4
-        ],
-        "conflicts": []
+        "warnings": [
+          5
+        ]
       },
       "UnrestrictedWrite": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
       }
     },
     "securifyErrors": {
       "errors": []
-    }
+    },
+    "version": "v0-147-g283223d-dirty"
   }
 }

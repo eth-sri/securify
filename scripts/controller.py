@@ -23,6 +23,7 @@ import logging
 
 from . import solc_project
 from . import truffle_project
+from . import solc_file
 
 
 class Controller:
@@ -43,6 +44,9 @@ class Controller:
         self._parser.add_argument('--descriptions',
                                   action="store_true",
                                   help="add descriptions to the JSON output")
+        self._parser.add_argument('--noexiterror',
+                                  action="store_true",
+                                  help="do not return an error as exit code if a violation is found")
         verbosity_group = self._parser.add_mutually_exclusive_group()
         verbosity_group.add_argument('-v', '--verbose',
                                      action="store_true",
@@ -53,7 +57,11 @@ class Controller:
 
         self.args, securify_flags = self._parser.parse_known_args()
 
-        if self.args.truffle:
+        # Check for single file
+        if self.args.project.endswith(".sol"):
+            self._project = solc_file.SolcFile(
+                self.args.project, self.args, securify_flags)
+        elif self.args.truffle:
             self._project = truffle_project.TruffleProject(
                 self.args.project, self.args, securify_flags)
         else:

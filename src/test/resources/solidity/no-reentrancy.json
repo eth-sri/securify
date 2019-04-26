@@ -2,78 +2,87 @@
   "src/test/resources/solidity/no-reentrancy.sol:MarketPlace": {
     "results": {
       "DAO": {
-        "violations": [],
-        "warnings": [
-          7
-        ],
-        "safe": [],
-        "conflicts": []
-      },
-      "DAOConstantGas": {
-        "violations": [],
-        "warnings": [],
-        "safe": [],
-        "conflicts": []
-      },
-      "LockedEther": {
-        "violations": [],
-        "warnings": [
-          1
-        ],
-        "safe": [],
-        "conflicts": []
-      },
-      "MissingInputValidation": {
-        "violations": [],
-        "warnings": [
-          4
-        ],
-        "safe": [],
-        "conflicts": []
-      },
-      "TODAmount": {
-        "violations": [
-          7
-        ],
-        "warnings": [],
-        "safe": [],
-        "conflicts": []
-      },
-      "TODReceiver": {
-        "violations": [],
-        "warnings": [
-          7
-        ],
-        "safe": [],
-        "conflicts": []
-      },
-      "UnhandledException": {
-        "violations": [
-          7
-        ],
-        "warnings": [],
-        "safe": [],
-        "conflicts": []
-      },
-      "UnrestrictedEtherFlow": {
-        "violations": [],
-        "warnings": [],
+        "conflicts": [],
         "safe": [
           7
         ],
-        "conflicts": []
+        "violations": [],
+        "warnings": []
+      },
+      "DAOConstantGas": {
+        "conflicts": [],
+        "safe": [],
+        "violations": [],
+        "warnings": []
+      },
+      "LockedEther": {
+        "conflicts": [],
+        "safe": [
+          1
+        ],
+        "violations": [],
+        "warnings": []
+      },
+      "MissingInputValidation": {
+        "conflicts": [],
+        "safe": [
+          4
+        ],
+        "violations": [],
+        "warnings": []
+      },
+      "RepeatedCall": {
+        "conflicts": [],
+        "safe": [
+          7
+        ],
+        "violations": [],
+        "warnings": []
+      },
+      "TODAmount": {
+        "conflicts": [],
+        "safe": [],
+        "violations": [
+          7
+        ],
+        "warnings": []
+      },
+      "TODReceiver": {
+        "conflicts": [],
+        "safe": [
+          7
+        ],
+        "violations": [],
+        "warnings": []
+      },
+      "UnhandledException": {
+        "conflicts": [],
+        "safe": [],
+        "violations": [
+          7
+        ],
+        "warnings": []
+      },
+      "UnrestrictedEtherFlow": {
+        "conflicts": [],
+        "safe": [],
+        "violations": [],
+        "warnings": [
+          7
+        ]
       },
       "UnrestrictedWrite": {
+        "conflicts": [],
+        "safe": [],
         "violations": [
           6
         ],
-        "warnings": [],
-        "safe": [],
-        "conflicts": []
+        "warnings": []
       }
     },
     "securifyErrors": {
       "errors": []
-    }
+    },
+    "version": "v0-147-g283223d-dirty"
   }
 }

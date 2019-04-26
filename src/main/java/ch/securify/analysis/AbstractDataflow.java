@@ -272,9 +272,13 @@ public abstract class AbstractDataflow {
 
         Process proc = Runtime.getRuntime().exec(command, envp);
 
-        if (!proc.waitFor(Config.PATTERN_TIMEOUT, TimeUnit.SECONDS) || proc.exitValue() != 0) {
+        if (!proc.waitFor(Config.PATTERN_TIMEOUT, TimeUnit.SECONDS)){ 
             proc.destroyForcibly();
-            throw new IOException(String.join(" ", command));
+            throw new IOException("Timeout for " + String.join(" ", command));
+        }
+        if (proc.exitValue() != 0) {
+            proc.destroyForcibly();
+            throw new IOException("Exit Value " + proc.exitValue() + " for " +  String.join(" ", command));
         }
     }
 

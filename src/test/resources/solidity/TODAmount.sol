@@ -1,3 +1,4 @@
+pragma solidity 0.4.23;
 contract TokenMarket {
     mapping(address => uint) balances;
     uint price = 10;

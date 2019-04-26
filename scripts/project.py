@@ -31,8 +31,6 @@ from . import utils
 def report(securify_target_output):
     """Report findings.
     """
-    with open(securify_target_output) as file:
-        json_report = json.load(file)
 
     return 0
 
@@ -54,6 +52,27 @@ class Project(metaclass=abc.ABCMeta):
 
         This function returns 0 if no violations are found, and 1 otherwise.
         """
+        json_report = self._execute()
+
+        if self.args.noexiterror:
+            return 0
+
+        for fname in json_report:
+            for pattern in json_report[fname]["results"]:
+                if len(json_report[fname]["results"][pattern]["violations"]) > 0:
+                    return 1
+        return 0
+
+    def execute_for_json(self):
+        """Executes the project. This includes compilation and reporting.
+
+        This function returns the full json result.
+        """
+        return self._execute()
+
+    def _execute(self):
+        """Internally executes the project. This includes compilation and reporting.
+        """
         with tempfile.TemporaryDirectory() as d:
             tmpdir = pathlib.Path(d)
 
@@ -65,7 +84,10 @@ class Project(metaclass=abc.ABCMeta):
             securify_target_output = tmpdir / "securify_res.json"
             self.run_securify(compilation_output, securify_target_output)
 
-            return report(securify_target_output)
+            with open(securify_target_output) as file:
+                json_report = json.load(file)
+
+            return json_report
 
     def run_securify(self, compilation_output, securify_target_output):
         """Runs the securify command.

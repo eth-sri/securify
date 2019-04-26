@@ -1,3 +1,4 @@
+pragma solidity 0.4.23;
 contract A {
     address a;
     function f() public view returns(address) {
