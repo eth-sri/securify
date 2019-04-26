@@ -22,7 +22,8 @@ from collections import namedtuple
 from distutils.version import StrictVersion
 import sys
 import json
-import urllib.error
+import requests.exceptions
+import subprocess
 
 from solcx.main import _parse_compiler_output
 from solcx.wrapper import solc_wrapper
@@ -206,7 +207,7 @@ def install_all_versions():
             old_major = int(next_version.split(".")[1])
             next_version = f'0.{old_major}.{new_minor}'
 
-        except urllib.error as e:
+        except (requests.exceptions.ConnectionError, subprocess.CalledProcessError) as e:
             # Increase major version
             new_major = int(next_version.split(".")[1]) + 1
             next_version = f'0.{new_major}.0'
@@ -216,7 +217,7 @@ def install_last_version():
     try:
         install_solc()
         return True
-    except urllib.error as e:
+    except (requests.exceptions.ConnectionError, subprocess.CalledProcessError) as e:
         print("Failed to install latest compiler. Trying to continue...")
         print("This might lead to later errors.")
         return False
