@@ -22,11 +22,6 @@ import json
 import os
 from pathlib import Path
 
-from solcx import get_solc_folder
-from solcx.exceptions import SolcError
-from solcx.main import _parse_compiler_output
-from solcx.wrapper import solc_wrapper
-
 from . import project
 from . import pysolc
 

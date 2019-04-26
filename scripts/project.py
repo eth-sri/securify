@@ -53,7 +53,7 @@ class Project(metaclass=abc.ABCMeta):
         This function returns 0 if no violations are found, and 1 otherwise.
         """
         json_report = self._execute()
-    
+
         if self.args.noexiterror:
             return 0
 

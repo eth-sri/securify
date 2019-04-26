@@ -19,9 +19,6 @@ You may obtain a copy of the License at
 
 """
 import json
-import shutil
-import subprocess
-import tempfile
 import argparse
 import sys
 import os.path
@@ -29,8 +26,7 @@ import os.path
 from pathlib import Path
 
 import psutil
-from scripts import pysolc 
-from scripts import controller
+from scripts import pysolc
 from scripts import solc_file
 
 
@@ -131,8 +127,8 @@ def test_securify_analysis(c_file, json_output, args):
     Returns: Whether changes were found
     """
     mem_available = psutil.virtual_memory().available // 1024 ** 3
-    assert mem_available >= args.memory, ('Not enough memory to run: '
-                                     f'{mem_available}G')
+    if mem_available < args.memory:
+        raise AssertionError(f'Not enough memory to run: {mem_available}G')
 
     if args.printdiffs:
         outfname = "/tmp/testdiffs/"  + os.path.basename(json_output)
@@ -154,7 +150,7 @@ def test_securify_analysis(c_file, json_output, args):
             print(f'Storing diffs for {json_output}.')
             with open(outfname, "w") as diff:
                 json.dump(curr_json, diff)
-            return True 
+            return True
 
         raise AssertionError('We should never get here')
 
@@ -193,7 +189,8 @@ def test(tests_dir, args, recursive=False):
     for contract_file in find('*.sol'):
         print(f'Running on {contract_file}')
         json_output = contract_file.with_suffix('.json')
-        assert (json_output.exists() or args.overwrite or args.printdiffs), f'Missing {json_output}'
+        if not (json_output.exists() or args.overwrite or args.printdiffs):
+            raise AssertionError(f'Missing {json_output}')
         changes_found |= test_securify_analysis(contract_file, json_output, args)
     print(f'Done with files in folder: {tests_dir}.')
     return changes_found
@@ -220,6 +217,6 @@ if __name__ == '__main__':
     QUICK = Path('src/test/resources/solidity/end_to_end_testing_quick')
     changes_found |= test(QUICK, args)
     BIG = Path('src/test/resources/solidity/end_to_end_testing_big')
-    changes_found |= test(BIG, args, recursive=True) 
+    changes_found |= test(BIG, args, recursive=True)
     print('Done.')
     sys.exit(changes_found)
