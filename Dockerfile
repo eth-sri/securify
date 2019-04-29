@@ -31,9 +31,6 @@ RUN apt-get update && apt-get -y install\
 COPY requirements.txt /tmp/
 RUN pip3 install --user -r /tmp/requirements.txt
 
-COPY scripts /tmp/installsolc
-RUN cd /tmp/ && python3 -m installsolc.install_solc
-
 # install truffle for project compilation
 RUN apt-get update && apt-get install -y\
       nodejs\
@@ -41,6 +38,10 @@ RUN apt-get update && apt-get install -y\
 
 ARG truffle="latest"
 RUN npm install -g truffle@$truffle
+
+# Install some compiler to avoid py-solc-x crashes
+RUN wget -O /usr/bin/solc https://github.com/ethereum/solidity/releases/download/v0.4.25/solc-static-linux
+RUN chmod +x /usr/bin/solc
 
 WORKDIR /sec
 

@@ -84,6 +84,7 @@ truffle_docker_test:
     - docker run -v "secvol:/project" securify --truffle --noexiterror > /tmp/sec.out
     - grep "Violation" /tmp/sec.out
     - grep "Warning" /tmp/sec.out
+    - rm -rf *
 
 solc_docker_test:
   stage: deploy
@@ -96,6 +97,12 @@ solc_docker_test:
     - cp src/test/resources/solidity/DAO.sol /secvol 
     - docker run -v "secvol:/project" securify --noexiterror > /tmp/sec.out
     - grep "Violation" /tmp/sec.out
+    - rm -rf /secvol/*
+    - mkdir /secvol/contracts/
+    - cp src/test/resources/solidity/{unprivileged-write-safemath-TP.sol,unprivileged-write-FN.sol} /secvol
+    - docker run -v "secvol:/project" securify --noexiterror > /tmp/sec.out
+    - grep "Violation" /tmp/sec.out
+    - rm -rf /secvol/*
 
 after_script:
 - echo "End CI"
