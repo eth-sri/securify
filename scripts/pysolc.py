@@ -22,10 +22,11 @@ from collections import namedtuple
 from distutils.version import StrictVersion
 import sys
 import json
-import requests
-import requests.exceptions
 import subprocess
 import logging
+
+import requests
+import requests.exceptions
 
 from solcx.main import _parse_compiler_output
 from solcx.wrapper import solc_wrapper
@@ -127,23 +128,19 @@ def set_supported_solc_versions():
     versions = []
     for release in releases:
         newversion = SolidityVersion(release["tag_name"][1:])
-        logging.info(f'Parsing version v{newversion}')
-        # Require a minimum version 
+        # Require a minimum version
         if newversion < SolidityVersion(MINIMAL_SOLC_VERSION):
-            logging.info(f'Version v{newversion} is too small')
             continue
         # Require a precompiled binary
         for asset in release["assets"]:
             if asset["name"] == "solc-static-linux":
                 break
         else:
-            logging.info(f'Version v{newversion} has no solc')
+            logging.info(f'Version v{newversion} has no solc.')
             continue
-        logging.info(f'Version v{newversion} added')
         versions.append(newversion)
 
     SOLC_VERSIONS = sorted(versions)
-    logging.info(f'Available versions v{SOLC_VERSIONS}')
         
 
 def parse_version(source):
@@ -228,8 +225,8 @@ def get_sol_files(project_root):
     """
     sources = []
     test_sources = []
-    for p, _, fs in os.walk(project_root):
-        for f in fs:
+    for p, _, files in os.walk(project_root):
+        for f in files:
             if f.endswith('.sol'):
                 if 'node_modules' not in p and '/test/' not in p[len(str(project_root)):] and not p.endswith('/test'):
                     sources.append(os.path.join(p, f))
