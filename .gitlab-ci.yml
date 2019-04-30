@@ -99,7 +99,7 @@ solc_docker_test:
     - grep "Violation" /tmp/sec.out
     - rm -rf /secvol/*
     - mkdir /secvol/contracts/
-    - cp src/test/resources/solidity/{unprivileged-write-safemath-TP.sol,unprivileged-write-FN.sol} /secvol
+    - cp src/test/resources/solidity/{decompile.sol,UnhandledException.sol} /secvol
     - docker run -v "secvol:/project" securify --noexiterror > /tmp/sec.out
     - grep "Violation" /tmp/sec.out
     - rm -rf /secvol/*
