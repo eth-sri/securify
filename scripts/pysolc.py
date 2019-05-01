@@ -86,7 +86,8 @@ class SolidityVersion(StrictVersion):
             s += ".0"
         return s
 
-SOLC_VERSIONS = []
+_SOLC_VERSIONS = []
+_SOLC_VERSIONS_LAST_UPDATE = 0
 
 OperatorVersionTuple = namedtuple('OperatorVersionTuple', ['op', 'v'])
 
@@ -112,36 +113,29 @@ def _get_binary(solc_version):
         raise AssertionError(f'solc binary not found for version: {solc_version}')
     return binary
 
-def set_supported_solc_versions():
-    global SOLC_VERSIONS
-    # If online, try to fetch the available versions
+def get_supported_solc_versions():
+    global _SOLC_VERSIONS
+    global _SOLC_VERSIONS_LAST_UPDATE
+
+    # Cache the result for one hour 
+    if len(_SOLC_VERSIONS) != 0 and _SOLC_VERSIONS_LAST_UPDATE >= time.time() - 3600:
+        return _SOLC_VERSIONS
+
     try:
-        releases = requests.get(RELEASES_LIST).json()
+        new_versions = get_available_solc_versions()
+        _SOLC_VERSIONS = sorted((SolidityVersion(v[1:]) for v in new_versions))
+        _SOLC_VERSIONS_LAST_UPDATE = time.time()
+
     except requests.exceptions.RequestException:
         # If offline, work with installed versions
-        logging.info('Fetching the latest compiler releases failed, relying on installed versions.')
-        versions = [SolidityVersion(v[1:])
-                    for v in get_installed_solc_versions()]
-        SOLC_VERSIONS = [v for v in versions if v >= SolidityVersion(MINIMAL_SOLC_VERSION)]
-        return
+        logging.info('Fetching the latest compiler releases failed, relying on known versions.')
+        pass
 
-    versions = []
-    for release in releases:
-        newversion = SolidityVersion(release["tag_name"][1:])
-        # Require a minimum version
-        if newversion < SolidityVersion(MINIMAL_SOLC_VERSION):
-            continue
-        # Require a precompiled binary
-        for asset in release["assets"]:
-            if asset["name"] == "solc-static-linux":
-                break
-        else:
-            logging.info(f'Version v{newversion} has no solc.')
-            continue
-        versions.append(newversion)
-
-    SOLC_VERSIONS = sorted(versions)
-        
+    return _SOLC_VERSIONS
+    
+     
+def get_default_solc_version():
+    return get_supported_solc_versions()[-1]        
 
 def parse_version(source):
     with open(source, encoding='utf-8') as f:
@@ -158,11 +152,11 @@ def parse_version(source):
             def fullfills_all_conditions(v):
                 return all(map(lambda cond: cond.op(v, cond.v), conditions))
             try:
-                return min(filter(fullfills_all_conditions, SOLC_VERSIONS))
+                return min(filter(fullfills_all_conditions, get_supported_solc_versions()))
             except ValueError:
                 raise CompilerVersionNotSupported("Conflicting Compiler Requirements")
     else:
-        return SOLC_VERSIONS[-1]
+        return get_default_solc_version()
 
 
 def compile_solfiles(files, proj_dir, solc_version=None, output_values=OUTPUT_VALUES, remappings=None):
@@ -184,8 +178,7 @@ def compile_solfiles(files, proj_dir, solc_version=None, output_values=OUTPUT_VA
             remappings.append(f'openzeppelin-solidity={open_zeppelin_path}')
 
     if solc_version is None:
-        set_supported_solc_versions()
-        if len(SOLC_VERSIONS) == 0:
+        if len(get_supported_solc_versions) == 0:
             raise CompilerVersionNotSupported("No compiler available. No connection to GitHub?")
         solc_version = max(map(parse_version, files))
 
