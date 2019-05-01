@@ -178,7 +178,7 @@ def compile_solfiles(files, proj_dir, solc_version=None, output_values=OUTPUT_VA
             remappings.append(f'openzeppelin-solidity={open_zeppelin_path}')
 
     if solc_version is None:
-        if len(get_supported_solc_versions) == 0:
+        if len(get_supported_solc_versions()) == 0:
             raise CompilerVersionNotSupported("No compiler available. No connection to GitHub?")
         solc_version = max(map(parse_version, files))
 
