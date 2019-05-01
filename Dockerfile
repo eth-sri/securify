@@ -39,10 +39,6 @@ RUN apt-get update && apt-get install -y\
 ARG truffle="latest"
 RUN npm install -g truffle@$truffle
 
-# Install some compiler to avoid py-solc-x crashes
-RUN wget -O /usr/bin/solc https://github.com/ethereum/solidity/releases/download/v0.4.25/solc-static-linux
-RUN chmod +x /usr/bin/solc
-
 WORKDIR /sec
 
 # To cache gradle distribution
