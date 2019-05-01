@@ -31,7 +31,7 @@ import requests.exceptions
 from solcx.main import _parse_compiler_output
 from solcx.wrapper import solc_wrapper
 from solcx.exceptions import SolcError
-from solcx import get_installed_solc_versions
+from solcx import get_available_solc_versions
 from solcx import get_solc_folder
 from solcx import install_solc
 
