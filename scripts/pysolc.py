@@ -138,7 +138,25 @@ def get_supported_solc_versions():
 def get_default_solc_version():
     return get_supported_solc_versions()[-1]        
 
+
 def parse_version(source):
+    conditions = _parse_conditions(source)
+    return _find_version_for_conditions(conditions)
+
+
+def _find_version_for_conditions(conditions):
+    if len(conditions) == 0:
+        return get_default_solc_version()
+
+    def fullfills_all_conditions(v):
+        return all(map(lambda cond: cond.op(v, cond.v), conditions))
+
+    try:
+        return min(filter(fullfills_all_conditions, get_supported_solc_versions()))
+    except ValueError:
+        raise CompilerVersionNotSupported("Conflicting Compiler Requirements.")
+
+def _parse_conditions(source):
     with open(source, encoding='utf-8') as f:
         lines = f.readlines()
 
@@ -149,15 +167,10 @@ def parse_version(source):
                     ops[v[1]], SolidityVersion(v[2])),
                 comp_version_rex.findall(l))
             )
+            return conditions
 
-            def fullfills_all_conditions(v):
-                return all(map(lambda cond: cond.op(v, cond.v), conditions))
-            try:
-                return min(filter(fullfills_all_conditions, get_supported_solc_versions()))
-            except ValueError:
-                raise CompilerVersionNotSupported("Conflicting Compiler Requirements")
-    else:
-        return get_default_solc_version()
+    return []
+
 
 
 def compile_solfiles(files, proj_dir, solc_version=None, output_values=OUTPUT_VALUES, remappings=None):
@@ -181,7 +194,10 @@ def compile_solfiles(files, proj_dir, solc_version=None, output_values=OUTPUT_VA
     if solc_version is None:
         if len(get_supported_solc_versions()) == 0:
             raise CompilerVersionNotSupported("No compiler available. No connection to GitHub?")
-        solc_version = max(map(parse_version, files))
+        all_conditions = []
+        for source in files:
+            all_conditions.extend(_parse_conditions(source))
+        solc_version = _find_version_for_conditions(all_conditions) 
 
     try:
         install_solc(f'v{solc_version}')
