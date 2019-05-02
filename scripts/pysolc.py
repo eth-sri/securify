@@ -118,7 +118,7 @@ def get_supported_solc_versions():
     global _SOLC_VERSIONS
     global _SOLC_VERSIONS_LAST_UPDATE
 
-    # Cache the result for one hour 
+    # Cache the result for one hour
     if len(_SOLC_VERSIONS) != 0 and _SOLC_VERSIONS_LAST_UPDATE >= time.time() - 3600:
         return _SOLC_VERSIONS
 
@@ -130,13 +130,12 @@ def get_supported_solc_versions():
     except requests.exceptions.RequestException:
         # If offline, work with installed versions
         logging.info('Fetching the latest compiler releases failed, relying on known versions.')
-        pass
 
     return _SOLC_VERSIONS
-    
-     
+   
+   
 def get_default_solc_version():
-    return get_supported_solc_versions()[-1]        
+    return get_supported_solc_versions()[-1]
 
 
 def parse_version(source):
@@ -197,7 +196,7 @@ def compile_solfiles(files, proj_dir, solc_version=None, output_values=OUTPUT_VA
         all_conditions = []
         for source in files:
             all_conditions.extend(_parse_conditions(source))
-        solc_version = _find_version_for_conditions(all_conditions) 
+        solc_version = _find_version_for_conditions(all_conditions)
 
     try:
         install_solc(f'v{solc_version}')
@@ -244,8 +243,9 @@ def get_sol_files(project_root):
                     test_sources.append(os.path.join(p, f))
     if len(sources) > 0:
         return sources
-    else:
-        return test_sources
+
+    # Only return test sources if no other sources were found
+    return test_sources
 
 
 if __name__ == '__main__':

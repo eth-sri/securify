@@ -19,8 +19,6 @@ limitations under the License.
 """
 
 import json
-import os
-from pathlib import Path
 
 from . import project
 from . import pysolc
