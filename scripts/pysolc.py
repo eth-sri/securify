@@ -50,7 +50,7 @@ class CompilerVersionNotSupported(BaseException):
 
 
 class SolidityCompilationException(SolcError):
-    def __init__(self, solc_exception, files):
+    def __init__(self, solc_exception, solc_version, files):
         super().__init__(
             solc_exception.command,
             solc_exception.return_code,
@@ -59,6 +59,7 @@ class SolidityCompilationException(SolcError):
             solc_exception.stdout_data,
             solc_exception.message
         )
+        self.solc_version = solc_version
         self.files = files
 
 
@@ -132,8 +133,8 @@ def get_supported_solc_versions():
         logging.info('Fetching the latest compiler releases failed, relying on known versions.')
 
     return _SOLC_VERSIONS
-   
-   
+
+
 def get_default_solc_version():
     return get_supported_solc_versions()[-1]
 
@@ -219,7 +220,7 @@ def compile_solfiles(files, proj_dir, solc_version=None, output_values=OUTPUT_VA
         stdoutdata, _, _, _ = solc_wrapper(**compiler_kwargs)
         return _parse_compiler_output(stdoutdata)
     except SolcError as e:
-        raise SolidityCompilationException(e, files)
+        raise SolidityCompilationException(e, solc_version, files)
 
 
 def compile_project(path, remappings=None):
