@@ -31,9 +31,6 @@ RUN apt-get update && apt-get -y install\
 COPY requirements.txt /tmp/
 RUN pip3 install --user -r /tmp/requirements.txt
 
-COPY scripts /tmp/installsolc
-RUN cd /tmp/ && python3 -m installsolc.install_solc
-
 # install truffle for project compilation
 RUN apt-get update && apt-get install -y\
       nodejs\

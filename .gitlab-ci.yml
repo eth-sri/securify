@@ -16,7 +16,7 @@ before_script:
   - apt-get -y install wget gdebi openjdk-8-jdk curl python3-pip
   - wget https://github.com/souffle-lang/souffle/releases/download/1.5.1/souffle_1.5.1-1_amd64.deb -O /tmp/souffle.deb
   - gdebi --n /tmp/souffle.deb
-  - wget -O /usr/bin/solc https://github.com/ethereum/solidity/releases/latest/download/solc-static-linux 
+  - wget -O /usr/bin/solc https://github.com/ethereum/solidity/releases/v0.4.25/download/solc-static-linux 
   - chmod +x /usr/bin/solc
   - export GRADLE_USER_HOME=`pwd`/.gradle
   - pip3 install -r requirements.txt
@@ -84,6 +84,7 @@ truffle_docker_test:
     - docker run -v "secvol:/project" securify --truffle --noexiterror > /tmp/sec.out
     - grep "Violation" /tmp/sec.out
     - grep "Warning" /tmp/sec.out
+    - rm -rf *
 
 solc_docker_test:
   stage: deploy
@@ -96,6 +97,12 @@ solc_docker_test:
     - cp src/test/resources/solidity/DAO.sol /secvol 
     - docker run -v "secvol:/project" securify --noexiterror > /tmp/sec.out
     - grep "Violation" /tmp/sec.out
+    - rm -rf /secvol/*
+    - mkdir /secvol/contracts/
+    - cp src/test/resources/solidity/{decompile.sol,UnhandledException.sol} /secvol
+    - docker run -v "secvol:/project" securify --noexiterror > /tmp/sec.out
+    - grep "Violation" /tmp/sec.out
+    - rm -rf /secvol/*
 
 after_script:
 - echo "End CI"

@@ -22,13 +22,17 @@ from collections import namedtuple
 from distutils.version import StrictVersion
 import sys
 import json
-import requests.exceptions
 import subprocess
+import logging
+import time
+
+import requests
+import requests.exceptions
 
 from solcx.main import _parse_compiler_output
 from solcx.wrapper import solc_wrapper
 from solcx.exceptions import SolcError
-from solcx import get_installed_solc_versions
+from solcx import get_available_solc_versions
 from solcx import get_solc_folder
 from solcx import install_solc
 
@@ -46,7 +50,7 @@ class CompilerVersionNotSupported(BaseException):
 
 
 class SolidityCompilationException(SolcError):
-    def __init__(self, solc_exception, files):
+    def __init__(self, solc_exception, solc_version, files):
         super().__init__(
             solc_exception.command,
             solc_exception.return_code,
@@ -55,12 +59,14 @@ class SolidityCompilationException(SolcError):
             solc_exception.stdout_data,
             solc_exception.message
         )
+        self.solc_version = solc_version
         self.files = files
 
 
 class OffsetException(Exception):
     pass
 
+RELEASES_LIST = "https://api.github.com/repos/ethereum/solidity/releases"
 
 OUTPUT_VALUES = ('abi',
                  'ast',
@@ -81,6 +87,9 @@ class SolidityVersion(StrictVersion):
         if len(s) <= 3:
             s += ".0"
         return s
+
+_SOLC_VERSIONS = []
+_SOLC_VERSIONS_LAST_UPDATE = 0
 
 OperatorVersionTuple = namedtuple('OperatorVersionTuple', ['op', 'v'])
 
@@ -107,11 +116,47 @@ def _get_binary(solc_version):
     return binary
 
 def get_supported_solc_versions():
-    versions = [SolidityVersion(v[1:])
-                for v in get_installed_solc_versions()]
-    return [v for v in versions if v >= SolidityVersion(MINIMAL_SOLC_VERSION)]
+    global _SOLC_VERSIONS
+    global _SOLC_VERSIONS_LAST_UPDATE
+
+    # Cache the result for one hour
+    if len(_SOLC_VERSIONS) != 0 and _SOLC_VERSIONS_LAST_UPDATE >= time.time() - 3600:
+        return _SOLC_VERSIONS
+
+    try:
+        new_versions = get_available_solc_versions()
+        _SOLC_VERSIONS = sorted((SolidityVersion(v[1:]) for v in new_versions))
+        _SOLC_VERSIONS_LAST_UPDATE = time.time()
+
+    except requests.exceptions.RequestException:
+        # If offline, work with installed versions
+        logging.info('Fetching the latest compiler releases failed, relying on known versions.')
+
+    return _SOLC_VERSIONS
+
+
+def get_default_solc_version():
+    return get_supported_solc_versions()[-1]
+
 
 def parse_version(source):
+    conditions = _parse_conditions(source)
+    return _find_version_for_conditions(conditions)
+
+
+def _find_version_for_conditions(conditions):
+    if len(conditions) == 0:
+        return get_default_solc_version()
+
+    def fullfills_all_conditions(v):
+        return all(map(lambda cond: cond.op(v, cond.v), conditions))
+
+    try:
+        return min(filter(fullfills_all_conditions, get_supported_solc_versions()))
+    except ValueError:
+        raise CompilerVersionNotSupported("Conflicting Compiler Requirements.")
+
+def _parse_conditions(source):
     with open(source, encoding='utf-8') as f:
         lines = f.readlines()
 
@@ -122,15 +167,10 @@ def parse_version(source):
                     ops[v[1]], SolidityVersion(v[2])),
                 comp_version_rex.findall(l))
             )
+            return conditions
 
-            def fullfills_all_conditions(v):
-                return all(map(lambda cond: cond.op(v, cond.v), conditions))
-            try:
-                return min(filter(fullfills_all_conditions, list(get_supported_solc_versions())))
-            except ValueError:
-                raise CompilerVersionNotSupported()
-    else:
-        return list(get_supported_solc_versions())[-1]
+    return []
+
 
 
 def compile_solfiles(files, proj_dir, solc_version=None, output_values=OUTPUT_VALUES, remappings=None):
@@ -152,7 +192,17 @@ def compile_solfiles(files, proj_dir, solc_version=None, output_values=OUTPUT_VA
             remappings.append(f'openzeppelin-solidity={open_zeppelin_path}')
 
     if solc_version is None:
-        solc_version = max(map(parse_version, files))
+        if len(get_supported_solc_versions()) == 0:
+            raise CompilerVersionNotSupported("No compiler available. No connection to GitHub?")
+        all_conditions = []
+        for source in files:
+            all_conditions.extend(_parse_conditions(source))
+        solc_version = _find_version_for_conditions(all_conditions)
+
+    try:
+        install_solc(f'v{solc_version}')
+    except (requests.exceptions.ConnectionError, subprocess.CalledProcessError):
+        raise CompilerVersionNotSupported(f'Failed to install v{solc_version} compiler.')
 
     binary = _get_binary(solc_version)
 
@@ -170,7 +220,7 @@ def compile_solfiles(files, proj_dir, solc_version=None, output_values=OUTPUT_VA
         stdoutdata, _, _, _ = solc_wrapper(**compiler_kwargs)
         return _parse_compiler_output(stdoutdata)
     except SolcError as e:
-        raise SolidityCompilationException(e, files)
+        raise SolidityCompilationException(e, solc_version, files)
 
 
 def compile_project(path, remappings=None):
@@ -180,47 +230,23 @@ def compile_project(path, remappings=None):
     return compile_solfiles(sources, path)
 
 
-def get_sol_files(src_dir_path):
-    return [os.path.join(p, f) for p, _, fs in os.walk(src_dir_path) for f in fs if
-            f.endswith('.sol') and
-            'node_modules' not in p and
-            '/test/' not in p[len(src_dir_path):] and
-            not p.endswith('/test')]
+def get_sol_files(project_root):
+    """Returns the solidity files contained in the project.
+    """
+    sources = []
+    test_sources = []
+    for p, _, files in os.walk(project_root):
+        for f in files:
+            if f.endswith('.sol'):
+                if 'node_modules' not in p and '/test/' not in p[len(str(project_root)):] and not p.endswith('/test'):
+                    sources.append(os.path.join(p, f))
+                else:
+                    test_sources.append(os.path.join(p, f))
+    if len(sources) > 0:
+        return sources
 
-
-def install_all_versions():
-    # First install last version
-    if not install_last_version():
-        print("Failed to install all compiler. Trying to continue...")
-        print("This might lead to later errors.")
-        return False
-
-    last_version = SolidityVersion(get_installed_solc_versions()[-1][1:])
-
-    next_version = MINIMAL_SOLC_VERSION
-
-    while SolidityVersion(next_version) < last_version:
-        try:
-            install_solc(f'v{next_version}')
-            # Increase major version
-            new_minor = int(next_version.split(".")[2]) + 1
-            old_major = int(next_version.split(".")[1])
-            next_version = f'0.{old_major}.{new_minor}'
-
-        except (requests.exceptions.ConnectionError, subprocess.CalledProcessError) as e:
-            # Increase major version
-            new_major = int(next_version.split(".")[1]) + 1
-            next_version = f'0.{new_major}.0'
-
-
-def install_last_version():
-    try:
-        install_solc()
-        return True
-    except (requests.exceptions.ConnectionError, subprocess.CalledProcessError) as e:
-        print("Failed to install latest compiler. Trying to continue...")
-        print("This might lead to later errors.")
-        return False
+    # Only return test sources if no other sources were found
+    return test_sources
 
 
 if __name__ == '__main__':

@@ -19,8 +19,6 @@ limitations under the License.
 """
 
 import json
-import os
-from pathlib import Path
 
 from . import project
 from . import pysolc
@@ -43,13 +41,9 @@ class SolcProject(project.Project):
             json.dump(comp_output, fs)
 
     def _get_sol_files(self):
-        """Returns the solidity files contained in the project root.
+        """Returns the solidity files contained in the project.
         """
-        return [os.path.join(p, f) for p, _, fs in os.walk(self.project_root) for f in fs if
-                f.endswith('.sol') and
-                'node_modules' not in p and
-                '/test/' not in p[len(str(self.project_root)):] and
-                not p.endswith('/test')]
+        return pysolc.get_sol_files(self.project_root)
 
     def _compile_solfiles(self, files, solc_version=None, output_values=pysolc.OUTPUT_VALUES):
         """Compiles the files using the solc compiler.
