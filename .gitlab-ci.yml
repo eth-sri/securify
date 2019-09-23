@@ -16,7 +16,7 @@ before_script:
   - apt-get -y install wget gdebi openjdk-8-jdk curl python3-pip
   - wget https://github.com/souffle-lang/souffle/releases/download/1.5.1/souffle_1.5.1-1_amd64.deb -O /tmp/souffle.deb
   - gdebi --n /tmp/souffle.deb
-  - wget -O /usr/bin/solc https://github.com/ethereum/solidity/releases/v0.4.25/download/solc-static-linux 
+  - wget -O https://github.com/ethereum/solidity/releases/download/v0.4.25/solc-static-linux 
   - chmod +x /usr/bin/solc
   - export GRADLE_USER_HOME=`pwd`/.gradle
   - pip3 install -r requirements.txt
@@ -27,10 +27,9 @@ cache:
     - .gradle/caches
 
 build_docker:
+  image: docker
   stage: build 
   before_script:
-    - apt-get update
-    - apt-get -y install docker.io
     - docker info
   script:
     - docker build -t securify .

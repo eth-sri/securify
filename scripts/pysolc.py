@@ -183,13 +183,12 @@ def compile_solfiles(files, proj_dir, solc_version=None, output_values=OUTPUT_VA
         remappings = []
     remappings = [complete_remapping(remapping) for remapping in remappings]
     node_modules_dir = find_node_modules_dir(proj_dir)
+    whitelisted_node_modules = ['zeppelin-solidity', 'openzeppelin-solidity', '@daostack', 'rlc-token']
     if node_modules_dir is not None:
-        zeppelin_path = os.path.abspath(os.path.join(node_modules_dir, 'zeppelin-solidity'))
-        open_zeppelin_path = os.path.abspath(os.path.join(node_modules_dir, 'openzeppelin-solidity'))
-        if os.path.isdir(zeppelin_path):
-            remappings.append(f'zeppelin-solidity={zeppelin_path}')
-        if os.path.isdir(open_zeppelin_path):
-            remappings.append(f'openzeppelin-solidity={open_zeppelin_path}')
+        for whitelisted_node_module in whitelisted_node_modules:
+            whitelisted_path = os.path.abspath(os.path.join(node_modules_dir, whitelisted_node_module))
+            if os.path.isdir(whitelisted_path):
+                remappings.append(f'{whitelisted_node_module}={whitelisted_path}')
 
     if solc_version is None:
         if len(get_supported_solc_versions()) == 0:
