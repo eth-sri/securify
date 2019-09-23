@@ -69,6 +69,7 @@ result_test:
 
 truffle_docker_test:
   stage: deploy
+  image: docker
   before_script:
     - apt-get update
     - apt-get -y install docker.io curl software-properties-common
@@ -86,20 +87,19 @@ truffle_docker_test:
     - rm -rf *
 
 solc_docker_test:
+  image: docker
   stage: deploy
   before_script:
-    - apt-get update
-    - apt-get -y install docker.io software-properties-common
     - docker info
   script:
     - rm -rf /secvol/*
     - cp src/test/resources/solidity/DAO.sol /secvol 
-    - docker run -v "secvol:/project" securify --noexiterror > /tmp/sec.out
+    - docker run --rm -v "secvol:/project" securify --noexiterror > /tmp/sec.out
     - grep "Violation" /tmp/sec.out
     - rm -rf /secvol/*
     - mkdir /secvol/contracts/
     - cp src/test/resources/solidity/{decompile.sol,UnhandledException.sol} /secvol
-    - docker run -v "secvol:/project" securify --noexiterror > /tmp/sec.out
+    - docker run --rm -v "secvol:/project" securify --noexiterror > /tmp/sec.out
     - grep "Violation" /tmp/sec.out
     - rm -rf /secvol/*
 
