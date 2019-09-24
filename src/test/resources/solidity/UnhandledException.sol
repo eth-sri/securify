@@ -1,4 +1,5 @@
 pragma solidity ^0.5.0;
+
 contract SimpleBank {
     mapping(address => uint) balances;
 

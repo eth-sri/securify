@@ -208,8 +208,6 @@ if __name__ == '__main__':
                                 help="Number of GB to use")
     args = parser.parse_args()
 
-    pysolc.install_all_versions()
-
     changes_found = False
 
     UNIT = Path('src/test/resources/solidity')

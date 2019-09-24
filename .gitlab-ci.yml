@@ -16,7 +16,7 @@ before_script:
   - apt-get -y install wget gdebi openjdk-8-jdk curl python3-pip
   - wget https://github.com/souffle-lang/souffle/releases/download/1.5.1/souffle_1.5.1-1_amd64.deb -O /tmp/souffle.deb
   - gdebi --n /tmp/souffle.deb
-  - wget -O https://github.com/ethereum/solidity/releases/download/v0.4.25/solc-static-linux 
+  - wget -O /usr/bin/solc https://github.com/ethereum/solidity/releases/download/v0.4.25/solc-static-linux 
   - chmod +x /usr/bin/solc
   - export GRADLE_USER_HOME=`pwd`/.gradle
   - pip3 install -r requirements.txt
@@ -56,6 +56,10 @@ gradle_test:
       - gradle/**/*
       - smt_files/**/*
       - src/**/*
+  artifacts:
+    paths:
+      - build/reports/**/*
+    when: on_failure
 
 result_test:
   stage: test
@@ -71,12 +75,9 @@ truffle_docker_test:
   stage: deploy
   image: docker
   before_script:
-    - apt-get update
-    - apt-get -y install docker.io curl software-properties-common
+    - apk add --update curl nodejs npm
     - docker info
-    - curl -sL https://deb.nodesource.com/setup_11.x | bash -
-    - apt-get install -y nodejs
-    - npm install -g truffle
+    - npm install -g truffle || true
   script:
     - cd /secvol
     - rm -rf *
@@ -98,7 +99,7 @@ solc_docker_test:
     - grep "Violation" /tmp/sec.out
     - rm -rf /secvol/*
     - mkdir /secvol/contracts/
-    - cp src/test/resources/solidity/{decompile.sol,UnhandledException.sol} /secvol
+    - cp src/test/resources/solidity/decompile.sol src/test/resources/solidity/UnhandledException.sol /secvol
     - docker run --rm -v "secvol:/project" securify --noexiterror > /tmp/sec.out
     - grep "Violation" /tmp/sec.out
     - rm -rf /secvol/*
