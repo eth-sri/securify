@@ -60,6 +60,8 @@
 .decl reachMay		(v:Var, f:VarFact)
 .decl reachMust     (l: Label, v:Var, f:VarFact)
 .decl reachInstr    (l:Label, f:VarFact)
+.decl reachCallerMay (v:Var)
+.decl reachCallerMust (l:Label, v:Var)
 .decl memoryMay		(l:Label, v:Var, f:VarFact)
 .decl memoryMust	(l:Label, v:Var, f:VarFact)
 .decl memoryTags	(l:Label, f:VarFact)
@@ -71,6 +73,9 @@
 // Patterns
 //
 
+.decl unrestrictedWriteViolation	(l:Label)
+.decl unrestrictedWriteSafe			(l:Label)
+
 
 // Declare outputs
 
@@ -78,7 +83,11 @@
 // PATTERNS
 // =====================================================
 
+unrestrictedWriteViolation(Lab) :- sstore(Lab, Index, _), ! varMayDepOnCaller(Index), ! instrMayDepOnCaller(Lab).
+unrestrictedWriteSafe(Lab) :- 
 
+varMayDepOnCaller(Var) :- reachMay(Var, X), caller(X).
+instrMayDepOnCaller(Lab) :- reachInstr(Lab, Var), caller(Var).
 
 // =====================================================
 // COMMON RULES
