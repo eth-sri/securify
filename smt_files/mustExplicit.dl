@@ -26,7 +26,7 @@
 //
 .decl assignType        (l:Label, v:Var, f:Fact)
 .decl assignVar		(l:Label, v1: Var, v2: Var)
-.decl follows		(l1: Label, l2: Label)
+.decl followsMust		(l1: Label, l2: Label)
 .decl jump		(l1: Label, l2: Label, l3: Label)
 .decl tag       (l1: Label)
 .decl oneBranchTag       (l1: Label)
@@ -41,7 +41,7 @@
 // Retrieve inputs
 .input assignType
 .input assignVar
-.input follows
+.input followsMust
 .input jump
 .input tag
 .input oneBranchTag
@@ -80,7 +80,7 @@
 // Rules
 //
 
-mustPrecedeStep(From, To) :- follows(From, To), !tag(To).
+mustPrecedeStep(From, To) :- followsMust(From, To), !tag(To).
 mustPrecedeStep(From, Mid) :- jump(From, Mid, _), oneBranchTag(Mid).
 mustPrecedeStep(From, To) :- jump(From, _, To).
 

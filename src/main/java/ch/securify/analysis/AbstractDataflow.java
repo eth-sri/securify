@@ -332,6 +332,10 @@ public abstract class AbstractDataflow {
         appendRule("assignVar", getCode(instr), getCode(output), getCode(input));
     }
 
+    protected void createAssignVarImplicitRule(Instruction instr, Variable output, Variable input) {
+        appendRule("assignVarImplicit", getCode(instr), getCode(output), getCode(input));
+    }
+
     protected void createAssignTypeRule(Instruction instr, Variable var, Class type) {
         appendRule("assignType", getCode(instr), getCode(var), getCode(type));
     }

@@ -90,14 +90,14 @@ public class MustExplicitDataflow extends AbstractDataflow {
                 BranchInstruction branchInstruction = (BranchInstruction) instr;
                 for (Instruction outgoingInstruction : branchInstruction.getOutgoingBranches()) {
                     if (!(outgoingInstruction instanceof _VirtualMethodHead)) {
-                        createFollowsRule(instr, outgoingInstruction);
+                        createFollowsMustRule(instr, outgoingInstruction);
                     }
                 }
             }
             Instruction nextInstruction = instr.getNext();
 
             if (nextInstruction != null) {
-                createFollowsRule(instr, nextInstruction);
+                createFollowsMustRule(instr, nextInstruction);
             }
         }
     }
@@ -140,21 +140,21 @@ public class MustExplicitDataflow extends AbstractDataflow {
         }
     }
 
-    private void createFollowsRule(Instruction from, Instruction to) {
+    private void createFollowsMustRule(Instruction from, Instruction to) {
         if (from instanceof JumpI) {
             Instruction mergeInstruction = ((JumpI)from).getMergeInstruction();
             if (mergeInstruction == null) {
                 mergeInstruction = new JumpDest("BLACKHOLE");
             }
             if (!(to instanceof JumpDest)) {
-                appendRule("follows", getCode(from), getCode(to));
+                appendRule("followsMust", getCode(from), getCode(to));
             }
             appendRule("jump", getCode(from), getCode(to), getCode(mergeInstruction));
         } else if (from instanceof Jump) {
             // need to use a jump, not follows because follows ignores the TO if it is of type Tag, see Datalog rules
             appendRule("jump", getCode(from), getCode(to), getCode(to));
         } else {
-            appendRule("follows", getCode(from), getCode(to));
+            appendRule("followsMust", getCode(from), getCode(to));
         }
 
         if (to instanceof JumpDest) {

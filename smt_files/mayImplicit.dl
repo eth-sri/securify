@@ -27,7 +27,8 @@
 //
 .decl assignType        (l:Label, v:Var, f:Fact)
 .decl assignVar		(l:Label, v1: Var, v2: Var)
-.decl follows		(l1: Label, l2: Label)
+.decl assignVarImplicit		(l:Label, v1: Var, v2: Var)
+.decl followsMay		(l1: Label, l2: Label)
 .decl taint		(l1:Label, l2:Label, v:Var)
 .decl endIf		(l1: Label, l2: Label)
 .decl mload		(l: Label, v:Var, f:VarFact)
@@ -40,7 +41,8 @@
 // Retrieve inputs
 .input assignType
 .input assignVar
-.input follows
+.input assignVarImplicit
+.input followsMay
 .input taint
 .input endIf
 .input mload
@@ -53,6 +55,7 @@
 //
 // Derived
 //
+.decl assignVarMay		(l:Label, v1: Var, v2: Var)
 .decl reassignMemory	(l:Label, v:Var)
 .decl reassignStorage	(l:Label, v:Var)
 
@@ -77,29 +80,29 @@
 //
 // Rules
 //
-isAfter(LabFrom, LabTo) :- follows(LabFrom, LabTo).
-isAfter(LabFrom, LabTo) :- follows(Lab, LabTo), isAfter(LabFrom, Lab).
+isAfter(LabFrom, LabTo) :- followsMay(LabFrom, LabTo).
+isAfter(LabFrom, LabTo) :- followsMay(Lab, LabTo), isAfter(LabFrom, Lab).
 
-taint(LabStart, LabTo, Var) :- follows(LabFrom, LabTo), taint(LabStart, LabFrom, Var), ! endIf(LabStart, LabTo).
+taint(LabStart, LabTo, Var) :- followsMay(LabFrom, LabTo), taint(LabStart, LabFrom, Var), ! endIf(LabStart, LabTo).
 
 reach(Var, Fact) :- assignType(_, Var, Fact).
-reach(Var1, Fact) :- assignVar(_, Var1, Var2), reach(Var2, Fact).
+reach(Var1, Fact) :- assignVarMay(_, Var1, Var2), reach(Var2, Fact).
 
 reach(Var1, Fact) :- assignType(Lab, Var1, _), taint(_, Lab, Var2), reach(Var2, Fact).
-reach(Var1, Fact) :- assignVar(Lab, Var1, _), taint(_, Lab, Var2), reach(Var2, Fact).
+reach(Var1, Fact) :- assignVarMay(Lab, Var1, _), taint(_, Lab, Var2), reach(Var2, Fact).
 
 reachInstr(Lab, Var) :- taint(_, Lab, Var).
 reachInstr(Lab, Fact) :- taint(_, Lab, Var), reach(Var, Fact).
 
 memory(Lab, Offset, Type) :- mstore(Lab, Offset, Var), reach(Var, Type).
-memory(LabTo, Offset, Type) :- follows(LabFrom, LabTo), memory(LabFrom, Offset, Type), ! reassignMemory(LabTo, Offset).
+memory(LabTo, Offset, Type) :- followsMay(LabFrom, LabTo), memory(LabFrom, Offset, Type), ! reassignMemory(LabTo, Offset).
 memoryTags(Lab, Type) :- memory(Lab, _, Type).
 
 assignType(Lab, Var, Type) :- mload(Lab, Offset, Var), memory(Lab, Offset, Type), ! unk(Offset).
 assignType(Lab, Var, Type) :- mload(Lab, Offset, Var), memory(Lab, _, Type), unk(Offset).
 
 storage(Lab, Index, Type) :- sstore(Lab, Index, Var), reach(Var, Type).
-storage(LabTo, Index, Type) :- follows(LabFrom, LabTo), storage(LabFrom, Index, Type), ! reassignStorage(LabTo, Index).
+storage(LabTo, Index, Type) :- followsMay(LabFrom, LabTo), storage(LabFrom, Index, Type), ! reassignStorage(LabTo, Index).
 
 assignType(Lab, Var, Type) :- sload(Lab, Index, Var), storage(Lab, Index, Type), ! unk(Index).
 assignType(Lab, Var, Type) :- sload(Lab, Index, Var), storage(Lab, _, Type), unk(Index).
@@ -107,3 +110,6 @@ assignType(Lab, Var, Type) :- memory(Lab, Offset, Type), sha3(Lab, Var, Offset).
 
 reassignStorage(Lab, Index) :- sstore(Lab, Index, _), !unk(Index).
 reassignMemory(Lab, Offset) :- mstore(Lab, Offset, _), !unk(Offset).
+
+assignVarMay(Lab, Var1, Var2) :- assignVar(Lab, Var1, Var2).
+assignVarMay(Lab, Var1, Var2) :- assignVarImplicit(Lab, Var1, Var2).

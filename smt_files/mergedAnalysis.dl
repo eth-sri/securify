@@ -1,0 +1,160 @@
+// =====================================================
+// MAY ANALYSIS
+// =====================================================
+
+// Type Node
+.number_type Label
+.number_type Var
+.number_type Fact
+.type VarFact = Var|Fact
+
+//
+// Inputs
+//
+.decl assignType        (l:Label, v:Var, f:Fact)
+.decl assignVar		(l:Label, v1: Var, v2: Var)
+.decl assignVarImplicit		(l:Label, v1: Var, v2: Var)
+.decl followsMay		(l1: Label, l2: Label)
+.decl followsMust		(l1: Label, l2: Label)
+.decl taint		(l1:Label, l2:Label, v:Var)
+.decl jump		(l1: Label, l2: Label, l3: Label)
+.decl tag       (l1: Label)
+.decl oneBranchTag       (l1: Label)
+.decl join		(l1: Label, l2: Label, l3: Label)
+.decl endIf		(l1: Label, l2: Label)
+.decl mload		(l: Label, v:Var, f:VarFact)
+.decl mstore		(l: Label, v:Var, f:VarFact)
+.decl sload		(l: Label, v:Var, f:VarFact)
+.decl sstore		(l: Label, v:Var, f:VarFact)
+.decl sha3		(l: Label, v:Var, f:VarFact)
+.decl unk	(f:VarFact)
+
+// Retrieve inputs
+.input assignType
+.input assignVar
+.input assignVarImplicit
+.input followsMay
+.input followsMust
+.input taint
+.input jump
+.input tag
+.input oneBranchTag
+.input join
+.input endIf
+.input mload
+.input mstore
+.input sload
+.input sstore
+.input sha3
+.input unk
+
+//
+// Derived
+//
+.decl assignTypeMay        (l:Label, v:Var, f:Fact)
+.decl assignTypeMust        (l:Label, v:Var, f:Fact)
+.decl assignVarMay		(l:Label, v1: Var, v2: Var)
+.decl reassignMemory	(l:Label, v:Var)
+.decl reassignStorage	(l:Label, v:Var)
+.decl mustPrecedeStep	(l1: Label, l2: Label)
+.decl reachMay		(v:Var, f:VarFact)
+.decl reachMust     (l: Label, v:Var, f:VarFact)
+.decl reachInstr    (l:Label, f:VarFact)
+.decl memoryMay		(l:Label, v:Var, f:VarFact)
+.decl memoryMust	(l:Label, v:Var, f:VarFact)
+.decl memoryTags	(l:Label, f:VarFact)
+.decl storageMay	(l:Label, v:Var, f:VarFact)
+.decl storageMust	(l:Label, v:Var, f:VarFact)
+.decl isAfter		(l1: Label, l2: Label)
+
+//
+// Patterns
+//
+
+
+// Declare outputs
+
+// =====================================================
+// PATTERNS
+// =====================================================
+
+
+
+// =====================================================
+// COMMON RULES
+// =====================================================
+
+reassignStorage(Lab, Index) :- sstore(Lab, Index, _), !unk(Index).
+reassignMemory(Lab, Offset) :- mstore(Lab, Offset, _), !unk(Offset).
+
+// =====================================================
+// MAY ANALYSIS
+// =====================================================
+
+isAfter(LabFrom, LabTo) :- followsMay(LabFrom, LabTo).
+isAfter(LabFrom, LabTo) :- followsMay(Lab, LabTo), isAfter(LabFrom, Lab).
+
+taint(LabStart, LabTo, Var) :- followsMay(LabFrom, LabTo), taint(LabStart, LabFrom, Var), ! endIf(LabStart, LabTo).
+
+reachMay(Var, Fact) :- assignTypeMay(_, Var, Fact).
+reachMay(Var1, Fact) :- assignVarMay(_, Var1, Var2), reachMay(Var2, Fact).
+
+reachMay(Var1, Fact) :- assignTypeMay(Lab, Var1, _), taint(_, Lab, Var2), reachMay(Var2, Fact).
+reachMay(Var1, Fact) :- assignVarMay(Lab, Var1, _), taint(_, Lab, Var2), reachMay(Var2, Fact).
+
+reachInstr(Lab, Var) :- taint(_, Lab, Var).
+reachInstr(Lab, Fact) :- taint(_, Lab, Var), reachMay(Var, Fact).
+
+memoryMay(Lab, Offset, Type) :- mstore(Lab, Offset, Var), reachMay(Var, Type).
+memoryMay(LabTo, Offset, Type) :- followsMay(LabFrom, LabTo), memoryMay(LabFrom, Offset, Type), ! reassignMemory(LabTo, Offset).
+memoryTags(Lab, Type) :- memoryMay(Lab, _, Type).
+
+assignTypeMay(Lab, Var, Type) :- mload(Lab, Offset, Var), memoryMay(Lab, Offset, Type), ! unk(Offset).
+assignTypeMay(Lab, Var, Type) :- mload(Lab, Offset, Var), memoryMay(Lab, _, Type), unk(Offset).
+
+storageMay(Lab, Index, Type) :- sstore(Lab, Index, Var), reachMay(Var, Type).
+storageMay(LabTo, Index, Type) :- followsMay(LabFrom, LabTo), storageMay(LabFrom, Index, Type), ! reassignStorage(LabTo, Index).
+
+assignTypeMay(Lab, Var, Type) :- sload(Lab, Index, Var), storageMay(Lab, Index, Type), ! unk(Index).
+assignTypeMay(Lab, Var, Type) :- sload(Lab, Index, Var), storageMay(Lab, _, Type), unk(Index).
+assignTypeMay(Lab, Var, Type) :- memoryMay(Lab, Offset, Type), sha3(Lab, Var, Offset).
+assignTypeMay(Lab, Var, Type) :- assignType(Lab, Var, Type).
+
+assignVarMay(Lab, Var1, Var2) :- assignVar(Lab, Var1, Var2).
+assignVarMay(Lab, Var1, Var2) :- assignVarImplicit(Lab, Var1, Var2).
+
+// =====================================================
+// MUST ANALYSIS
+// =====================================================
+
+mustPrecedeStep(From, To) :- followsMust(From, To), !tag(To).
+mustPrecedeStep(From, Mid) :- jump(From, Mid, _), oneBranchTag(Mid).
+mustPrecedeStep(From, To) :- jump(From, _, To).
+
+mustPrecede(From, To) :- mustPrecedeStep(From, To).
+mustPrecede(From, To) :- mustPrecede(From, Mid), mustPrecede(Mid, To).
+
+reachMust(Lab, Var, Fact) :- assignTypeMust(Lab, Var, Fact).
+reachMust(Lab, Var1, Fact) :- assignVar(Lab, Var1, Var2), reachMust(Lab, Var2, Fact).
+reachMust(LabTo, Var, Fact) :- mustPrecede(LabFrom, LabTo), reachMust(LabFrom, Var, Fact).
+reachMust(LabTo, Var, Fact) :- join(LabFrom1, LabFrom2, LabTo), reachMust(LabFrom1, Var, Fact), reachMust(LabFrom2, Var, Fact).
+
+memoryMust(Lab, Offset, Type) :- mstore(Lab, Offset, Var), reachMust(Lab, Var, Type), ! unk(Offset).
+memoryMust(LabTo, Offset, Type) :- mustPrecedeStep(LabFrom, LabTo),  memoryMust(LabFrom, Offset, Type), ! reassignMemory(LabTo, Offset).
+memoryMust(LabTo, Offset, Type) :- join(LabFrom1, LabFrom2, LabTo),
+								memoryMust(LabFrom1, Offset, Type),
+								memoryMust(LabFrom2, Offset, Type),
+								! unk(Offset).
+
+assignTypeMust(Lab, Var, Type) :- mload(Lab, Offset, Var), memoryMust(Lab, Offset, Type), ! unk(Offset).
+
+storageMust(Lab, Index, Type) :- sstore(Lab, Index, Var), reachMust(Lab, Var, Type), ! unk(Index).
+storageMust(LabTo, Index, Type) :- mustPrecedeStep(LabFrom, LabTo), storageMust(LabFrom, Index, Type), ! reassignStorage(LabTo, Index).
+storageMust(LabTo, Index, Type) :- join(LabFrom1, LabFrom2, LabTo),
+								storageMust(LabFrom1, Index, Type),
+								storageMust(LabFrom2, Index, Type),
+								! unk(Index).
+
+assignTypeMust(Lab, Var, Type) :- sload(Lab, Index, Var), storageMust(Lab, Index, Type), ! unk(Index).
+assignTypeMust(Lab, Var, Type) :- memoryMust(Lab, Offset, Type), sha3(Lab, Var, Offset), ! unk(Offset).
+assignTypeMust(Lab, Var, Type) :- assignType(Lab, Var, Type).

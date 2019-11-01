@@ -83,7 +83,7 @@ public class MayImplicitDataflow extends AbstractDataflow {
         } else {
             indexCode = unk;
             // if you have "var = sload(index)", to propagate labels from index to var we add "var = index"
-            createAssignVarRule(instr, var, index);
+            createAssignVarImplicitRule(instr, var, index);
         }
         appendRule("sload", getCode(instr), indexCode, getCode(var));
     }
@@ -95,7 +95,7 @@ public class MayImplicitDataflow extends AbstractDataflow {
             offsetCode = getCode(getMemoryVarForIndex(getInt(offset.getConstantValue())));
         } else {
             offsetCode = unk;
-            createAssignVarRule(instr, var, offset);
+            createAssignVarImplicitRule(instr, var, offset);
         }
         appendRule("mload", getCode(instr), offsetCode, getCode(var));
     }
@@ -108,14 +108,14 @@ public class MayImplicitDataflow extends AbstractDataflow {
                 BranchInstruction branchInstruction = (BranchInstruction) instr;
                 for (Instruction outgoingInstruction : branchInstruction.getOutgoingBranches()) {
                     if (!(outgoingInstruction instanceof _VirtualMethodHead)) {
-                        createFollowsRule(instr, outgoingInstruction);
+                        createFollowsMayRule(instr, outgoingInstruction);
                     }
                 }
             }
             Instruction nextInstruction = instr.getNext();
 
             if (nextInstruction != null) {
-                createFollowsRule(instr, nextInstruction);
+                createFollowsMayRule(instr, nextInstruction);
             }
         }
     }
@@ -149,9 +149,10 @@ public class MayImplicitDataflow extends AbstractDataflow {
         }
     }
 
-    private void createFollowsRule(Instruction from, Instruction to) {
-        appendRule("follows", getCode(from), getCode(to));
+    private void createFollowsMayRule(Instruction from, Instruction to) {
+        appendRule("followsMay", getCode(from), getCode(to));
     }
+
 
     private void createTaintRule(Instruction labStart, Instruction lab, Variable var) {
         appendRule("taint", getCode(labStart), getCode(lab), getCode(var));
