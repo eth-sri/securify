@@ -40,6 +40,7 @@ import static com.google.common.io.Resources.getResource;
 
 public abstract class AbstractDataflow {
 
+    public static final int CALLER_CONST_VAL = -2;
     public static final int UNK_CONST_VAL = -1;
 
     abstract public int mayFollow(Instruction instr1, Instruction instr2);
@@ -71,6 +72,7 @@ public abstract class AbstractDataflow {
     protected int bvCounter = 0; // reserve first 100 for types
 
     public int unk;
+    public int caller;
 
     protected final boolean DEBUG = false;
 
@@ -135,9 +137,13 @@ public abstract class AbstractDataflow {
         ruleToSB.put("isStorageVar", new StringBuffer());
         ruleToSB.put("sha3", new StringBuffer());
         ruleToSB.put("unk", new StringBuffer());
+        ruleToSB.put("caller", new StringBuffer());
 
         unk = getCode(UNK_CONST_VAL);
         appendRule("unk", unk);
+
+        caller = getCode(CALLER_CONST_VAL);
+        appendRule("caller", caller);
 
         log("Souffle Analysis");
 
@@ -154,11 +160,13 @@ public abstract class AbstractDataflow {
         WORKSPACE_OUT = fWORKSPACE_OUT.getAbsolutePath();
 
         deriveAssignVarPredicates();
+        deriveAssignCallerPredicates();
         deriveAssignTypePredicates();
         deriveHeapPredicates();
         deriveStorePredicates();
 
         deriveFollowsPredicates();
+        deriveJumpPredicates();
         deriveIfPredicates();
 
         createProgramRulesFile();
@@ -183,6 +191,7 @@ public abstract class AbstractDataflow {
         ByteBuffer bb = ByteBuffer.wrap(bytes);
         return bb.getInt();
     }
+
 
     protected static long Encode(CSVRecord record) {
         assert(record.size() <= 3);
@@ -407,6 +416,27 @@ public abstract class AbstractDataflow {
             return getCode((Variable) o);
         } else {
             throw new RuntimeException("Not supported object of a bit vector");
+        }
+    }
+
+
+    protected void deriveAssignCallerPredicates() {
+        log(">> Derive Caller predicates <<");
+        for (Instruction instr : instructions) {
+            if (instr instanceof Caller) {
+                appendRule("assignType", getCode(instr), getCode(instr.getOutput()[0]), caller);
+            }
+        }
+    }
+
+    protected void deriveJumpPredicates() {
+        log(">> Derive Jump predicates <<");
+        for (Instruction instr : instructions) {
+            if (instr instanceof JumpI) {
+                JumpI ifInstr = (JumpI) instr;
+                Variable condition = ifInstr.getCondition();
+                appendRule("jump", getCode(ifInstr), getCode(condition));
+            }
         }
     }
 

@@ -12,22 +12,24 @@
 // Inputs
 //
 .decl assignType        (l:Label, v:Var, f:Fact)
-.decl assignVar		(l:Label, v1: Var, v2: Var)
-.decl assignVarImplicit		(l:Label, v1: Var, v2: Var)
+.decl assignVar			(l:Label, v1: Var, v2: Var)
+.decl assignVarImplicit	(l:Label, v1: Var, v2: Var)
 .decl followsMay		(l1: Label, l2: Label)
 .decl followsMust		(l1: Label, l2: Label)
-.decl taint		(l1:Label, l2:Label, v:Var)
-.decl jump		(l1: Label, l2: Label, l3: Label)
-.decl tag       (l1: Label)
-.decl oneBranchTag       (l1: Label)
-.decl join		(l1: Label, l2: Label, l3: Label)
-.decl endIf		(l1: Label, l2: Label)
-.decl mload		(l: Label, v:Var, f:VarFact)
-.decl mstore		(l: Label, v:Var, f:VarFact)
-.decl sload		(l: Label, v:Var, f:VarFact)
-.decl sstore		(l: Label, v:Var, f:VarFact)
-.decl sha3		(l: Label, v:Var, f:VarFact)
-.decl unk	(f:VarFact)
+.decl taint				(l1:Label, l2:Label, v:Var)
+.decl jump				(l1: Label, l2: Label, l3: Label)
+.decl tag       		(l1: Label)
+.decl oneBranchTag      (l1: Label)
+.decl join				(l1: Label, l2: Label, l3: Label)
+.decl endIf				(l1: Label, l2: Label)
+.decl mload				(l: Label, v:Var, f:VarFact)
+.decl mstore			(l: Label, v:Var, f:VarFact)
+.decl sload				(l: Label, v:Var, f:VarFact)
+.decl sstore			(l: Label, v:Var, f:VarFact)
+.decl sha3				(l: Label, v:Var, f:VarFact)
+.decl unk				(f:VarFact)
+.decl caller 			(f:VarFact)
+.decl jump 				(l: Label, v:Var)
 
 // Retrieve inputs
 .input assignType
@@ -47,6 +49,8 @@
 .input sstore
 .input sha3
 .input unk
+.input caller
+.input jump
 
 //
 // Derived
@@ -84,10 +88,11 @@
 // =====================================================
 
 unrestrictedWriteViolation(Lab) :- sstore(Lab, Index, _), ! varMayDepOnCaller(Index), ! instrMayDepOnCaller(Lab).
-unrestrictedWriteSafe(Lab) :- 
+unrestrictedWriteSafe(Lab) :- sstore(Lab, Index, _), reachMust(Lab, Index, X), caller(X).
+unrestrictedWriteSafe(Lab) :- sstore(Lab, _, _), jump(LabJump, Cond), mustPrecede(LabJump, Lab), reachMust(LabJump, Cond, X), caller(X).
 
 varMayDepOnCaller(Var) :- reachMay(Var, X), caller(X).
-instrMayDepOnCaller(Lab) :- reachInstr(Lab, Var), caller(Var).
+instrMayDepOnCaller(Lab) :- reachInstr(Lab, X), caller(X).
 
 // =====================================================
 // COMMON RULES
