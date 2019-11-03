@@ -18,6 +18,7 @@
 
 package ch.securify.analysis;
 
+import ch.securify.Main;
 import ch.securify.decompiler.Variable;
 import ch.securify.decompiler.instructions.*;
 import ch.securify.utils.BigIntUtil;
@@ -59,20 +60,21 @@ public abstract class AbstractDataflow {
 
     protected List<Instruction> instructions;
 
-    protected BiMap<Variable, Integer> varToCode;
-    protected BiMap<Instruction, Integer> instrToCode;
-    protected BiMap<Class, Integer> typeToCode;
-    protected BiMap<Integer, Integer> constToCode;
+    protected static BiMap<Variable, Integer> varToCode = HashBiMap.create();
+    protected static BiMap<Instruction, Integer> instrToCode = HashBiMap.create();
+    protected static BiMap<Class, Integer> typeToCode = HashBiMap.create();
+    protected static BiMap<Integer, Integer> constToCode = HashBiMap.create();
+    protected static BiMap<Integer, Variable> offsetToStorageVar = HashBiMap.create();
+    protected static BiMap<Integer, Variable> offsetToMemoryVar = HashBiMap.create();
 
-    protected BiMap<Integer, Variable> offsetToStorageVar;
-    protected BiMap<Integer, Variable> offsetToMemoryVar;
+
     protected BiMap<String, StringBuffer> ruleToSB;
     protected Map<String, Set<Long>> fixedpoint;
 
     protected int bvCounter = 0; // reserve first 100 for types
 
-    public int unk;
-    public int caller;
+    public static int unk;
+    public static int caller;
 
     protected final boolean DEBUG = false;
 
@@ -111,21 +113,20 @@ public abstract class AbstractDataflow {
 
         String DL_EXEC = DL_FOLDER + "/" + binaryName;
 
-        varToCode = HashBiMap.create();
-        instrToCode = HashBiMap.create();
-        typeToCode = HashBiMap.create();
-        constToCode = HashBiMap.create();
+
         fixedpoint = new HashMap<>();
 
-        offsetToStorageVar = HashBiMap.create();
-        offsetToMemoryVar = HashBiMap.create();
+
 
         ruleToSB = HashBiMap.create();
         ruleToSB.put("assignVar", new StringBuffer());
         ruleToSB.put("assignType", new StringBuffer());
         ruleToSB.put("taint", new StringBuffer());
-        ruleToSB.put("follows", new StringBuffer());
+        ruleToSB.put("followsMay", new StringBuffer());
+        ruleToSB.put("followsMust", new StringBuffer());
+        ruleToSB.put("assignVarImplicit", new StringBuffer());
         ruleToSB.put("jump", new StringBuffer());
+        ruleToSB.put("jumpCond", new StringBuffer());
         ruleToSB.put("tag", new StringBuffer());
         ruleToSB.put("oneBranchTag", new StringBuffer());
         ruleToSB.put("join", new StringBuffer());
@@ -138,6 +139,7 @@ public abstract class AbstractDataflow {
         ruleToSB.put("sha3", new StringBuffer());
         ruleToSB.put("unk", new StringBuffer());
         ruleToSB.put("caller", new StringBuffer());
+        ruleToSB.put("call", new StringBuffer());
 
         unk = getCode(UNK_CONST_VAL);
         appendRule("unk", unk);
@@ -147,12 +149,13 @@ public abstract class AbstractDataflow {
 
         log("Souffle Analysis");
 
+
         File fWORKSPACE = (new File(System.getProperty("java.io.tmpdir"), "souffle-" + UUID.randomUUID()));
         if (!fWORKSPACE.mkdir()) {
             throw new IOException("Could not create temporary directory");
         }
         WORKSPACE = fWORKSPACE.getAbsolutePath();
-
+        System.out.println("Datalog: " + binaryName + ": " + WORKSPACE);
         File fWORKSPACE_OUT = new File(WORKSPACE + "_OUT");
         if (!fWORKSPACE_OUT.mkdir()) {
             throw new IOException("Could not create temporary directory");
@@ -162,6 +165,7 @@ public abstract class AbstractDataflow {
         deriveAssignVarPredicates();
         deriveAssignCallerPredicates();
         deriveAssignTypePredicates();
+        deriveCallPredicates();
         deriveHeapPredicates();
         deriveStorePredicates();
 
@@ -174,7 +178,7 @@ public abstract class AbstractDataflow {
         log("Threshold: " + Config.THRESHOLD_COMPILE);
 
         long start = System.currentTimeMillis();
-        runCommand(new String[]{DL_EXEC, "-j", Integer.toString(Runtime.getRuntime().availableProcessors()), "-F", WORKSPACE, "-D", WORKSPACE_OUT});
+        //runCommand(new String[]{DL_EXEC, "-j", Integer.toString(Runtime.getRuntime().availableProcessors()), "-F", WORKSPACE, "-D", WORKSPACE_OUT});
 
         long elapsedTime = System.currentTimeMillis() - start;
         String elapsedTimeStr = String.format("%d min, %d sec",
@@ -242,8 +246,8 @@ public abstract class AbstractDataflow {
     }
 
     public void dispose() throws IOException, InterruptedException {
-        deleteDirectory(Paths.get(WORKSPACE));
-        deleteDirectory(Paths.get(WORKSPACE_OUT));
+        //deleteDirectory(Paths.get(WORKSPACE));
+        //deleteDirectory(Paths.get(WORKSPACE_OUT));
     }
 
     protected void readFixedpoint(String ruleName) throws IOException {
@@ -435,7 +439,31 @@ public abstract class AbstractDataflow {
             if (instr instanceof JumpI) {
                 JumpI ifInstr = (JumpI) instr;
                 Variable condition = ifInstr.getCondition();
-                appendRule("jump", getCode(ifInstr), getCode(condition));
+                appendRule("jumpCond", getCode(ifInstr), getCode(condition));
+            }
+        }
+    }
+
+    protected void deriveCallPredicates() {
+        log(">> Derive Jump predicates <<");
+        for (Instruction instr : instructions) {
+            if (instr instanceof Call) {
+                Call call = (Call)instr;
+
+                Variable ret  = call.getOutput()[0];
+                Variable gas = call.getInput()[0];
+                Variable to = call.getInput()[1];
+                Variable value = call.getInput()[2];
+
+                if (gas.hasConstantValue()) {
+//                    continue;
+                }
+
+                if (value.hasConstantValue() && AbstractDataflow.getInt(value.getConstantValue()) == 0) {
+//                    continue;
+                }
+
+                appendRule("call", getCode(call), getCode(ret), getCode(gas), getCode(to), getCode(value));
             }
         }
     }

@@ -71,6 +71,9 @@ public class Main {
         @Parameter(names = {"--decompoutputfile"}, description = "output file for the decompiled code")
         private String decompoutputfile;
 
+        @Parameter(names = {"--souffleinput"}, description = "store souffle input")
+        private String souffleInputDir;
+
         @Parameter(names = {"-v", "--verbose"}, description = "provide verbose output")
         private boolean verbose;
 
@@ -91,7 +94,7 @@ public class Main {
     private static ContractResult contractResult;
     private static PrintStream log = new DevNullPrintStream();
     private static PrintStream progressPrinter = System.out;
-    private static Args args;
+    public static Args args;
 
 
     public static TreeMap<String, SolidityResult> processSolidityFile(String solcPath, String filesol, String livestatusfile) throws IOException, InterruptedException {
@@ -109,15 +112,31 @@ public class Main {
         Set<Map.Entry<String, JsonElement>> entries = compilationOutput.entrySet();
 
         TreeMap<String, SolidityResult> allContractResults = new TreeMap<>();
+
+        int largestSize = 0;
+        Map.Entry<String, JsonElement> largestContract = null;
         for (Map.Entry<String, JsonElement> elt : entries) {
+            String bin = elt.getValue().getAsJsonObject().get("bin-runtime").getAsString();
+            int curSize = bin.length();
+            if (curSize > largestSize) {
+                largestContract = elt;
+                largestSize = curSize;
+            }
+        }
+        System.out.println(largestContract.getKey());
+        System.out.println(largestContract.getValue().getAsJsonObject().get("bin-runtime").getAsString().length());
+
+
+        //for (Map.Entry<String, JsonElement> elt : entries) {
+            Map.Entry<String, JsonElement> elt = largestContract;
             initPatterns(args);
             progressPrinter.println("Processing contract: " + elt.getKey());
 
             String bin = elt.getValue().getAsJsonObject().get("bin-runtime").getAsString();
-            if ("".equals(bin)) {
-                log.println("Skipping empty contract: " + elt.getKey());
-                continue;
-            }
+//            if ("".equals(bin)) {
+//                log.println("Skipping empty contract: " + elt.getKey());
+//                continue;
+//            }
             String map = elt.getValue().getAsJsonObject().get("srcmap-runtime").getAsString();
 
             List<String> lines = Collections.singletonList(bin);
@@ -140,7 +159,7 @@ public class Main {
 
                 allContractResults.put(elt.getKey(), allPatternResults);
             }
-        }
+        //}
 
         return allContractResults;
     }
@@ -366,6 +385,8 @@ public class Main {
         } else {
             patterns = allPatterns;
         }
+
+        patterns = new LinkedList<>();
 
         SolidityResult.setPatternDescriptions(patterns);
     }

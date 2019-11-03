@@ -18,6 +18,7 @@
 .decl followsMust		(l1: Label, l2: Label)
 .decl taint				(l1:Label, l2:Label, v:Var)
 .decl jump				(l1: Label, l2: Label, l3: Label)
+.decl jumpCond			(l: Label, v:Var)
 .decl tag       		(l1: Label)
 .decl oneBranchTag      (l1: Label)
 .decl join				(l1: Label, l2: Label, l3: Label)
@@ -29,7 +30,6 @@
 .decl sha3				(l: Label, v:Var, f:VarFact)
 .decl unk				(f:VarFact)
 .decl caller 			(f:VarFact)
-.decl jump 				(l: Label, v:Var)
 
 // Retrieve inputs
 .input assignType
@@ -39,6 +39,7 @@
 .input followsMust
 .input taint
 .input jump
+.input jumpCond
 .input tag
 .input oneBranchTag
 .input join
@@ -50,28 +51,28 @@
 .input sha3
 .input unk
 .input caller
-.input jump
 
 //
 // Derived
 //
-.decl assignTypeMay        (l:Label, v:Var, f:Fact)
-.decl assignTypeMust        (l:Label, v:Var, f:Fact)
-.decl assignVarMay		(l:Label, v1: Var, v2: Var)
-.decl reassignMemory	(l:Label, v:Var)
-.decl reassignStorage	(l:Label, v:Var)
-.decl mustPrecedeStep	(l1: Label, l2: Label)
-.decl reachMay		(v:Var, f:VarFact)
-.decl reachMust     (l: Label, v:Var, f:VarFact)
-.decl reachInstr    (l:Label, f:VarFact)
-.decl reachCallerMay (v:Var)
-.decl reachCallerMust (l:Label, v:Var)
-.decl memoryMay		(l:Label, v:Var, f:VarFact)
-.decl memoryMust	(l:Label, v:Var, f:VarFact)
-.decl memoryTags	(l:Label, f:VarFact)
-.decl storageMay	(l:Label, v:Var, f:VarFact)
-.decl storageMust	(l:Label, v:Var, f:VarFact)
-.decl isAfter		(l1: Label, l2: Label)
+.decl assignTypeMay			(l:Label, v:Var, f:Fact)
+.decl assignTypeMust		(l:Label, v:Var, f:Fact)
+.decl assignVarMay			(l:Label, v1: Var, v2: Var)
+.decl reassignMemory		(l:Label, v:Var)
+.decl reassignStorage		(l:Label, v:Var)
+.decl mustPrecedeStep		(l1: Label, l2: Label)
+.decl mustPrecede			(l1: Label, l2: Label)
+.decl reachMay				(v:Var, f:VarFact)
+.decl reachMust     		(l: Label, v:Var, f:VarFact)
+.decl reachInstr    		(l:Label, f:VarFact)
+.decl varMayDepOnCaller 	(v:Var)
+.decl memoryMay				(l:Label, v:Var, f:VarFact)
+.decl memoryMust			(l:Label, v:Var, f:VarFact)
+.decl memoryTags			(l:Label, f:VarFact)
+.decl storageMay			(l:Label, v:Var, f:VarFact)
+.decl storageMust			(l:Label, v:Var, f:VarFact)
+.decl isAfter				(l1: Label, l2: Label)
+.decl instrMayDepOnCaller	(l:Label)
 
 //
 // Patterns
@@ -79,7 +80,6 @@
 
 .decl unrestrictedWriteViolation	(l:Label)
 .decl unrestrictedWriteSafe			(l:Label)
-
 
 // Declare outputs
 
@@ -89,7 +89,7 @@
 
 unrestrictedWriteViolation(Lab) :- sstore(Lab, Index, _), ! varMayDepOnCaller(Index), ! instrMayDepOnCaller(Lab).
 unrestrictedWriteSafe(Lab) :- sstore(Lab, Index, _), reachMust(Lab, Index, X), caller(X).
-unrestrictedWriteSafe(Lab) :- sstore(Lab, _, _), jump(LabJump, Cond), mustPrecede(LabJump, Lab), reachMust(LabJump, Cond, X), caller(X).
+unrestrictedWriteSafe(Lab) :- sstore(Lab, _, _), jumpCond(LabJump, Cond), mustPrecede(LabJump, Lab), reachMust(LabJump, Cond, X), caller(X).
 
 varMayDepOnCaller(Var) :- reachMay(Var, X), caller(X).
 instrMayDepOnCaller(Lab) :- reachInstr(Lab, X), caller(X).
