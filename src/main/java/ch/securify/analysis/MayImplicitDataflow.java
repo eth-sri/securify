@@ -19,10 +19,7 @@
 package ch.securify.analysis;
 
 import ch.securify.decompiler.Variable;
-import ch.securify.decompiler.instructions.BranchInstruction;
-import ch.securify.decompiler.instructions.Instruction;
-import ch.securify.decompiler.instructions.JumpI;
-import ch.securify.decompiler.instructions._VirtualMethodHead;
+import ch.securify.decompiler.instructions.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -141,7 +138,7 @@ public class MayImplicitDataflow extends AbstractDataflow {
                     createTaintRule(instr, elseInstr, condition);
                 }
 
-                if (mergeInstr != null) {
+                if (mergeInstr != null && !(mergeInstr.getPrev() instanceof Revert)) {
                     log("merge instruction: " + mergeInstr.getStringRepresentation());
                     createEndIfRule(instr, mergeInstr);
                 }

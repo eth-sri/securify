@@ -61,6 +61,7 @@ public class JumpI extends BranchInstruction {
 		return getOutgoingBranches().size() > 0 ? getOutgoingBranches().iterator().next() : null;
 	}
 
+
 	/**
 	 * Get the Instruction where the branches created by this conditional jump merge.
 	 * @return Instruction at the merge point, null if the branches do not merge,
@@ -68,6 +69,7 @@ public class JumpI extends BranchInstruction {
 	public Instruction getMergeInstruction() {
 		Instruction branchA = getNext();
 		Instruction branchB = getTargetInstruction();
+
 		if (branchA == null || branchB == null)
 			return null;
 

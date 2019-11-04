@@ -18,8 +18,7 @@
 
 package ch.securify.decompiler.printer;
 
-import ch.securify.decompiler.instructions.Instruction;
-import ch.securify.decompiler.instructions._VirtualMethodHead;
+import ch.securify.decompiler.instructions.*;
 
 import java.io.PrintStream;
 import java.util.List;

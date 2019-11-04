@@ -132,7 +132,7 @@ public class MustExplicitDataflow extends AbstractDataflow {
                 JumpI ifInstr = (JumpI) instr;
                 Instruction mergeInstr = ifInstr.getMergeInstruction();
 
-                if (mergeInstr != null) {
+                if (mergeInstr != null && !(mergeInstr.getPrev() instanceof Revert)) {
                     log("merge instruction: " + mergeInstr.getStringRepresentation());
                     createEndIfRule(instr, mergeInstr);
                 }
