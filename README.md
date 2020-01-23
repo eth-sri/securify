@@ -1,4 +1,7 @@
-# Securify
+# [DEPRECATED] Securify
+
+This is version of Securify is deprecated and will be no longer supported. Please use [Securify v2.0](https://github.com/eth-sri/securify2).
+
 
 ![securify](/img/foundation_securify.png)
 
